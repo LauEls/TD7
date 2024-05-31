@@ -87,3 +87,46 @@ class LAP(object):
 		
 		if self.prioritized:
 			self.priority = torch.ones(self.size).to(self.device)
+
+	def load_paths(self, paths):
+		cntr = 0
+		cntr_2 = 0
+		reward_sum = 0
+		for path in paths:
+			self.total_score = 0
+			self.total_ee_wrench = 0
+			self.path_steps = 0
+			self.done = False
+			cntr += 1
+			for i, (
+				obs,
+				action,
+				reward,
+				next_obs,
+				terminal
+			) in enumerate(zip(
+				path["observations"],
+				path["actions"],
+				path["rewards"],
+				path["next_observations"],
+				path["dones"]
+			)):
+				# print("terminal: ", terminal)
+				cntr_2 += 1
+				self.add(
+					state=obs,
+					action=action,
+					reward=reward,
+					next_state=next_obs,
+					done=terminal,
+				)
+			# self.avg_score = self.total_score/self.path_steps
+			reward_sum += self.total_score
+			# print('path ', self.paths, 'score ', self.total_score)
+
+		avg_reward = reward_sum/cntr 
+		# print("Epoch average reward: ",avg_reward)
+		print(self.not_done)
+		# print("cnt: ", cntr)
+		# print("cnt_2: ", cntr_2)
+		return avg_reward    

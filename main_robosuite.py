@@ -60,14 +60,15 @@ def train_online(RL_agent, env, eval_env, args):
 			ep_num += 1 
 
 
-def train_offline(RL_agent, env, eval_env, args):
-	RL_agent.replay_buffer.load_D4RL(d4rl.qlearning_dataset(env))
+def train_offline(RL_agent, env, eval_env, paths, args):
+	# RL_agent.replay_buffer.load_D4RL(d4rl.qlearning_dataset(env))
+	RL_agent.replay_buffer.load_paths(paths)
 
 	evals = []
 	start_time = time.time()
 
 	for t in range(int(args.max_timesteps+1)):
-		maybe_evaluate_and_print(RL_agent, eval_env, evals, t, start_time, args, d4rl=True)
+		maybe_evaluate_and_print(RL_agent, eval_env, evals, t, start_time, args, d4rl=False)
 		RL_agent.train()
 
 
@@ -99,7 +100,7 @@ def maybe_evaluate_and_print(RL_agent, eval_env, evals, t, start_time, args, d4r
 
 
 if __name__ == "__main__":
-	load_dir = "runs/lift/panda/osc_pose/online/"
+	load_dir = "runs/lift/panda/osc_pose/offline/"
 
 	kwargs_fpath = os.path.join(load_dir, "variant.json")
 	try:
@@ -167,10 +168,15 @@ if __name__ == "__main__":
 	parser.add_argument('--d4rl_path', default="./d4rl_datasets", type=str)
 	args = parser.parse_args()
 
+	args.max_timesteps += 3300
+
 	if offline:
-		import d4rl
-		d4rl.set_dataset_path(args.d4rl_path)
+		# import d4rl
+		# d4rl.set_dataset_path(args.d4rl_path)
+		paths = np.load('/home/laurenz/phd_project/sac/scripts/robosuite_env_solved/demonstrations/lift/lift_no_random_no_noise_test_v3.npy', allow_pickle=True)
+		print("Loaded paths length: ", len(paths))
 		args.use_checkpoints = False
+
 
 	if args.file_name is None:
 		args.file_name = f"TD7_{env_name}_{seed}"
@@ -198,6 +204,6 @@ if __name__ == "__main__":
 	RL_agent = TD7.Agent(state_dim, action_dim, max_action, offline)
 
 	if offline:
-		train_offline(RL_agent, env, eval_env, args)
+		train_offline(RL_agent, env, eval_env, paths, args)
 	else:
 		train_online(RL_agent, env, eval_env, args)
