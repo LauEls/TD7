@@ -13,9 +13,7 @@
       "num_trains_per_train_loop": 1000,
       "pre_training": false
     },
-    "hyperparameters":{
-      "buffer_size": 20000
-    },
+    "hyperparameters": {},
     "environment_kwargs": {
       "control_freq": 20,
       "controller": "OSC_POSE",
@@ -46,8 +44,8 @@
       ]
     },
     "replay_buffer_size": 1000000,
-    "seed": 5,
-    "offline": true,
+    "seed": 7,
+    "offline": false,
     "trainer_kwargs": {
       "discount": 0.99,
       "policy_lr": 0.001,

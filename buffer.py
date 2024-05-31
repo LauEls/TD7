@@ -17,6 +17,7 @@ class LAP(object):
 	
 		max_size = int(max_size)
 		self.max_size = max_size
+		print("max_size: ", max_size)
 		self.ptr = 0
 		self.size = 0
 

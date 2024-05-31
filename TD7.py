@@ -14,7 +14,7 @@ import buffer
 class Hyperparameters:
 	# Generic
 	batch_size: int = 256
-	buffer_size: int = 20000#1e6
+	buffer_size: int = 1e6
 	discount: float = 0.99
 	target_update_rate: int = 250
 	exploration_noise: float = 0.1

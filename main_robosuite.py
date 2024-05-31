@@ -100,7 +100,8 @@ def maybe_evaluate_and_print(RL_agent, eval_env, evals, t, start_time, args, d4r
 
 
 if __name__ == "__main__":
-	load_dir = "runs/lift/panda/osc_pose/offline/"
+	# load_dir = "runs/lift/panda/osc_pose/offline/"
+	load_dir = "runs/lift/panda/osc_pose/online/v2_alg_comp"
 
 	kwargs_fpath = os.path.join(load_dir, "variant.json")
 	try:
@@ -201,7 +202,8 @@ if __name__ == "__main__":
 	action_dim = env.action_space.shape[0] 
 	max_action = float(env.action_space.high[0])
 
-	RL_agent = TD7.Agent(state_dim, action_dim, max_action, offline)
+	hp = TD7.Hyperparameters(**variant["hyperparameters"])
+	RL_agent = TD7.Agent(state_dim, action_dim, max_action, offline, hp=hp)
 
 	if offline:
 		train_offline(RL_agent, env, eval_env, paths, args)
