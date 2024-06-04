@@ -100,8 +100,9 @@ def maybe_evaluate_and_print(RL_agent, eval_env, evals, t, start_time, args, d4r
 
 
 if __name__ == "__main__":
-	load_dir = "runs/lift/panda/osc_pose/offline/"
+	# load_dir = "runs/lift/panda/osc_pose/offline/"
 	# load_dir = "runs/lift/panda/osc_pose/online/v2_alg_comp"
+	load_dir = "runs/stack/panda/osc_pose/online/v1"
 
 	kwargs_fpath = os.path.join(load_dir, "variant.json")
 	try:
@@ -169,7 +170,6 @@ if __name__ == "__main__":
 	parser.add_argument('--d4rl_path', default="./d4rl_datasets", type=str)
 	args = parser.parse_args()
 
-	args.max_timesteps += 3300
 
 	if offline:
 		# import d4rl
