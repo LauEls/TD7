@@ -328,3 +328,7 @@ class Agent(object):
 		self.eps_since_update = 0
 		self.timesteps_since_update = 0
 		self.min_return = 1e8
+
+	def save_model(self, path):
+		torch.save(self.actor.state_dict(), path + "actor")
+		torch.save(self.encoder.state_dict(), path + "encoder")

@@ -59,6 +59,9 @@ def train_online(RL_agent, env, eval_env, args):
 			ep_total_reward, ep_timesteps = 0, 0
 			ep_num += 1 
 
+	# Save final model
+	RL_agent.save_model(f"./models/{args.file_name}")
+
 
 def train_offline(RL_agent, env, eval_env, paths, args):
 	# RL_agent.replay_buffer.load_D4RL(d4rl.qlearning_dataset(env))
