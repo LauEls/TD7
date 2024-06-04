@@ -174,6 +174,7 @@ class Agent(object):
 			max_action, normalize_actions=True, prioritized=True)
 
 		self.max_action = max_action
+		print("max_action: ", max_action)
 		self.offline = offline
 
 		self.training_steps = 0
@@ -272,7 +273,9 @@ class Agent(object):
 
 			actor_loss = -Q.mean() 
 			if self.offline:
+				# print("actor loss 1:", actor_loss)
 				actor_loss = actor_loss + self.hp.lmbda * Q.abs().mean().detach() * F.mse_loss(actor, action)
+				# print("actor loss 2:", actor_loss)
 
 			self.actor_optimizer.zero_grad()
 			actor_loss.backward()

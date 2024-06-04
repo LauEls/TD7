@@ -31,9 +31,9 @@ class LAP(object):
 		self.not_done = np.zeros((max_size, 1))
 
 		self.prioritized = prioritized
-		if prioritized:
-			self.priority = torch.zeros(max_size, device=device)
-			self.max_priority = 1
+		# if prioritized:
+		self.priority = torch.zeros(max_size, device=device)
+		self.max_priority = 1
 
 		self.normalize_actions = max_action if normalize_actions else 1
 
@@ -44,9 +44,8 @@ class LAP(object):
 		self.next_state[self.ptr] = next_state
 		self.reward[self.ptr] = reward
 		self.not_done[self.ptr] = 1. - done
-		
-		if self.prioritized:
-			self.priority[self.ptr] = self.max_priority
+		# if self.prioritized:
+		self.priority[self.ptr] = self.max_priority
 
 		self.ptr = (self.ptr + 1) % self.max_size
 		self.size = min(self.size + 1, self.max_size)
