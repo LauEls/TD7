@@ -99,116 +99,126 @@ def maybe_evaluate_and_print(RL_agent, eval_env, evals, t, start_time, args, d4r
 		print("---------------------------------------")
 
 		evals.append(total_reward)
-		np.save(f"./results/{args.file_name}", evals)
+		# np.save(f"./results/{args.file_name}", evals)
+		np.save(args.result_path, evals)
 
 
 if __name__ == "__main__":
-	# load_dir = "runs/lift/panda/osc_pose/offline/"
-	# load_dir = "runs/lift/panda/osc_pose/online/v2_alg_comp"
-	load_dir = "runs/stack/panda/osc_pose/online/v1"
+	experimental_runs = 3
+	for i in range(experimental_runs):
+		load_dir = "runs/lift/panda/osc_pose/offline/"
+		# load_dir = "runs/lift/panda/osc_pose/online/v2_alg_comp"
+		# load_dir = "runs/stack/panda/osc_pose/online/v1"
 
-	kwargs_fpath = os.path.join(load_dir, "variant.json")
-	try:
-		with open(kwargs_fpath) as f:
-			variant = json.load(f)
-	except FileNotFoundError:
-		print("Error opening default controller filepath at: {}. "
-			"Please check filepath and try again.".format(kwargs_fpath))
+		kwargs_fpath = os.path.join(load_dir, "variant.json")
+		try:
+			with open(kwargs_fpath) as f:
+				variant = json.load(f)
+		except FileNotFoundError:
+			print("Error opening default controller filepath at: {}. "
+				"Please check filepath and try again.".format(kwargs_fpath))
+			
+		env_config = variant["environment_kwargs"]
+		env_name = variant["environment_kwargs"]["env_name"]
+		# seed = variant["seed"]
+		seed = i
+		offline = variant["offline"]
+		# use_checkpoints = True
+
+		# Load controller
+		controller = env_config.pop("controller")
+		if controller in set(suite.ALL_CONTROLLERS):
+			print("Controller: "+controller)
+			# This is a default controller
+			controller_config = suite.load_controller_config(default_controller=controller)
+			
+			if "controller_config" in env_config.keys():
+				controller_settings = env_config.pop("controller_config")
+				for config in controller_settings:
+					controller_config[config] = controller_settings[config]
+		else:
+			# This is a string to the custom controller
+			controller_config = suite.load_controller_config(custom_fpath=controller)
+			
+		suite_env = suite.make(**env_config,
+								#  has_renderer=variant["render"],
+								has_renderer=True,
+								has_offscreen_renderer=False,
+								use_object_obs=True,
+								use_camera_obs=False,
+								controller_configs=controller_config,
+								)
 		
-	env_config = variant["environment_kwargs"]
-	env_name = variant["environment_kwargs"]["env_name"]
-	seed = variant["seed"]
-	offline = variant["offline"]
-	# use_checkpoints = True
+		suite_eval_env = suite.make(**env_config,
+								#  has_renderer=variant["render"],
+								has_renderer=True,
+								has_offscreen_renderer=False,
+								use_object_obs=True,
+								use_camera_obs=False,
+								controller_configs=controller_config,
+								)
+			
+		env = NormalizedBoxEnv(GymWrapper(suite_env))
+		eval_env = NormalizedBoxEnv(GymWrapper(suite_eval_env))
 
-    # Load controller
-	controller = env_config.pop("controller")
-	if controller in set(suite.ALL_CONTROLLERS):
-		print("Controller: "+controller)
-		# This is a default controller
-		controller_config = suite.load_controller_config(default_controller=controller)
-		
-		if "controller_config" in env_config.keys():
-			controller_settings = env_config.pop("controller_config")
-			for config in controller_settings:
-				controller_config[config] = controller_settings[config]
-	else:
-		# This is a string to the custom controller
-		controller_config = suite.load_controller_config(custom_fpath=controller)
-		
-	suite_env = suite.make(**env_config,
-							#  has_renderer=variant["render"],
-							has_renderer=True,
-							has_offscreen_renderer=False,
-							use_object_obs=True,
-							use_camera_obs=False,
-							controller_configs=controller_config,
-							)
-	
-	suite_eval_env = suite.make(**env_config,
-							#  has_renderer=variant["render"],
-							has_renderer=True,
-							has_offscreen_renderer=False,
-							use_object_obs=True,
-							use_camera_obs=False,
-							controller_configs=controller_config,
-							)
-		
-	env = NormalizedBoxEnv(GymWrapper(suite_env))
-	eval_env = NormalizedBoxEnv(GymWrapper(suite_eval_env))
-
-	parser = argparse.ArgumentParser()
-	# RL
-	# parser.add_argument("--env", default="HalfCheetah-v4", type=str)
-	# parser.add_argument("--seed", default=0, type=int)
-	# parser.add_argument("--offline", default=False, action=argparse.BooleanOptionalAction)
-	parser.add_argument('--use_checkpoints', default=True)
-	# Evaluation
-	parser.add_argument("--timesteps_before_training", default=25e3, type=int)
-	parser.add_argument("--eval_freq", default=5e3, type=int)
-	parser.add_argument("--eval_eps", default=10, type=int)
-	parser.add_argument("--max_timesteps", default=5e6, type=int)
-	# File
-	parser.add_argument('--file_name', default=None)
-	parser.add_argument('--d4rl_path', default="./d4rl_datasets", type=str)
-	args = parser.parse_args()
+		parser = argparse.ArgumentParser()
+		# RL
+		# parser.add_argument("--env", default="HalfCheetah-v4", type=str)
+		# parser.add_argument("--seed", default=0, type=int)
+		# parser.add_argument("--offline", default=False, action=argparse.BooleanOptionalAction)
+		parser.add_argument('--use_checkpoints', default=True)
+		# Evaluation
+		parser.add_argument("--timesteps_before_training", default=25e3, type=int)
+		parser.add_argument("--eval_freq", default=5e3, type=int)
+		parser.add_argument("--eval_eps", default=10, type=int)
+		parser.add_argument("--max_timesteps", default=5e6, type=int)
+		# File
+		parser.add_argument('--file_name', default=None)
+		parser.add_argument('--d4rl_path', default="./d4rl_datasets", type=str)
+		parser.add_argument('--result_path', default="./results", type=str)
+		args = parser.parse_args()
 
 
-	if offline:
-		# import d4rl
-		# d4rl.set_dataset_path(args.d4rl_path)
-		paths = np.load('/home/laurenz/phd_project/sac/scripts/robosuite_env_solved/demonstrations/lift/lift_no_random_no_noise_test_v3.npy', allow_pickle=True)
-		print("Loaded paths length: ", len(paths))
-		args.use_checkpoints = False
+		if offline:
+			# import d4rl
+			# d4rl.set_dataset_path(args.d4rl_path)
+			paths = np.load('/home/laurenz/phd_project/sac/scripts/robosuite_env_solved/demonstrations/lift/lift_medium_expert_no_random_no_noise.npy', allow_pickle=True)
+			print("Loaded paths length: ", len(paths))
+			args.use_checkpoints = False
 
 
-	if args.file_name is None:
-		args.file_name = f"TD7_{env_name}_{seed}"
+		if args.file_name is None:
+			args.file_name = f"TD7_{env_name}_{seed}"
 
-	if not os.path.exists("./results"):
-		os.makedirs("./results")
+		result_path = os.path.join(load_dir, "run_"+str(i))
 
-	# env = gym.make(args.env)
-	# eval_env = gym.make(args.env)
+		if not os.path.exists(result_path):
+			os.makedirs(result_path)
+		args.result_path = result_path
+		# if not os.path.exists("./results"):
+		# 	os.makedirs("./results")
 
-	print("---------------------------------------")
-	print(f"Algorithm: TD7, Env: {env_name}, Seed: {seed}")
-	print("---------------------------------------")
+		# env = gym.make(args.env)
+		# eval_env = gym.make(args.env)
 
-	env.seed(seed)
-	env.action_space.seed(seed)
-	eval_env.seed(seed+100)
-	torch.manual_seed(seed)
-	np.random.seed(seed)
+		print("---------------------------------------")
+		print(f"Algorithm: TD7, Env: {env_name}, Seed: {seed}")
+		print("---------------------------------------")
 
-	state_dim = env.observation_space.shape[0]
-	action_dim = env.action_space.shape[0] 
-	max_action = float(env.action_space.high[0])
+		env.seed(seed)
+		env.action_space.seed(seed)
+		eval_env.seed(seed+100)
+		torch.manual_seed(seed)
+		np.random.seed(seed)
 
-	hp = TD7.Hyperparameters(**variant["hyperparameters"])
-	RL_agent = TD7.Agent(state_dim, action_dim, max_action, offline=offline, hp=hp)
+		state_dim = env.observation_space.shape[0]
+		action_dim = env.action_space.shape[0] 
+		max_action = float(env.action_space.high[0])
 
-	if offline:
-		train_offline(RL_agent, env, eval_env, paths, args)
-	else:
-		train_online(RL_agent, env, eval_env, args)
+		hp = TD7.Hyperparameters(**variant["hyperparameters"])
+		RL_agent = TD7.Agent(state_dim, action_dim, max_action, offline=offline, hp=hp)
+
+		if offline:
+			train_offline(RL_agent, env, eval_env, paths, args)
+		else:
+			train_online(RL_agent, env, eval_env, args)

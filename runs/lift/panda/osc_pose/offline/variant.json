@@ -14,7 +14,7 @@
     "pre_training": false
   },
   "hyperparameters":{
-    "buffer_size": 20000
+    "buffer_size": 1000000
   },
   "environment_kwargs": {
     "control_freq": 20,
