@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from typing import Callable
 
 import numpy as np
+import os
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -330,5 +331,5 @@ class Agent(object):
 		self.min_return = 1e8
 
 	def save_model(self, path):
-		torch.save(self.actor.state_dict(), path + "actor")
-		torch.save(self.encoder.state_dict(), path + "encoder")
+		torch.save(self.actor.state_dict(), os.path.join(path,"actor_params"))
+		torch.save(self.encoder.state_dict(), os.path.join(path,"encoder_params"))

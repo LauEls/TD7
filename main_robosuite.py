@@ -60,7 +60,7 @@ def train_online(RL_agent, env, eval_env, args):
 			ep_num += 1 
 
 	# Save final model
-	RL_agent.save_model(f"./models/{args.file_name}")
+	RL_agent.save_model(args.result_path)
 
 
 def train_offline(RL_agent, env, eval_env, paths, args):
@@ -73,6 +73,8 @@ def train_offline(RL_agent, env, eval_env, paths, args):
 	for t in range(int(args.max_timesteps+1)):
 		maybe_evaluate_and_print(RL_agent, eval_env, evals, t, start_time, args, d4rl=False)
 		RL_agent.train()
+
+	RL_agent.save_model(args.result_path)
 
 
 def maybe_evaluate_and_print(RL_agent, eval_env, evals, t, start_time, args, d4rl=False):
@@ -100,15 +102,14 @@ def maybe_evaluate_and_print(RL_agent, eval_env, evals, t, start_time, args, d4r
 
 		evals.append(total_reward)
 		# np.save(f"./results/{args.file_name}", evals)
-		np.save(args.result_path, evals)
+		np.save(os.path.join(args.result_path,"results.npy"), evals)
 
 
 if __name__ == "__main__":
 	experimental_runs = 3
 	for i in range(experimental_runs):
-		# load_dir = "runs/lift/panda/osc_pose/offline/"
-		load_dir = "runs/lift/panda/osc_pose/online/v3_ada527_reward_shaping"
-		# load_dir = "runs/lift/panda/osc_pose/online/v3_ada527_no_reward_shaping"
+		load_dir = "runs/lift/panda/osc_pose/offline/v2_medium_expert_with_random"
+		# load_dir = "runs/lift/panda/osc_pose/online/v2_alg_comp"
 		# load_dir = "runs/stack/panda/osc_pose/online/v1"
 
 		kwargs_fpath = os.path.join(load_dir, "variant.json")
@@ -172,7 +173,7 @@ if __name__ == "__main__":
 		parser.add_argument("--timesteps_before_training", default=25e3, type=int)
 		parser.add_argument("--eval_freq", default=5e3, type=int)
 		parser.add_argument("--eval_eps", default=10, type=int)
-		parser.add_argument("--max_timesteps", default=5e6, type=int)
+		parser.add_argument("--max_timesteps", default=5e2, type=int)
 		# File
 		parser.add_argument('--file_name', default=None)
 		parser.add_argument('--d4rl_path', default="./d4rl_datasets", type=str)
@@ -183,8 +184,9 @@ if __name__ == "__main__":
 		if offline:
 			# import d4rl
 			# d4rl.set_dataset_path(args.d4rl_path)
-			paths = np.load('/home/laurenz/phd_project/sac/scripts/robosuite_env_solved/demonstrations/lift/lift_medium_expert_no_random_no_noise.npy', allow_pickle=True)
-			print("Loaded paths length: ", len(paths))
+
+			paths = np.load(os.path.join("demonstrations/",variant["demo_file_name"]), allow_pickle=True)
+			# print("Loaded paths length: ", len(paths))
 			args.use_checkpoints = False
 
 
