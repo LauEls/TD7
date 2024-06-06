@@ -106,8 +106,9 @@ def maybe_evaluate_and_print(RL_agent, eval_env, evals, t, start_time, args, d4r
 if __name__ == "__main__":
 	experimental_runs = 3
 	for i in range(experimental_runs):
-		load_dir = "runs/lift/panda/osc_pose/offline/"
-		# load_dir = "runs/lift/panda/osc_pose/online/v2_alg_comp"
+		# load_dir = "runs/lift/panda/osc_pose/offline/"
+		load_dir = "runs/lift/panda/osc_pose/online/v3_ada527_reward_shaping"
+		# load_dir = "runs/lift/panda/osc_pose/online/v3_ada527_no_reward_shaping"
 		# load_dir = "runs/stack/panda/osc_pose/online/v1"
 
 		kwargs_fpath = os.path.join(load_dir, "variant.json")
