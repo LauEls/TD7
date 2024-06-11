@@ -108,8 +108,8 @@ def maybe_evaluate_and_print(RL_agent, eval_env, evals, t, start_time, args, d4r
 if __name__ == "__main__":
 	experimental_runs = 3
 	for i in range(experimental_runs):
-		load_dir = "runs/lift/panda/osc_pose/offline/v2_medium_expert_with_random"
-		# load_dir = "runs/lift/panda/osc_pose/online/v2_alg_comp"
+		# load_dir = "runs/lift/panda/osc_pose/offline/v2_medium_expert_with_random"
+		load_dir = "runs/lift/panda/osc_pose/online/v3_ada527_reward_shaping"
 		# load_dir = "runs/stack/panda/osc_pose/online/v1"
 
 		kwargs_fpath = os.path.join(load_dir, "variant.json")
@@ -173,7 +173,7 @@ if __name__ == "__main__":
 		parser.add_argument("--timesteps_before_training", default=25e3, type=int)
 		parser.add_argument("--eval_freq", default=5e3, type=int)
 		parser.add_argument("--eval_eps", default=10, type=int)
-		parser.add_argument("--max_timesteps", default=5e2, type=int)
+		parser.add_argument("--max_timesteps", default=5e6, type=int)
 		# File
 		parser.add_argument('--file_name', default=None)
 		parser.add_argument('--d4rl_path', default="./d4rl_datasets", type=str)
