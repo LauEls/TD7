@@ -161,3 +161,4 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 demonstrations/lift_medium_expert_with_random.npy
+demonstrations/lift_expert_random.npy
