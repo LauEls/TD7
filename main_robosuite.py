@@ -106,7 +106,7 @@ def maybe_evaluate_and_print(RL_agent, eval_env, evals, t, start_time, args, d4r
 
 
 if __name__ == "__main__":
-	experimental_runs = 3
+	experimental_runs = 1
 	for i in range(experimental_runs):
 		load_dir = "runs/lift/panda/osc_pose/offline/v3_expert_with_random"
 		# load_dir = "runs/lift/panda/osc_pose/online/v4_ada527_no_reward_shaping"
