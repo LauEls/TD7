@@ -112,7 +112,8 @@ if __name__ == "__main__":
 		# load_dir = "runs/lift/panda/osc_pose/online/v4_ada527_no_reward_shaping"
 		# load_dir = "runs/stack/panda/osc_pose/online/v1"
 		# load_dir = "runs/trajectory_following/gh360t/eq_soft/v5_motor_vel"
-		load_dir = "runs/trajectory_following/gh360t/eq_vs/v1"
+		# load_dir = "runs/trajectory_following/gh360t/eq_vs/v1"
+		load_dir = "runs/door_mirror/gh360t/eq_soft/v1_no_motor_obs"
 
 		kwargs_fpath = os.path.join(load_dir, "variant.json")
 		try:
