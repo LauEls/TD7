@@ -15,6 +15,10 @@ from util import NormalizedBoxEnv
 
 
 def train_online(RL_agent, env, eval_env, args):
+	if RL_agent.continue_learning:
+		buffer_paths = np.load(args.result_path+"/buffer_paths.npy", allow_pickle=True)
+		RL_agent.replay_buffer.load_paths(buffer_paths)
+
 	evals = []
 	start_time = time.time()
 	allow_train = False
@@ -108,12 +112,12 @@ def maybe_evaluate_and_print(RL_agent, eval_env, evals, t, start_time, args, d4r
 if __name__ == "__main__":
 	experimental_runs = 1
 	for i in range(experimental_runs):
-		# load_dir = "runs/lift/panda/osc_pose/offline/v3_expert_with_random"
+		load_dir = "runs/lift/panda/osc_pose/offline/v4_medium_expert_with_random"
 		# load_dir = "runs/lift/panda/osc_pose/online/v4_ada527_no_reward_shaping"
 		# load_dir = "runs/stack/panda/osc_pose/online/v1"
 		# load_dir = "runs/trajectory_following/gh360t/eq_soft/v5_motor_vel"
 		# load_dir = "runs/trajectory_following/gh360t/eq_vs/v1"
-		load_dir = "runs/door_mirror/gh360t/eq_soft/v1_no_motor_obs"
+		# load_dir = "runs/door_mirror/gh360t/eq_soft/v1_no_motor_obs"
 
 		kwargs_fpath = os.path.join(load_dir, "variant.json")
 		try:
@@ -201,6 +205,7 @@ if __name__ == "__main__":
 		if not os.path.exists(result_path):
 			os.makedirs(result_path)
 		args.result_path = result_path
+		
 		# if not os.path.exists("./results"):
 		# 	os.makedirs("./results")
 
@@ -222,6 +227,8 @@ if __name__ == "__main__":
 		max_action = float(env.action_space.high[0])
 
 		hp = TD7.Hyperparameters(**variant["hyperparameters"])
+		hp.dir_path = result_path
+		
 		RL_agent = TD7.Agent(state_dim, action_dim, max_action, offline=offline, hp=hp)
 
 		if offline:

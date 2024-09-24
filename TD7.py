@@ -53,6 +53,10 @@ class Hyperparameters:
 	actor_activ: Callable = F.relu
 	actor_lr: float = 3e-4
 
+	#Continue learning
+	continue_learning: bool = False
+	dir_path: str = ''
+
 
 def AvgL1Norm(x, eps=1e-8):
 	return x/x.abs().mean(-1,keepdim=True).clamp(min=eps)
@@ -177,6 +181,11 @@ class Agent(object):
 		self.max_action = max_action
 		print("max_action: ", max_action)
 		self.offline = offline
+		self.continue_learning = self.hp.continue_learning
+
+		if self.continue_learning:
+			self.load_model(self.hp.dir_path)
+		
 
 		self.training_steps = 0
 
@@ -333,3 +342,9 @@ class Agent(object):
 	def save_model(self, path):
 		torch.save(self.actor.state_dict(), os.path.join(path,"actor_params"))
 		torch.save(self.encoder.state_dict(), os.path.join(path,"encoder_params"))
+		torch.save(self.critic.state_dict(), os.path.join(path,"critic_params"))
+	
+	def load_model(self, path):
+		self.actor.load_state_dict(torch.load(os.path.join(path,"actor_params")))
+		self.encoder.load_state_dict(torch.load(os.path.join(path,"encoder_params")))
+		self.critic.load_state_dict(torch.load(os.path.join(path,"critic_params")))
