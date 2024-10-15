@@ -1,0 +1,18 @@
+{
+    "algorithm": "TD7",
+    "hyperparameters":{
+      "buffer_size": 1000000,
+      "zs_dim": 512,
+      "enc_hdim": 512,
+      "critic_hdim": 512,
+      "actor_hdim": 512
+    },
+    "environment_kwargs": {
+        "env_name": "Door-v0",
+        "motor_obs": true
+    },
+    "seed": 5,
+    "demo_file_name": "reach_handle_v4.npy",
+    "offline": true,
+    "eval_during_training": false
+}
