@@ -160,20 +160,8 @@ class Agent(object):
 		self.hp = hp
 
 		self.actor = Actor(state_dim, action_dim, hp.zs_dim, hp.actor_hdim, hp.actor_activ).to(self.device)
-		self.actor_optimizer = torch.optim.Adam(self.actor.parameters(), lr=hp.actor_lr)
-		self.actor_target = copy.deepcopy(self.actor)
-
 		self.critic = Critic(state_dim, action_dim, hp.zs_dim, hp.critic_hdim, hp.critic_activ).to(self.device)
-		self.critic_optimizer = torch.optim.Adam(self.critic.parameters(), lr=hp.critic_lr)
-		self.critic_target = copy.deepcopy(self.critic)
-
 		self.encoder = Encoder(state_dim, action_dim, hp.zs_dim, hp.enc_hdim, hp.enc_activ).to(self.device)
-		self.encoder_optimizer = torch.optim.Adam(self.encoder.parameters(), lr=hp.encoder_lr)
-		self.fixed_encoder = copy.deepcopy(self.encoder)
-		self.fixed_encoder_target = copy.deepcopy(self.encoder)
-
-		self.checkpoint_actor = copy.deepcopy(self.actor)
-		self.checkpoint_encoder = copy.deepcopy(self.encoder)
 
 		self.replay_buffer = buffer.LAP(state_dim, action_dim, self.device, hp.buffer_size, hp.batch_size, 
 			max_action, normalize_actions=True, prioritized=True)
@@ -185,7 +173,17 @@ class Agent(object):
 
 		if self.continue_learning:
 			self.load_model(self.hp.dir_path)
+
+		self.actor_optimizer = torch.optim.Adam(self.actor.parameters(), lr=hp.actor_lr)
+		self.critic_optimizer = torch.optim.Adam(self.critic.parameters(), lr=hp.critic_lr)
+		self.encoder_optimizer = torch.optim.Adam(self.encoder.parameters(), lr=hp.encoder_lr)
 		
+		self.actor_target = copy.deepcopy(self.actor)
+		self.critic_target = copy.deepcopy(self.critic)
+		self.fixed_encoder = copy.deepcopy(self.encoder)
+		self.fixed_encoder_target = copy.deepcopy(self.encoder)
+		self.checkpoint_actor = copy.deepcopy(self.actor)
+		self.checkpoint_encoder = copy.deepcopy(self.encoder)
 
 		self.training_steps = 0
 
