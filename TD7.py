@@ -158,6 +158,7 @@ class Agent(object):
 		
 		self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 		self.hp = hp
+		self.action_dim = action_dim
 
 		self.actor = Actor(state_dim, action_dim, hp.zs_dim, hp.actor_hdim, hp.actor_activ).to(self.device)
 		self.critic = Critic(state_dim, action_dim, hp.zs_dim, hp.critic_hdim, hp.critic_activ).to(self.device)
@@ -171,9 +172,6 @@ class Agent(object):
 		self.offline = offline
 		self.continue_learning = self.hp.continue_learning
 
-		if self.continue_learning:
-			self.load_model(self.hp.dir_path)
-
 		self.actor_optimizer = torch.optim.Adam(self.actor.parameters(), lr=hp.actor_lr)
 		self.critic_optimizer = torch.optim.Adam(self.critic.parameters(), lr=hp.critic_lr)
 		self.encoder_optimizer = torch.optim.Adam(self.encoder.parameters(), lr=hp.encoder_lr)
@@ -185,6 +183,9 @@ class Agent(object):
 		self.checkpoint_actor = copy.deepcopy(self.actor)
 		self.checkpoint_encoder = copy.deepcopy(self.encoder)
 
+
+		if self.continue_learning:
+			self.load_model(self.hp.dir_path)
 		self.training_steps = 0
 
 		# Checkpointing tracked values
@@ -341,8 +342,38 @@ class Agent(object):
 		torch.save(self.actor.state_dict(), os.path.join(path,"actor_params"))
 		torch.save(self.encoder.state_dict(), os.path.join(path,"encoder_params"))
 		torch.save(self.critic.state_dict(), os.path.join(path,"critic_params"))
+		torch.save(self.actor_optimizer.state_dict(), os.path.join(path,"actor_optimizer_params"))
+		torch.save(self.encoder_optimizer.state_dict(), os.path.join(path,"encoder_optimizer_params"))
+		torch.save(self.critic_optimizer.state_dict(), os.path.join(path,"critic_optimizer_params"))
+		torch.save(self.actor_target.state_dict(), os.path.join(path,"actor_target_params"))
+		torch.save(self.critic_target.state_dict(), os.path.join(path,"critic_target_params"))
+		torch.save(self.fixed_encoder.state_dict(), os.path.join(path,"fixed_encoder_params"))
+		torch.save(self.fixed_encoder_target.state_dict(), os.path.join(path,"fixed_encoder_target_params"))
+		torch.save(self.checkpoint_actor.state_dict(), os.path.join(path,"checkpoint_actor_params"))
+		torch.save(self.checkpoint_encoder.state_dict(), os.path.join(path,"checkpoint_encoder_params"))
 	
 	def load_model(self, path):
 		self.actor.load_state_dict(torch.load(os.path.join(path,"actor_params")))
 		self.encoder.load_state_dict(torch.load(os.path.join(path,"encoder_params")))
 		self.critic.load_state_dict(torch.load(os.path.join(path,"critic_params")))
+		self.actor_optimizer.load_state_dict(torch.load(os.path.join(path,"actor_optimizer_params")))
+		self.encoder_optimizer.load_state_dict(torch.load(os.path.join(path,"encoder_optimizer_params")))
+		self.critic_optimizer.load_state_dict(torch.load(os.path.join(path,"critic_optimizer_params")))
+		self.actor_target.load_state_dict(torch.load(os.path.join(path,"actor_target_params")))
+		self.critic_target.load_state_dict(torch.load(os.path.join(path,"critic_target_params")))
+		self.fixed_encoder.load_state_dict(torch.load(os.path.join(path,"fixed_encoder_params")))
+		self.fixed_encoder_target.load_state_dict(torch.load(os.path.join(path,"fixed_encoder_target_params")))
+		self.checkpoint_actor.load_state_dict(torch.load(os.path.join(path,"checkpoint_actor_params")))
+		self.checkpoint_encoder.load_state_dict(torch.load(os.path.join(path,"checkpoint_encoder_params")))
+		
+
+		# self.actor_optimizer = torch.optim.Adam(self.actor.parameters(), lr=hp.actor_lr)
+		# self.critic_optimizer = torch.optim.Adam(self.critic.parameters(), lr=hp.critic_lr)
+		# self.encoder_optimizer = torch.optim.Adam(self.encoder.parameters(), lr=hp.encoder_lr)
+		
+		# self.actor_target = copy.deepcopy(self.actor)
+		# self.critic_target = copy.deepcopy(self.critic)
+		# self.fixed_encoder = copy.deepcopy(self.encoder)
+		# self.fixed_encoder_target = copy.deepcopy(self.encoder)
+		# self.checkpoint_actor = copy.deepcopy(self.actor)
+		# self.checkpoint_encoder = copy.deepcopy(self.encoder)

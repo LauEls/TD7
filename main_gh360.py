@@ -16,9 +16,17 @@ from util import NormalizedBoxEnv
 
 
 def train_online(RL_agent, env, eval_env, args):
+    t = 0
     if RL_agent.continue_learning:
         buffer_paths = np.load(args.result_path+"/buffer_paths.npy", allow_pickle=True)
         RL_agent.replay_buffer.load_paths(buffer_paths)
+    elif args.init_buffer_paths:
+        buffer_paths = np.load(args.result_path+"/init_buffer_paths.npy", allow_pickle=True)
+        RL_agent.replay_buffer.load_paths(buffer_paths)
+        print(f"Loaded initial buffer paths of length: {len(buffer_paths[0]['observations'])}")
+        print(f"Buffer size: {RL_agent.replay_buffer.size}")
+        t = RL_agent.replay_buffer.size-1
+        
 
     evals = []
     start_time = time.time()
@@ -27,7 +35,8 @@ def train_online(RL_agent, env, eval_env, args):
     state, ep_finished = env.reset(), False
     ep_total_reward, ep_timesteps, ep_num = 0, 0, 1
 
-    for t in range(int(args.max_timesteps+1)):
+    # for i in range(int(args.max_timesteps+1)):
+    while t < int(args.max_timesteps+1):
         maybe_evaluate_and_print(RL_agent, eval_env, evals, t, start_time, args)
         
         if allow_train:
@@ -37,10 +46,13 @@ def train_online(RL_agent, env, eval_env, args):
 
         next_state, reward, ep_finished, _ = env.step(action) 
         
+        
         ep_total_reward += reward
         ep_timesteps += 1
 
-        if ep_timesteps >= args.ep_length: ep_finished = 1
+        if ep_timesteps >= args.ep_length: 
+            ep_finished = 1
+            env.step(np.zeros(RL_agent.action_dim))
         # done = float(ep_finished) if ep_timesteps < 500 else 0
         done = ep_finished
         
@@ -52,19 +64,23 @@ def train_online(RL_agent, env, eval_env, args):
             RL_agent.train()
 
         if ep_finished: 
+            print(f"Reward: {ep_total_reward}")
             print(f"Total T: {t+1} Episode Num: {ep_num} Episode T: {ep_timesteps} Reward: {ep_total_reward:.3f}")
 
             if allow_train and args.use_checkpoints:
-                if t >= args.timesteps_before_training and t <= (args.timesteps_before_training+ep_timesteps*2):
-                    RL_agent.replay_buffer.save_paths(args.result_path+"/init_buffer_paths.npy")
                 RL_agent.maybe_train_and_checkpoint(ep_timesteps, ep_total_reward)
 
             if t >= args.timesteps_before_training:
                 allow_train = True
+                if t >= args.timesteps_before_training and t <= (args.timesteps_before_training+ep_timesteps):
+                    print("Saving initial buffer paths")
+                    RL_agent.replay_buffer.save_paths(args.result_path+"/init_buffer_paths.npy")
 
             state, done = env.reset(), False
             ep_total_reward, ep_timesteps = 0, 0
             ep_num += 1 
+
+        t += 1
 
     # Save final model
     RL_agent.save_model(args.result_path)
@@ -120,7 +136,7 @@ def maybe_evaluate_and_print(RL_agent, eval_env, evals, t, start_time, args, d4r
 if __name__ == "__main__":
     experimental_runs = 1
     for i in range(experimental_runs):
-        load_dir = "runs/door/real_gh360/motor_vel/online/v1_first_try"
+        load_dir = "runs/door/real_gh360/motor_vel/online/v2_open_door_1"
 
         kwargs_fpath = os.path.join(load_dir, "variant.json")
         try:
@@ -171,6 +187,7 @@ if __name__ == "__main__":
         args.timesteps_before_training = args.ep_length*50
         args.eval_freq = args.ep_length*10
         args.max_timesteps = args.ep_length*10000
+        args.init_buffer_paths = variant["init_buffer_paths"]
         
         args.eval_eps = 1
 

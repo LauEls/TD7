@@ -1,0 +1,25 @@
+{
+    "algorithm": "TD7",
+    "hyperparameters":{
+      "buffer_size": 150000,
+      "zs_dim": 512,
+      "enc_hdim": 512,
+      "critic_hdim": 512,
+      "actor_hdim": 512
+    },
+    "environment_kwargs": {
+        "env_name": "Door-v0",
+        "motor_obs": true,
+        "input_max": [1.00144565, 0.75548554, 1.27832152, 1.32329817, 1.08259467, 0.64936562, 1.21194928],
+        "input_min": [-1.2124836, -1.06289547, -1.25321694, -1.11204316, -0.99516759, -0.74193468, -1.37268793],
+        "max_joint_pos": [0.36935451, 0.0059903,  0.59189521, 1.94303424, 2.09994188, 0.89892009, 1.5118597],
+        "min_joint_pos": [-0.39571837, -1.01295639, -0.14825049, 1.05907785, 0.90305343, -0.85902189, -0.92448517],
+        "max_current": [762.72, 2573.76, 860.16, 1424.64, 1928.64, 530.88, 1619.52]
+    },
+    "episode_length": 200,
+    "original_episode_length": 200,
+    "seed": 5,
+    "offline": false,
+    "eval_during_training": true,
+    "init_buffer_paths": true
+}

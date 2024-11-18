@@ -1,7 +1,7 @@
 {
     "algorithm": "TD7",
     "hyperparameters":{
-      "buffer_size": 200000,
+      "buffer_size": 150000,
       "zs_dim": 512,
       "enc_hdim": 512,
       "critic_hdim": 512,
@@ -20,5 +20,6 @@
     "origina_episode_length": 64,
     "seed": 5,
     "offline": false,
-    "eval_during_training": true
+    "eval_during_training": true,
+    "init_buffer_paths": false
 }

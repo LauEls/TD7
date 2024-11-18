@@ -132,13 +132,14 @@ class LAP(object):
 		return avg_reward    
 	
 	def save_paths(self, filename):
-		paths = dict(
-			observations=self.state,
-			actions=self.action,
-			rewards=self.reward,
-			next_observations=self.next_state,
-			dones=self.not_done
-		)
+		paths = []
+		paths.append(dict(
+			observations=self.state[:self.size],
+			actions=self.action[:self.size],
+			rewards=self.reward[:self.size],
+			next_observations=self.next_state[:self.size],
+			dones=1-self.not_done[:self.size]
+		))
 		file_array = np.array(paths)
 
 		np.save(filename, file_array)

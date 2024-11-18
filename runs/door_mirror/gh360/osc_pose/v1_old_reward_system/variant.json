@@ -1,0 +1,29 @@
+{
+    "algorithm": "TD7",
+    "load_q": false,
+    "load_policy": false,
+    "render": false,
+    "hyperparameters": {
+      "zs_dim": 512,
+      "enc_hdim": 512,
+      "critic_hdim": 512,
+      "actor_hdim": 512
+    },
+    "environment_kwargs": {
+      "control_freq": 20,
+      "controller": "OSC_POSE",
+      "env_name": "DoorMirror",
+      "grasp_check": true,
+      "table_offset": [-0.35, 0.5, 0.75],
+      "hard_reset": false,
+      "horizon": 500,
+      "ignore_done": true,
+      "reward_scale": 1.0,
+      "gripper_types": "HookGripper",
+      "robots": [
+        "GH360"
+      ]
+    },
+    "offline": false,
+    "seed": 7
+  }
