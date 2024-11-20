@@ -118,11 +118,16 @@ if __name__ == "__main__":
 	experimental_runs = 1
 	for i in range(experimental_runs):
 		# load_dir = "runs/lift/panda/osc_pose/offline/v4_medium_expert_with_random"
-		load_dir = "runs/lift/panda/osc_pose/online/v5_cont_learning"
+		# load_dir = "runs/lift/panda/osc_pose/online/v5_cont_learning"
 		# load_dir = "runs/stack/panda/osc_pose/online/v1"
 		# load_dir = "runs/trajectory_following/gh360t/eq_soft/v5_motor_vel"
 		# load_dir = "runs/trajectory_following/gh360t/eq_vs/v1"
-		# load_dir = "runs/door_mirror/gh360t/eq_soft/v1_no_motor_obs"
+		# load_dir = "runs/door_mirror/gh360/osc_pose/v1_old_reward_system"
+		# load_dir = "runs/door_mirror/gh360/osc_pose/v2_new_reward_system"
+		# load_dir = "runs/door_mirror/gh360/joint_velocity/v1_old_reward_system"
+		# load_dir = "runs/door_mirror/gh360/joint_velocity/v2_new_reward_system"
+		# load_dir = "runs/door_mirror/gh360t/eq_soft/v3_old_rewards_no_motor_obs"
+		load_dir = "runs/door_mirror/gh360t/eq_soft/v4_old_rewards_motor_obs"
 
 		kwargs_fpath = os.path.join(load_dir, "variant.json")
 		try:
