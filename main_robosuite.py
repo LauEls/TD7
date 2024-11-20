@@ -13,6 +13,26 @@ import TD7
 from util import NormalizedBoxEnv
 
 
+def rollout(RL_agent, env, args):
+	
+	# print(f"Total time passed: {round((time.time()-start_time)/60.,2)} min(s)")
+
+	total_reward = np.zeros(10)
+
+	for ep in range(10):
+		print("---------------------------------------")
+		print(f"Evaluation {ep}")
+		state, done = eval_env.reset(), False
+		cntr = 0
+		while not done and cntr < args.ep_length:
+			action = RL_agent.select_action(np.array(state), args.use_checkpoints, use_exploration=False)
+			state, reward, done, _ = eval_env.step(action)
+			total_reward[ep] += reward
+			cntr += 1
+
+		print(f"Average total reward over {args.eval_eps} episodes: {total_reward.mean():.3f}")
+		print("---------------------------------------")
+
 
 def train_online(RL_agent, env, eval_env, args):
 	allow_train = False
@@ -44,7 +64,7 @@ def train_online(RL_agent, env, eval_env, args):
 		ep_total_reward += reward
 		ep_timesteps += 1
 
-		if ep_timesteps >= 500: ep_finished = 1
+		if ep_timesteps >= args.ep_length: ep_finished = 1
 		# done = float(ep_finished) if ep_timesteps < 500 else 0
 		done = ep_finished
 		
@@ -96,7 +116,7 @@ def maybe_evaluate_and_print(RL_agent, eval_env, evals, t, start_time, args, d4r
 		for ep in range(args.eval_eps):
 			state, done = eval_env.reset(), False
 			cntr = 0
-			while not done and cntr < 500:
+			while not done and cntr < args.ep_length:
 				action = RL_agent.select_action(np.array(state), args.use_checkpoints, use_exploration=False)
 				state, reward, done, _ = eval_env.step(action)
 				total_reward[ep] += reward
@@ -191,6 +211,7 @@ if __name__ == "__main__":
 		parser.add_argument("--eval_freq", default=5e3, type=int)
 		parser.add_argument("--eval_eps", default=10, type=int)
 		parser.add_argument("--max_timesteps", default=5e6, type=int)
+		parser.add_argument("--ep_length", default=500, type=int)
 		# File
 		parser.add_argument('--file_name', default=None)
 		parser.add_argument('--d4rl_path', default="./d4rl_datasets", type=str)
@@ -243,7 +264,11 @@ if __name__ == "__main__":
 		
 		RL_agent = TD7.Agent(state_dim, action_dim, max_action, offline=offline, hp=hp)
 
-		if offline:
-			train_offline(RL_agent, env, eval_env, paths, args)
+		if not args.rollout:
+			if offline:
+				train_offline(RL_agent, env, eval_env, paths, args)
+			else:
+				train_online(RL_agent, env, eval_env, args)
 		else:
-			train_online(RL_agent, env, eval_env, args)
+			RL_agent.load_model(args.result_path)
+			rollout(RL_agent, eval_env, args)

@@ -136,7 +136,7 @@ def maybe_evaluate_and_print(RL_agent, eval_env, evals, t, start_time, args, d4r
 if __name__ == "__main__":
     experimental_runs = 1
     for i in range(experimental_runs):
-        load_dir = "runs/door/real_gh360/motor_vel/online/v2_open_door_1"
+        load_dir = "runs/door/real_gh360/motor_vel/online/v3_open_door_2"
 
         kwargs_fpath = os.path.join(load_dir, "variant.json")
         try:
@@ -187,6 +187,8 @@ if __name__ == "__main__":
         args.timesteps_before_training = args.ep_length*50
         args.eval_freq = args.ep_length*10
         args.max_timesteps = args.ep_length*10000
+        variant["hyperparameters"]["buffer_size"] = args.ep_length*2000
+        # variant["hyperparameters"]["batch_size"] = int(args.ep_length/2)
         args.init_buffer_paths = variant["init_buffer_paths"]
         
         args.eval_eps = 1
