@@ -20,13 +20,15 @@
       "env_name": "DoorMirror",
       "grasp_check": false,
       "table_offset": [-0.43, 0.412, 0.81],
+      "force_punishment": false,
+      "stiffness_punishment": false,
       "hard_reset": false,
       "horizon": 500,
       "ignore_done": true,
       "reward_scale": 1.0,
       "gripper_types": "HookGripper",
       "robots": [
-        "GH360"
+        "GH360T"
       ]
     },
     "offline": false,

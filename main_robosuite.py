@@ -148,8 +148,8 @@ if __name__ == "__main__":
 		# load_dir = "runs/door_mirror/gh360/osc_pose/v1_old_reward_system"
 		# load_dir = "runs/door_mirror/gh360/osc_pose/v2_new_reward_system"
 		# load_dir = "runs/door_mirror/gh360/joint_velocity/v1_old_reward_system"
-		load_dir = "runs/door_mirror/gh360/joint_velocity/v2_new_reward_system"
-		# load_dir = "runs/door_mirror/gh360t/eq_soft/v3_old_rewards_no_motor_obs"
+		# load_dir = "runs/door_mirror/gh360/joint_velocity/v2_new_reward_system"
+		load_dir = "runs/door_mirror/gh360t/eq_soft/v5_new_door_pos_no_motor_obs"
 		# load_dir = "runs/door_mirror/gh360t/eq_soft/v4_old_rewards_motor_obs"
 
 		kwargs_fpath = os.path.join(load_dir, "variant.json")
@@ -220,7 +220,7 @@ if __name__ == "__main__":
 		parser.add_argument('--d4rl_path', default="./d4rl_datasets", type=str)
 		parser.add_argument('--result_path', default="./results", type=str)
 		parser.add_argument('--load_dir', default="", type=str)
-		parser.add_argument('--rollout', default=True, type=bool)
+		parser.add_argument('--rollout', default=False, type=bool)
 		args = parser.parse_args()
 
 
