@@ -13,7 +13,7 @@ import TD7
 from util import NormalizedBoxEnv
 
 
-def rollout(RL_agent, env, args):
+def rollout(RL_agent, eval_env, args):
 	
 	# print(f"Total time passed: {round((time.time()-start_time)/60.,2)} min(s)")
 
@@ -23,15 +23,18 @@ def rollout(RL_agent, env, args):
 		print("---------------------------------------")
 		print(f"Evaluation {ep}")
 		state, done = eval_env.reset(), False
+		eval_env.render()
 		cntr = 0
 		while not done and cntr < args.ep_length:
 			action = RL_agent.select_action(np.array(state), args.use_checkpoints, use_exploration=False)
 			state, reward, done, _ = eval_env.step(action)
+			eval_env.render()
 			total_reward[ep] += reward
 			cntr += 1
+		print(f"Episode {ep} reward: {total_reward[ep]:.3f}")
 
-		print(f"Average total reward over {args.eval_eps} episodes: {total_reward.mean():.3f}")
-		print("---------------------------------------")
+	print(f"Average total reward over {args.eval_eps} episodes: {total_reward.mean():.3f}")
+	print("---------------------------------------")
 
 
 def train_online(RL_agent, env, eval_env, args):
@@ -145,9 +148,9 @@ if __name__ == "__main__":
 		# load_dir = "runs/door_mirror/gh360/osc_pose/v1_old_reward_system"
 		# load_dir = "runs/door_mirror/gh360/osc_pose/v2_new_reward_system"
 		# load_dir = "runs/door_mirror/gh360/joint_velocity/v1_old_reward_system"
-		# load_dir = "runs/door_mirror/gh360/joint_velocity/v2_new_reward_system"
+		load_dir = "runs/door_mirror/gh360/joint_velocity/v2_new_reward_system"
 		# load_dir = "runs/door_mirror/gh360t/eq_soft/v3_old_rewards_no_motor_obs"
-		load_dir = "runs/door_mirror/gh360t/eq_soft/v4_old_rewards_motor_obs"
+		# load_dir = "runs/door_mirror/gh360t/eq_soft/v4_old_rewards_motor_obs"
 
 		kwargs_fpath = os.path.join(load_dir, "variant.json")
 		try:
@@ -217,6 +220,7 @@ if __name__ == "__main__":
 		parser.add_argument('--d4rl_path', default="./d4rl_datasets", type=str)
 		parser.add_argument('--result_path', default="./results", type=str)
 		parser.add_argument('--load_dir', default="", type=str)
+		parser.add_argument('--rollout', default=True, type=bool)
 		args = parser.parse_args()
 
 
