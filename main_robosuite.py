@@ -149,7 +149,7 @@ if __name__ == "__main__":
 		# load_dir = "runs/door_mirror/gh360/osc_pose/v2_new_reward_system"
 		# load_dir = "runs/door_mirror/gh360/joint_velocity/v1_old_reward_system"
 		# load_dir = "runs/door_mirror/gh360/joint_velocity/v2_new_reward_system"
-		load_dir = "runs/door_mirror/gh360t/eq_soft/v5_new_door_pos_no_motor_obs"
+		load_dir = "runs/door_mirror/gh360t/eq_soft/v6_new_door_pos_motor_obs"
 		# load_dir = "runs/door_mirror/gh360t/eq_soft/v4_old_rewards_motor_obs"
 
 		kwargs_fpath = os.path.join(load_dir, "variant.json")
