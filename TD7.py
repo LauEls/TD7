@@ -153,7 +153,7 @@ class Critic(nn.Module):
 
 
 class Agent(object):
-	def __init__(self, state_dim, action_dim, max_action, offline=False, hp=Hyperparameters()): 
+	def __init__(self, state_dim, action_dim, max_action, offline=False, demo_buffer=False, hp=Hyperparameters()): 
 		# Changing hyperparameters example: hp=Hyperparameters(batch_size=128)
 		
 		self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -166,6 +166,11 @@ class Agent(object):
 
 		self.replay_buffer = buffer.LAP(state_dim, action_dim, self.device, hp.buffer_size, hp.batch_size, 
 			max_action, normalize_actions=True, prioritized=True)
+		
+		if demo_buffer:
+			self.demo_buffer = buffer.LAP(state_dim, action_dim, self.device, hp.buffer_size, hp.batch_size*0.1, max_action, normalize_actions=True, prioritized=False)
+		else:
+			self.demo_buffer = None
 
 		self.max_action = max_action
 		print("max_action: ", max_action)
@@ -223,6 +228,15 @@ class Agent(object):
 		self.training_steps += 1
 
 		state, action, next_state, reward, not_done = self.replay_buffer.sample()
+
+		if self.demo_buffer != None:
+			state_demo, action_demo, next_state_demo, reward_demo, not_done_demo = self.demo_buffer.sample()
+			state = torch.cat([state, state_demo], 0)
+			action = torch.cat([action, action_demo], 0)
+			next_state = torch.cat([next_state, next_state_demo], 0)
+			reward = torch.cat([reward, reward_demo], 0)
+			not_done = torch.cat([not_done, not_done_demo], 0)
+
 
 		#########################
 		# Update Encoder

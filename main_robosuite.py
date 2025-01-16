@@ -52,6 +52,9 @@ def train_online(RL_agent, env, eval_env, args):
 	start_time = time.time()
 
 	state, ep_finished = env.reset(), False
+	# for i in range(600):
+	# 	env.render()
+	# 	time.sleep(0.1)
 	ep_total_reward, ep_timesteps, ep_num = 0, 0, 1
 
 	for t in range(int(args.max_timesteps+1)):
@@ -63,6 +66,8 @@ def train_online(RL_agent, env, eval_env, args):
 			action = env.action_space.sample()
 
 		next_state, reward, ep_finished, _ = env.step(action) 
+
+		if args.render: env.render()
 		
 		ep_total_reward += reward
 		ep_timesteps += 1
@@ -141,13 +146,13 @@ if __name__ == "__main__":
 	experimental_runs = 1
 	for i in range(experimental_runs):
 		# load_dir = "runs/lift/panda/osc_pose/offline/v4_medium_expert_with_random"
-		# load_dir = "runs/lift/panda/osc_pose/online/v5_cont_learning"
+		load_dir = "runs/lift/panda/osc_pose/online/v7_reduced_ep_len"
 		# load_dir = "runs/stack/panda/osc_pose/online/v1"
 		# load_dir = "runs/trajectory_following/gh360t/eq_soft/v5_motor_vel"
 		# load_dir = "runs/trajectory_following/gh360t/eq_vs/v1"
 		# load_dir = "runs/door_mirror/gh360/osc_pose/v1_old_reward_system"
 		# load_dir = "runs/door_mirror/gh360/osc_pose/v2_new_reward_system"
-		load_dir = "runs/door_mirror/gh360/joint_velocity/v3_test_joint_limits"
+		# load_dir = "runs/door_mirror/gh360/joint_velocity/v4_test_joint_limit_2"
 		# load_dir = "runs/door_mirror/gh360/joint_velocity/v2_new_reward_system"
 		# load_dir = "runs/door_mirror/gh360t/eq_soft/v5_new_door_pos_no_motor_obs"
 		# load_dir = "runs/door_mirror/gh360t/eq_soft/v4_old_rewards_motor_obs"
@@ -165,6 +170,7 @@ if __name__ == "__main__":
 		# seed = variant["seed"]
 		seed = i
 		offline = variant["offline"]
+		demo_buffer = variant["demo_buffer"]
 		# use_checkpoints = True
 
 		# Load controller
@@ -221,6 +227,7 @@ if __name__ == "__main__":
 		parser.add_argument('--result_path', default="./results", type=str)
 		parser.add_argument('--load_dir', default="", type=str)
 		parser.add_argument('--rollout', default=False, type=bool)
+		parser.add_argument('--render', default=False, type=bool)
 		args = parser.parse_args()
 
 		if True:
@@ -229,6 +236,8 @@ if __name__ == "__main__":
 			args.eval_freq = args.ep_length*10
 			args.max_timesteps = args.ep_length*10000
 
+		args.render = variant["render"]
+
 		if offline:
 			# import d4rl
 			# d4rl.set_dataset_path(args.d4rl_path)
@@ -236,7 +245,6 @@ if __name__ == "__main__":
 			paths = np.load(os.path.join("demonstrations/",variant["demo_file_name"]), allow_pickle=True)
 			# print("Loaded paths length: ", len(paths))
 			args.use_checkpoints = False
-
 
 		if args.file_name is None:
 			args.file_name = f"TD7_{env_name}_{seed}"
@@ -271,7 +279,11 @@ if __name__ == "__main__":
 		hp = TD7.Hyperparameters(**variant["hyperparameters"])
 		hp.dir_path = load_dir
 		
-		RL_agent = TD7.Agent(state_dim, action_dim, max_action, offline=offline, hp=hp)
+		RL_agent = TD7.Agent(state_dim, action_dim, max_action, demo_buffer=demo_buffer, offline=offline, hp=hp)
+
+		if demo_buffer:
+			paths = np.load(os.path.join("demonstrations/",variant["demo_file_name"]), allow_pickle=True)
+			RL_agent.demo_buffer.load_paths(paths)
 
 		if not args.rollout:
 			if offline:
