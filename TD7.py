@@ -168,7 +168,8 @@ class Agent(object):
 			max_action, normalize_actions=True, prioritized=True)
 		
 		if demo_buffer:
-			self.demo_buffer = buffer.LAP(state_dim, action_dim, self.device, hp.buffer_size, hp.batch_size*0.1, max_action, normalize_actions=True, prioritized=False)
+			self.demo_buffer = buffer.LAP(state_dim, action_dim, self.device, hp.buffer_size, int(hp.batch_size*0.1), max_action, normalize_actions=True, prioritized=False)
+			self.replay_buffer.batch_size = int(hp.batch_size-self.demo_buffer.batch_size)
 		else:
 			self.demo_buffer = None
 
@@ -231,11 +232,17 @@ class Agent(object):
 
 		if self.demo_buffer != None:
 			state_demo, action_demo, next_state_demo, reward_demo, not_done_demo = self.demo_buffer.sample()
+			# state[:-self.demo_buffer.batch_size] = state_demo
+			# action[:-self.demo_buffer.batch_size] = action_demo
+			# next_state[:-self.demo_buffer.batch_size] = next_state_demo
+			# reward[:-self.demo_buffer.batch_size] = reward_demo
+			# not_done[:-self.demo_buffer.batch_size] = not_done_demo
 			state = torch.cat([state, state_demo], 0)
 			action = torch.cat([action, action_demo], 0)
 			next_state = torch.cat([next_state, next_state_demo], 0)
 			reward = torch.cat([reward, reward_demo], 0)
 			not_done = torch.cat([not_done, not_done_demo], 0)
+			# state
 
 
 		#########################
@@ -283,6 +290,7 @@ class Agent(object):
 		#########################
 		# Update LAP
 		#########################
+		td_loss = td_loss[:-self.demo_buffer.batch_size]
 		priority = td_loss.max(1)[0].clamp(min=self.hp.min_priority).pow(self.hp.alpha)
 		self.replay_buffer.update_priority(priority)
 
