@@ -1,6 +1,8 @@
 {
   "algorithm": "TD7",
   "render": false,
+  "hyperparameters":{
+  },
   "environment_kwargs": {
     "control_freq": 20,
     "controller": "OSC_POSE",
