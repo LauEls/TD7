@@ -2,7 +2,7 @@ import numpy as np
 import os
 import csv
 
-file_base_path = "runs/door/real_gh360/motor_vel/online/v2_open_door_1/run_0"
+file_base_path = "runs/lift/panda/osc_pose/online/v7_reduced_ep_len_250/run_0"
 npy_file_name = "results.npy"
 csv_file_name = "results.csv"
 

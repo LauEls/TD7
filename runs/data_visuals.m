@@ -1,15 +1,20 @@
 clear all;
 close all;
 
-td7_file_base = "door_mirror/gh360t/eq_soft/";
+td7_file_base = "lift/panda/osc_pose/online/";
 
-v5_new_door_pos_no_motor_obs = readmatrix(td7_file_base+"v5_new_door_pos_no_motor_obs/run_0/results.csv");
-v6_new_door_pos_motor_obs = readmatrix(td7_file_base+"v6_new_door_pos_motor_obs/run_0/results.csv");
-
+exp_1_raw = readmatrix(td7_file_base+"v7_reduced_ep_len_50/run_0/results.csv");
+exp_2_raw = readmatrix(td7_file_base+"v7_reduced_ep_len_100/run_0/results.csv");
+exp_3_raw = readmatrix(td7_file_base+"v7_reduced_ep_len_250/run_0/results.csv");
 
 %%
-v5_new_door_pos_no_motor_obs_mean = mean(v5_new_door_pos_no_motor_obs,2);
-v6_new_door_pos_motor_obs_mean = mean(v6_new_door_pos_motor_obs,2);
+exp_1_mean = mean(exp_1_raw,2);
+exp_2_mean = mean(exp_2_raw,2);
+exp_3_mean = mean(exp_3_raw,2);
+
+exp_1_mean = exp_1_mean/50;
+exp_2_mean = exp_2_mean/100;
+exp_3_mean = exp_3_mean/250;
 
 % td7_reward_shaping_online_run_0_mean = mean(td7_reward_shaping_online_run_0,2);
 % td7_reward_shaping_online_run_1_mean = mean(td7_reward_shaping_online_run_1,2);
@@ -23,8 +28,9 @@ error = 'std';
 %%
 close all;
 
-v5_new_door_pos_no_motor_obs_t = [transpose(v5_new_door_pos_no_motor_obs_mean)];
-v6_new_door_pos_motor_obs_t = [transpose(v6_new_door_pos_motor_obs_mean)];
+exp_1_trans = [transpose(exp_1_mean)];
+exp_2_trans = [transpose(exp_2_mean)];
+exp_3_trans = [transpose(exp_3_mean)];
 
 % td7_reward_shaping_online = [transpose(td7_reward_shaping_online_run_0_mean);transpose(td7_reward_shaping_online_run_1_mean);transpose(td7_reward_shaping_online_run_2_mean)];
 % sac_reward_shaping_no_demo = [transpose(sac_reward_shaping_no_demo_run_0_mean);transpose(sac_reward_shaping_no_demo_run_1_mean);transpose(sac_reward_shaping_no_demo_run_2_mean)];
@@ -65,11 +71,12 @@ options_5.x_axis     = td7_x_values;
 
 figure('Position',[0 0 1920 1440]);
 hold on
-plot_areaerrorbar(v5_new_door_pos_no_motor_obs_t, options_2);
-plot_areaerrorbar(v6_new_door_pos_motor_obs_t, options_4);
+plot_areaerrorbar(exp_1_trans, options_2);
+plot_areaerrorbar(exp_2_trans, options_3);
+plot_areaerrorbar(exp_3_trans, options_4);
 xlim([0 5])
-ylim([0 500])
-lgd = legend('', 'no motor obs', '', 'motor obs', 'Location','best');
+ylim([0 1])
+lgd = legend('', '50', '', '100', '', '250', 'Location','best');
 %lgd.NumColumns = 3;
 xlabel('Time Steps (1M)','FontSize',16)
 ylabel('Total Reward','FontSize',16)
