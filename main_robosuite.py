@@ -146,9 +146,9 @@ if __name__ == "__main__":
 	# experimental_runs = 1
 	# for i in range(experimental_runs):
 	if True:
-		i = 1
-		# load_dir = "runs/lift/panda/osc_pose/offline/v4_medium_expert_with_random"
-		load_dir = "runs/lift/panda/osc_pose/online/v8_reduced_ep_len_500"
+		i = 0
+		load_dir = "runs/lift/panda/osc_pose/offline/v5_medium_expert_2"
+		# load_dir = "runs/lift/panda/osc_pose/online/v8_reduced_ep_len_500"
 		# load_dir = "runs/stack/panda/osc_pose/online/v1"
 		# load_dir = "runs/trajectory_following/gh360t/eq_soft/v5_motor_vel"
 		# load_dir = "runs/trajectory_following/gh360t/eq_vs/v1"

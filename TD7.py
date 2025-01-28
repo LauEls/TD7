@@ -290,7 +290,8 @@ class Agent(object):
 		#########################
 		# Update LAP
 		#########################
-		td_loss = td_loss[:-self.demo_buffer.batch_size]
+		if self.demo_buffer != None:
+			td_loss = td_loss[:-self.demo_buffer.batch_size]
 		priority = td_loss.max(1)[0].clamp(min=self.hp.min_priority).pow(self.hp.alpha)
 		self.replay_buffer.update_priority(priority)
 
