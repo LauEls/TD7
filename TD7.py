@@ -192,6 +192,7 @@ class Agent(object):
 
 		if self.continue_learning:
 			self.load_model(self.hp.dir_path)
+			self.replay_buffer.load_paths(np.load(os.path.join(self.hp.dir_path,"replay_buffer.npy"), allow_pickle=True))
 		self.training_steps = 0
 
 		# Checkpointing tracked values

@@ -98,6 +98,7 @@ def train_online(RL_agent, env, eval_env, args):
 
 	# Save final model
 	RL_agent.save_model(args.result_path)
+	RL_agent.replay_buffer.save_paths(os.path.join(args.result_path,"buffer_paths.npy"))
 
 
 def train_offline(RL_agent, env, eval_env, paths, args):
@@ -143,12 +144,12 @@ def maybe_evaluate_and_print(RL_agent, eval_env, evals, t, start_time, args, d4r
 
 
 if __name__ == "__main__":
-	# load_dir = "runs/lift/panda/osc_pose/offline/v5_medium_expert_2"
+	load_dir = "runs/lift/panda/osc_pose/offline/v5_medium_expert_2"
 	# load_dir = "runs/lift/panda/osc_pose/online/v8_reduced_ep_len_500"
 	# load_dir = "runs/stack/panda/osc_pose/online/v1"
 	# load_dir = "runs/trajectory_following/gh360t/eq_soft/v5_motor_vel"
 	# load_dir = "runs/trajectory_following/gh360t/eq_vs/v1"
-	load_dir = "runs/door_mirror/gh360/osc_pose/v3_ep_length_50"
+	# load_dir = "runs/door_mirror/gh360/osc_pose/v3_ep_length_50"
 	# load_dir = "runs/door_mirror/gh360/joint_velocity/v4_test_joint_limit_2"
 	# load_dir = "runs/door_mirror/gh360/joint_velocity/v2_new_reward_system"
 	# load_dir = "runs/door_mirror/gh360t/eq_soft/v5_new_door_pos_no_motor_obs"
@@ -182,7 +183,7 @@ if __name__ == "__main__":
 	parser.add_argument('--d4rl_path', default="./d4rl_datasets", type=str)
 	parser.add_argument('--result_path', default="./results", type=str)
 	parser.add_argument('--load_dir', default="", type=str)
-	parser.add_argument('--rollout', default=False, type=bool)
+	parser.add_argument('--rollout', default=True, type=bool)
 	parser.add_argument('--render', default=False, type=bool)
 	args = parser.parse_args()
 
@@ -227,7 +228,7 @@ if __name__ == "__main__":
 	env = NormalizedBoxEnv(GymWrapper(suite_env))
 	eval_env = NormalizedBoxEnv(GymWrapper(suite_eval_env))
 
-	if offline:
+	if offline and not args.rollout:
 		paths = np.load(os.path.join("demonstrations/",variant["demo_file_name"]), allow_pickle=True)
 		# print("Loaded paths length: ", len(paths))
 		args.use_checkpoints = False
@@ -267,7 +268,7 @@ if __name__ == "__main__":
 		max_action = float(env.action_space.high[0])
 
 		hp = TD7.Hyperparameters(**variant["hyperparameters"])
-		hp.dir_path = load_dir
+		# hp.dir_path = load_dir
 		
 		RL_agent = TD7.Agent(state_dim, action_dim, max_action, demo_buffer=demo_buffer, offline=offline, hp=hp)
 

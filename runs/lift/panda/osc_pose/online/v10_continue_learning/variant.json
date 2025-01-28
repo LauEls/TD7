@@ -1,7 +1,9 @@
 {
   "algorithm": "TD7",
-  "render": false,
+  "render": true,
   "hyperparameters":{
+    "continue_learning": true,
+    "dir_path": "runs/lift/panda/osc_pose/offline/v5_medium_expert_2/run_0"
   },
   "environment_kwargs": {
     "control_freq": 20,
@@ -24,6 +26,5 @@
   "episode_length": 500,
   "demo_buffer": false,
   "demo_file_name": "lift_medium_expert_v2.npy",
-  "experimental_runs": 1,
-  "offline": true
+  "offline": false
 }
