@@ -3,10 +3,20 @@ close all;
 
 td7_file_base = "lift/panda/osc_pose/online/";
 
-exp_1_raw = readmatrix(td7_file_base+"v8_reduced_ep_len_50/run_0/results.csv");
-exp_2_raw = readmatrix(td7_file_base+"v8_reduced_ep_len_100/run_0/results.csv");
-exp_3_raw = readmatrix(td7_file_base+"v8_reduced_ep_len_250/run_0/results.csv");
-exp_4_raw = readmatrix(td7_file_base+"v8_reduced_ep_len_500/run_0/results.csv");
+% exp_1_raw = readmatrix(td7_file_base+"v7_reduced_ep_len_50/run_0/results.csv");
+% exp_2_raw = readmatrix(td7_file_base+"v7_reduced_ep_len_100/run_0/results.csv");
+% exp_3_raw = readmatrix(td7_file_base+"v7_reduced_ep_len_250/run_0/results.csv");
+% exp_4_raw = readmatrix(td7_file_base+"v7_reduced_ep_len_250/run_0/results.csv");
+
+% exp_1_raw = readmatrix(td7_file_base+"v8_reduced_ep_len_50/run_0/results.csv");
+% exp_2_raw = readmatrix(td7_file_base+"v8_reduced_ep_len_100/run_0/results.csv");
+% exp_3_raw = readmatrix(td7_file_base+"v8_reduced_ep_len_250/run_0/results.csv");
+% exp_4_raw = readmatrix(td7_file_base+"v8_reduced_ep_len_500/run_0/results.csv");
+
+exp_1_raw = readmatrix(td7_file_base+"v8_reduced_ep_len_50/run_1/results.csv");
+exp_2_raw = readmatrix(td7_file_base+"v8_reduced_ep_len_100/run_1/results.csv");
+exp_3_raw = readmatrix(td7_file_base+"v8_reduced_ep_len_250/run_1/results.csv");
+exp_4_raw = readmatrix(td7_file_base+"v8_reduced_ep_len_500/run_1/results.csv");
 
 % exp_1_raw = readmatrix(td7_file_base+"v9_demo_buffer_50/run_0/results.csv");
 % exp_2_raw = readmatrix(td7_file_base+"v9_demo_buffer_100/run_0/results.csv");
