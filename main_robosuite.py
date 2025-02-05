@@ -42,11 +42,12 @@ def train_online(RL_agent, env, eval_env, args):
 	evals = []
 	
 	if RL_agent.continue_learning:
-		buffer_paths = np.load(args.load_dir+"/buffer_paths.npy", allow_pickle=True)
-		RL_agent.replay_buffer.load_paths(buffer_paths)
 		allow_train = True
 		args.timesteps_before_training = 0
 		print("Continue Learning")
+
+	
+
 
 	
 	start_time = time.time()
@@ -99,6 +100,7 @@ def train_online(RL_agent, env, eval_env, args):
 	# Save final model
 	RL_agent.save_model(args.result_path)
 	RL_agent.replay_buffer.save_paths(os.path.join(args.result_path,"buffer_paths.npy"))
+	RL_agent.replay_buffer.save_priority(os.path.join(args.result_path,"priority.npy"))
 
 
 def train_offline(RL_agent, env, eval_env, paths, args):
@@ -144,7 +146,7 @@ def maybe_evaluate_and_print(RL_agent, eval_env, evals, t, start_time, args, d4r
 
 
 if __name__ == "__main__":
-	load_dir = "runs/lift/panda/osc_pose/offline/v5_medium_expert_2"
+	load_dir = "runs/lift/panda/osc_pose/online/v11_cont_learning_with_buffer"
 	# load_dir = "runs/lift/panda/osc_pose/online/v8_reduced_ep_len_500"
 	# load_dir = "runs/stack/panda/osc_pose/online/v1"
 	# load_dir = "runs/trajectory_following/gh360t/eq_soft/v5_motor_vel"
@@ -183,7 +185,7 @@ if __name__ == "__main__":
 	parser.add_argument('--d4rl_path', default="./d4rl_datasets", type=str)
 	parser.add_argument('--result_path', default="./results", type=str)
 	parser.add_argument('--load_dir', default="", type=str)
-	parser.add_argument('--rollout', default=True, type=bool)
+	parser.add_argument('--rollout', default=False, type=bool)
 	parser.add_argument('--render', default=False, type=bool)
 	args = parser.parse_args()
 
@@ -192,6 +194,7 @@ if __name__ == "__main__":
 		args.timesteps_before_training = args.ep_length*50
 		args.eval_freq = args.ep_length*10
 		# args.max_timesteps = args.ep_length*10000
+		args.max_timesteps = args.ep_length*5000
 
 	args.render = variant["render"]
 
