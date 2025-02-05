@@ -143,3 +143,9 @@ class LAP(object):
 		file_array = np.array(paths)
 
 		np.save(filename, file_array)
+
+	def save_priority(self, filename):
+		np.save(filename, self.priority[:self.size].cpu().data.numpy())
+
+	def load_priority(self, filename):
+		self.priority[:self.size] = torch.tensor(np.load(filename), device=self.device)
