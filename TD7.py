@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from typing import Callable
 
 import numpy as np
+import json
 import os
 import torch
 import torch.nn as nn
@@ -189,13 +190,6 @@ class Agent(object):
 		self.checkpoint_actor = copy.deepcopy(self.actor)
 		self.checkpoint_encoder = copy.deepcopy(self.encoder)
 
-
-		if self.continue_learning:
-			self.load_model(self.hp.dir_path)
-			buffer_paths = np.load(hp.dir_path+"/buffer_paths.npy", allow_pickle=True)
-			self.replay_buffer.load_paths(buffer_paths)
-			self.replay_buffer.load_priority(hp.dir_path+"priority.npy")
-			# self.replay_buffer.load_paths(np.load(os.path.join(self.hp.dir_path,"replay_buffer.npy"), allow_pickle=True))
 		self.training_steps = 0
 
 		# Checkpointing tracked values
@@ -210,6 +204,15 @@ class Agent(object):
 		self.min = 1e8
 		self.max_target = 0
 		self.min_target = 0
+
+		if self.continue_learning:
+			self.load_model(self.hp.dir_path)
+			buffer_paths = np.load(hp.dir_path+"/buffer_paths.npy", allow_pickle=True)
+			self.replay_buffer.load_paths(buffer_paths)
+			self.replay_buffer.load_priority(hp.dir_path+"priority.npy")
+			# self.replay_buffer.reset_max_priority()
+			self.load_class_variables(hp.dir_path)
+			# self.replay_buffer.load_paths(np.load(os.path.join(self.hp.dir_path,"replay_buffer.npy"), allow_pickle=True))
 
 
 	def select_action(self, state, use_checkpoint=False, use_exploration=True):
@@ -404,3 +407,37 @@ class Agent(object):
 		# self.fixed_encoder_target = copy.deepcopy(self.encoder)
 		# self.checkpoint_actor = copy.deepcopy(self.actor)
 		# self.checkpoint_encoder = copy.deepcopy(self.encoder)
+
+	def save_class_variables(self, path):
+		data = dict()
+		data['eps_since_update'] = self.eps_since_update
+		data['timesteps_since_update'] = self.timesteps_since_update
+		data['max_eps_before_update'] = self.max_eps_before_update
+		data['min_return'] = self.min_return
+		data['best_min_return'] = self.best_min_return
+		data['max'] = self.max
+		data['min'] = self.min
+		data['max_target'] = self.max_target
+		data['min_target'] = self.min_target
+		data['training_steps'] = self.training_steps
+		data['buffer_max_priority'] = self.replay_buffer.max_priority
+
+		print("saving data: ", data)
+		
+		json.dump(data, open(os.path.join(path,'class_variables.json'), 'w'))
+
+	def load_class_variables(self, path):
+		data = json.load(open(os.path.join(path,'class_variables.json'), 'r'))
+		self.eps_since_update = data['eps_since_update']
+		self.timesteps_since_update = data['timesteps_since_update']
+		self.max_eps_before_update = data['max_eps_before_update']
+		self.min_return = data['min_return']
+		self.best_min_return = data['best_min_return']
+		self.max = data['max']
+		self.min = data['min']
+		self.max_target = data['max_target']
+		self.min_target = data['min_target']
+		self.training_steps = data['training_steps']
+		self.replay_buffer.max_priority = data['buffer_max_priority']
+
+		print("loading data: ", data)

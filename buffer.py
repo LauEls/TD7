@@ -148,4 +148,4 @@ class LAP(object):
 		np.save(filename, self.priority[:self.size].cpu().data.numpy())
 
 	def load_priority(self, filename):
-		self.priority[:self.size] = torch.tensor(np.load(filename), device=self.device)
+		self.priority[:self.size] = torch.tensor(np.load(filename, allow_pickle=True), device=self.device)
