@@ -42,6 +42,8 @@ def train_online(RL_agent, env, eval_env, args):
 	evals = []
 	
 	if RL_agent.continue_learning:
+		# buffer_paths = np.load(args.load_dir+"/buffer_paths.npy", allow_pickle=True)
+		# RL_agent.replay_buffer.load_paths(buffer_paths)
 		allow_train = True
 		args.timesteps_before_training = 0
 		print("Continue Learning")
@@ -61,7 +63,7 @@ def train_online(RL_agent, env, eval_env, args):
 	for t in range(int(args.max_timesteps+1)):
 		maybe_evaluate_and_print(RL_agent, eval_env, evals, t, start_time, args)
 		
-		if allow_train:
+		if allow_train or RL_agent.continue_learning:
 			action = RL_agent.select_action(np.array(state))
 		else:
 			action = env.action_space.sample()
@@ -100,7 +102,7 @@ def train_online(RL_agent, env, eval_env, args):
 	# Save final model
 	RL_agent.save_model(args.result_path)
 	RL_agent.replay_buffer.save_paths(os.path.join(args.result_path,"buffer_paths.npy"))
-	RL_agent.replay_buffer.save_priority(os.path.join(args.result_path,"priority.npy"))
+	RL_agent.replay_buffer.save_priority(os.path.join(args.result_path, "priority.npy"))
 
 
 def train_offline(RL_agent, env, eval_env, paths, args):
@@ -146,12 +148,13 @@ def maybe_evaluate_and_print(RL_agent, eval_env, evals, t, start_time, args, d4r
 
 
 if __name__ == "__main__":
-	load_dir = "runs/lift/panda/osc_pose/online/v11_cont_learning_with_buffer"
-	# load_dir = "runs/lift/panda/osc_pose/online/v8_reduced_ep_len_500"
+	# load_dir = "runs/lift/panda/osc_pose/offline/v6_medium_expert_2"
+	# load_dir = "runs/lift/panda/osc_pose/online/v11_cont_learning_with_buffer"
+	load_dir = "runs/door_mirror/gh360/joint_velocity/offline/v1_first_offline_test"
 	# load_dir = "runs/stack/panda/osc_pose/online/v1"
 	# load_dir = "runs/trajectory_following/gh360t/eq_soft/v5_motor_vel"
 	# load_dir = "runs/trajectory_following/gh360t/eq_vs/v1"
-	# load_dir = "runs/door_mirror/gh360/osc_pose/v3_ep_length_50"
+	# load_dir = "runs/door_mirror/gh360/osc_pose/v3_ep_length_500"
 	# load_dir = "runs/door_mirror/gh360/joint_velocity/v4_test_joint_limit_2"
 	# load_dir = "runs/door_mirror/gh360/joint_velocity/v2_new_reward_system"
 	# load_dir = "runs/door_mirror/gh360t/eq_soft/v5_new_door_pos_no_motor_obs"

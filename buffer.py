@@ -146,8 +146,6 @@ class LAP(object):
 
 	def save_priority(self, filename):
 		np.save(filename, self.priority[:self.size].cpu().data.numpy())
-		print("priority: ", self.priority[:self.size].cpu().data.numpy())
 
 	def load_priority(self, filename):
 		self.priority[:self.size] = torch.tensor(np.load(filename), device=self.device)
-		print("priority: ", self.priority[:self.size].cpu().data.numpy())

@@ -194,7 +194,7 @@ class Agent(object):
 			self.load_model(self.hp.dir_path)
 			buffer_paths = np.load(hp.dir_path+"/buffer_paths.npy", allow_pickle=True)
 			self.replay_buffer.load_paths(buffer_paths)
-			self.replay_buffer.load_priority(hp.dir_path+"/priority.npy")
+			self.replay_buffer.load_priority(hp.dir_path+"priority.npy")
 			# self.replay_buffer.load_paths(np.load(os.path.join(self.hp.dir_path,"replay_buffer.npy"), allow_pickle=True))
 		self.training_steps = 0
 
