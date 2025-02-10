@@ -146,8 +146,9 @@ def maybe_evaluate_and_print(RL_agent, eval_env, evals, t, start_time, args, d4r
 
 if __name__ == "__main__":
 	# load_dir = "runs/lift/panda/osc_pose/offline/v6_medium_expert_2"
-	load_dir = "runs/lift/panda/osc_pose/online/v13_cont_learn_test"
-	# load_dir = "runs/door_mirror/gh360/joint_velocity/offline/v1_first_offline_test"
+	# load_dir = "runs/lift/panda/osc_pose/online/v12_cont_learning_with_buffer_p2"
+	load_dir = "runs/door_mirror/gh360/joint_velocity/offline/v5_new_gather_method"
+	# load_dir = "runs/door_mirror/gh360/joint_velocity/online/v5_ep_len_500_256"
 	# load_dir = "runs/stack/panda/osc_pose/online/v1"
 	# load_dir = "runs/trajectory_following/gh360t/eq_soft/v5_motor_vel"
 	# load_dir = "runs/trajectory_following/gh360t/eq_vs/v1"
@@ -194,8 +195,8 @@ if __name__ == "__main__":
 		args.timesteps_before_training = args.ep_length*50
 		args.eval_freq = args.ep_length*10
 		# args.max_timesteps = args.ep_length*10000
-		# args.max_timesteps = args.ep_length*5000
-		args.max_timesteps = args.ep_length*20
+		#args.max_timesteps = args.ep_length*5000
+		# args.max_timesteps = args.ep_length*20
 
 	args.render = variant["render"]
 
