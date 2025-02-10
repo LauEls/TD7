@@ -114,6 +114,9 @@ def train_offline(RL_agent, env, eval_env, paths, args):
 		RL_agent.train()
 
 	RL_agent.save_model(args.result_path)
+	RL_agent.replay_buffer.save_paths(os.path.join(args.result_path,"buffer_paths.npy"))
+	RL_agent.replay_buffer.save_priority(os.path.join(args.result_path, "priority.npy"))
+	RL_agent.save_class_variables(args.result_path)
 
 
 def maybe_evaluate_and_print(RL_agent, eval_env, evals, t, start_time, args, d4rl=False):
