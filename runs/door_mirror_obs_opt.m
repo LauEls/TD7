@@ -9,10 +9,11 @@ td7_file_base = "door_mirror/gh360/joint_velocity/";
 % exp_3_raw = readmatrix(td7_file_base+"v7_reduced_ep_len_250/run_0/results.csv");
 % exp_4_raw = readmatrix(td7_file_base+"v7_reduced_ep_len_250/run_0/results.csv");
 
-exp_1_raw = readmatrix(td7_file_base+"/online/v5_ep_len_500/run_0/results.csv");
-exp_2_raw = readmatrix(td7_file_base+"/online/v5_ep_len_500_256/run_0/results.csv");
-exp_3_raw = readmatrix(td7_file_base+"/offline/v2_offline_test_500/run_0/results.csv");
-exp_4_raw = readmatrix(td7_file_base+"/offline/v5_new_gather_method/run_0/results.csv");
+% exp_1_raw = readmatrix(td7_file_base+"/online/v5_ep_len_500/run_0/results.csv");
+exp_1_raw = readmatrix(td7_file_base+"/online/v5_ep_len_500_256/run_0/results.csv");
+exp_2_raw = readmatrix(td7_file_base+"/offline/v6_new_dataset/run_0/results.csv");
+exp_3_raw = readmatrix(td7_file_base+"/offline/v6_old_dataset_50/run_0/results.csv");
+exp_4_raw = readmatrix(td7_file_base+"/offline/v6_old_dataset_150/run_0/results.csv");
 
 % exp_1_raw = readmatrix(td7_file_base+"v8_reduced_ep_len_50/run_1/results.csv");
 % exp_2_raw = readmatrix(td7_file_base+"v8_reduced_ep_len_100/run_1/results.csv");
@@ -29,6 +30,7 @@ exp_1_mean = mean(exp_1_raw,2);
 exp_2_mean = mean(exp_2_raw,2);
 exp_3_mean = mean(exp_3_raw,2);
 exp_4_mean = mean(exp_4_raw,2);
+
 
 exp_1_mean = exp_1_mean/500;
 exp_2_mean = exp_2_mean/500;
@@ -96,13 +98,17 @@ options_5.x_axis     = td7_x_values;
 
 figure('Position',[0 0 1920 1440]);
 hold on
-plot_areaerrorbar(exp_1_trans, options_2);
 plot_areaerrorbar(exp_2_trans, options_3);
-plot_areaerrorbar(exp_3_trans, options_4);
 plot_areaerrorbar(exp_4_trans, options_5);
+plot_areaerrorbar(exp_3_trans, options_4);
+plot_areaerrorbar(exp_1_trans, options_2);
+
+
+
+
 xlim([0 5])
 ylim([0 1])
-lgd = legend('', 'online', '', 'online 256', '', 'offline old data', '', 'offline new data', 'Location','best');
+lgd = legend('', 'offline new 50', '', 'offline old 150', '', 'offline old 50', '', 'online', 'Location','best');
 %lgd.NumColumns = 3;
 xlabel('Time Steps (1M)','FontSize',16)
 ylabel('Total Reward','FontSize',16)

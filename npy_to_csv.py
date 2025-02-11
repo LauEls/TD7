@@ -5,7 +5,7 @@ import csv
 for i in range(1):
 
     # file_base_path = "runs/door_mirror/gh360/osc_pose/v3_ep_length_50/run_"+str(i)
-    file_base_path = "runs/door_mirror/gh360/joint_velocity/online/v5_ep_len_500_256/run_"+str(i)
+    file_base_path = "runs/door_mirror/gh360/joint_velocity/offline/v6_old_dataset_150/run_"+str(i)
     # file_base_path = "runs/lift/panda/osc_pose/offline/v5_medium_expert_2/run_0"
     npy_file_name = "results.npy"
     csv_file_name = "results.csv"
