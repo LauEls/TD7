@@ -283,6 +283,7 @@ if __name__ == "__main__":
 		if demo_buffer:
 			paths = np.load(os.path.join("demonstrations/",variant["demo_file_name"]), allow_pickle=True)
 			RL_agent.demo_buffer.load_paths(paths)
+			args.timesteps_before_training = RL_agent.demo_buffer.size
 
 		if not args.rollout:
 			if offline:
