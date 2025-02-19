@@ -150,7 +150,7 @@ def maybe_evaluate_and_print(RL_agent, eval_env, evals, t, start_time, args, d4r
 if __name__ == "__main__":
 	# load_dir = "runs/lift/panda/osc_pose/offline/v6_medium_expert_2"
 	# load_dir = "runs/lift/panda/osc_pose/online/v12_cont_learning_with_buffer_p2"
-	load_dir = "runs/door_mirror/gh360/joint_velocity/online/v7_demo_buffer_expert_v3"
+	load_dir = "runs/door_mirror/gh360/joint_velocity/online/v8_early_training_v3"
 	# load_dir = "runs/door_mirror/gh360/joint_velocity/online/v5_ep_len_500_256"
 	# load_dir = "runs/stack/panda/osc_pose/online/v1"
 	# load_dir = "runs/trajectory_following/gh360t/eq_soft/v5_motor_vel"
@@ -283,7 +283,8 @@ if __name__ == "__main__":
 		if demo_buffer:
 			paths = np.load(os.path.join("demonstrations/",variant["demo_file_name"]), allow_pickle=True)
 			RL_agent.demo_buffer.load_paths(paths)
-			args.timesteps_before_training = RL_agent.demo_buffer.size
+			args.timesteps_before_training -= RL_agent.demo_buffer.size
+			if args.timesteps_before_training < 256: args.timesteps_before_training = 256
 
 		if not args.rollout:
 			if offline:

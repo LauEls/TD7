@@ -1909,3 +1909,27 @@ WARNING: Linesearch objective is not convex
 Fri Feb 14 13:25:05 2025
 WARNING: Linesearch objective is not convex
 
+Mon Feb 17 10:08:36 2025
+WARNING: Linesearch objective is not convex
+
+Mon Feb 17 10:08:36 2025
+WARNING: Linesearch objective is not convex
+
+Mon Feb 17 10:08:36 2025
+WARNING: Linesearch objective is not convex
+
+Mon Feb 17 10:08:36 2025
+WARNING: Linesearch objective is not convex
+
+Mon Feb 17 10:08:36 2025
+WARNING: Linesearch objective is not convex
+
+Mon Feb 17 10:08:36 2025
+WARNING: Linesearch objective is not convex
+
+Mon Feb 17 10:08:36 2025
+WARNING: Linesearch objective is not convex
+
+Mon Feb 17 10:08:36 2025
+WARNING: Linesearch objective is not convex
+
