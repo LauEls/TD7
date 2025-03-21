@@ -14,7 +14,7 @@
         "min_joint_pos": [-0.26072807, -0.44269906, 0.0273903, 1.34286429, 1.23439327, -0.51080826, -0.45623756],
         "max_current": [661.92, 756.0, 672.0, 813.12, 635.04, 393.12, 497.28]
     },
-    "episode_length": 130,
+    "episode_length": 500,
     "original_episode_length": 130,
     "seed": 3,
     "offline": false,
