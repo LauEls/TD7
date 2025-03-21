@@ -1,0 +1,34 @@
+{
+    "algorithm": "TD7",
+    "load_q": false,
+    "load_policy": false,
+    "render": false,
+    "hyperparameters": {
+      "zs_dim": 512,
+      "enc_hdim": 512,
+      "critic_hdim": 512,
+      "actor_hdim": 512
+    },
+    "environment_kwargs": {
+      "control_freq": 20,
+      "controller": "JOINT_VELOCITY_LIMITED",
+      "controller_config": {
+        "joint_max_angle": [0.23129625, 0.0, 0.43274471, 1.78388374, 1.96686906, 0.52923072, 0.55542272],
+        "joint_min_angle": [-0.26072807, -0.44269906, 0.0273903, 1.34286429, 1.23439327, -0.51080826, -0.45623756]
+      },
+      "env_name": "DoorMirror",
+      "grasp_check": false,
+      "table_offset": [-0.43, 0.412, 0.81],
+      "hard_reset": false,
+      "horizon": 500,
+      "ignore_done": true,
+      "reward_scale": 1.0,
+      "gripper_types": "HookGripper",
+      "robots": [
+        "GH360"
+      ]
+    },
+    "episode_length": 130,
+    "offline": false,
+    "seed": 7
+  }

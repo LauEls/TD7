@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from typing import Callable
 
 import numpy as np
+import json
 import os
 import torch
 import torch.nn as nn
@@ -153,7 +154,7 @@ class Critic(nn.Module):
 
 
 class Agent(object):
-	def __init__(self, state_dim, action_dim, max_action, offline=False, hp=Hyperparameters()): 
+	def __init__(self, state_dim, action_dim, max_action, offline=False, demo_buffer=False, hp=Hyperparameters()): 
 		# Changing hyperparameters example: hp=Hyperparameters(batch_size=128)
 		
 		self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -166,6 +167,12 @@ class Agent(object):
 
 		self.replay_buffer = buffer.LAP(state_dim, action_dim, self.device, hp.buffer_size, hp.batch_size, 
 			max_action, normalize_actions=True, prioritized=True)
+		
+		if demo_buffer:
+			self.demo_buffer = buffer.LAP(state_dim, action_dim, self.device, hp.buffer_size, int(hp.batch_size*0.5), max_action, normalize_actions=True, prioritized=False)
+			self.replay_buffer.batch_size = int(hp.batch_size-self.demo_buffer.batch_size)
+		else:
+			self.demo_buffer = None
 
 		self.max_action = max_action
 		print("max_action: ", max_action)
@@ -183,9 +190,6 @@ class Agent(object):
 		self.checkpoint_actor = copy.deepcopy(self.actor)
 		self.checkpoint_encoder = copy.deepcopy(self.encoder)
 
-
-		if self.continue_learning:
-			self.load_model(self.hp.dir_path)
 		self.training_steps = 0
 
 		# Checkpointing tracked values
@@ -200,6 +204,15 @@ class Agent(object):
 		self.min = 1e8
 		self.max_target = 0
 		self.min_target = 0
+
+		if self.continue_learning:
+			self.load_model(self.hp.dir_path)
+			buffer_paths = np.load(hp.dir_path+"/buffer_paths.npy", allow_pickle=True)
+			self.replay_buffer.load_paths(buffer_paths)
+			self.replay_buffer.load_priority(hp.dir_path+"priority.npy")
+			# self.replay_buffer.reset_max_priority()
+			self.load_class_variables(hp.dir_path)
+			# self.replay_buffer.load_paths(np.load(os.path.join(self.hp.dir_path,"replay_buffer.npy"), allow_pickle=True))
 
 
 	def select_action(self, state, use_checkpoint=False, use_exploration=True):
@@ -223,6 +236,21 @@ class Agent(object):
 		self.training_steps += 1
 
 		state, action, next_state, reward, not_done = self.replay_buffer.sample()
+
+		if self.demo_buffer != None:
+			state_demo, action_demo, next_state_demo, reward_demo, not_done_demo = self.demo_buffer.sample()
+			# state[:-self.demo_buffer.batch_size] = state_demo
+			# action[:-self.demo_buffer.batch_size] = action_demo
+			# next_state[:-self.demo_buffer.batch_size] = next_state_demo
+			# reward[:-self.demo_buffer.batch_size] = reward_demo
+			# not_done[:-self.demo_buffer.batch_size] = not_done_demo
+			state = torch.cat([state, state_demo], 0)
+			action = torch.cat([action, action_demo], 0)
+			next_state = torch.cat([next_state, next_state_demo], 0)
+			reward = torch.cat([reward, reward_demo], 0)
+			not_done = torch.cat([not_done, not_done_demo], 0)
+			# state
+
 
 		#########################
 		# Update Encoder
@@ -269,6 +297,8 @@ class Agent(object):
 		#########################
 		# Update LAP
 		#########################
+		if self.demo_buffer != None:
+			td_loss = td_loss[:-self.demo_buffer.batch_size]
 		priority = td_loss.max(1)[0].clamp(min=self.hp.min_priority).pow(self.hp.alpha)
 		self.replay_buffer.update_priority(priority)
 
@@ -377,3 +407,37 @@ class Agent(object):
 		# self.fixed_encoder_target = copy.deepcopy(self.encoder)
 		# self.checkpoint_actor = copy.deepcopy(self.actor)
 		# self.checkpoint_encoder = copy.deepcopy(self.encoder)
+
+	def save_class_variables(self, path):
+		data = dict()
+		data['eps_since_update'] = self.eps_since_update
+		data['timesteps_since_update'] = self.timesteps_since_update
+		data['max_eps_before_update'] = self.max_eps_before_update
+		data['min_return'] = self.min_return
+		data['best_min_return'] = self.best_min_return
+		data['max'] = self.max
+		data['min'] = self.min
+		data['max_target'] = self.max_target
+		data['min_target'] = self.min_target
+		data['training_steps'] = self.training_steps
+		data['buffer_max_priority'] = self.replay_buffer.max_priority
+
+		print("saving data: ", data)
+		
+		json.dump(data, open(os.path.join(path,'class_variables.json'), 'w'))
+
+	def load_class_variables(self, path):
+		data = json.load(open(os.path.join(path,'class_variables.json'), 'r'))
+		self.eps_since_update = data['eps_since_update']
+		self.timesteps_since_update = data['timesteps_since_update']
+		self.max_eps_before_update = data['max_eps_before_update']
+		self.min_return = data['min_return']
+		self.best_min_return = data['best_min_return']
+		self.max = data['max']
+		self.min = data['min']
+		self.max_target = data['max_target']
+		self.min_target = data['min_target']
+		self.training_steps = data['training_steps']
+		self.replay_buffer.max_priority = data['buffer_max_priority']
+
+		print("loading data: ", data)

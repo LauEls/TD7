@@ -1,0 +1,26 @@
+{
+  "algorithm": "TD7",
+  "render": false,
+  "hyperparameters":{
+  },
+  "environment_kwargs": {
+    "control_freq": 20,
+    "controller": "OSC_POSE",
+    "env_name": "DoorMirror",
+    "grasp_check": false,
+    "table_offset": [-0.43, 0.412, 0.81],
+    "hard_reset": false,
+    "horizon": 500,
+    "ignore_done": true,
+    "reward_scale": 1.0,
+    "gripper_types": "HookGripper",
+    "robots": [
+      "GH360"
+    ]
+  },
+  "seed": 5,
+  "episode_length": 250,
+  "experimental_runs": 3,
+  "demo_buffer": false,
+  "offline": false
+}

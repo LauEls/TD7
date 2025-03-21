@@ -1,0 +1,27 @@
+{
+  "algorithm": "TD7",
+  "render": false,
+  "hyperparameters":{
+  },
+  "environment_kwargs": {
+    "control_freq": 20,
+    "controller": "OSC_POSE",
+    "env_name": "Lift",
+    "hard_reset": false,
+    "reward_shaping": true,
+    "cube_x_range": [-0.2, 0.2],
+    "cube_y_range": [-0.2, 0.2],
+    "cube_rotation": [-0.7854, 0.7854],
+    "horizon": 500,
+    "ignore_done": true,
+    "reward_scale": 1.0,
+    "obs_optimization": true,
+    "robots": [
+      "Panda"
+    ]
+  },
+  "seed": 5,
+  "episode_length": 50,
+  "demo_buffer": false,
+  "offline": false
+}

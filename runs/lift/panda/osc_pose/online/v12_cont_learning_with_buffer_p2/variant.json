@@ -1,0 +1,31 @@
+{
+  "algorithm": "TD7",
+  "render": false,
+  "hyperparameters":{
+    "continue_learning": true,
+    "dir_path": "runs/lift/panda/osc_pose/online/v11_cont_learning_with_buffer/run_0/"
+  },
+  "environment_kwargs": {
+    "control_freq": 20,
+    "controller": "OSC_POSE",
+    "env_name": "Lift",
+    "hard_reset": false,
+    "reward_shaping": true,
+    "cube_x_range": [-0.2, 0.2],
+    "cube_y_range": [-0.2, 0.2],
+    "cube_rotation": [-0.7854, 0.7854],
+    "horizon": 500,
+    "ignore_done": true,
+    "reward_scale": 1.0,
+    "obs_optimization": true,
+    "robots": [
+      "Panda"
+    ]
+  },
+  "seed": 5,
+  "episode_length": 250,
+  "demo_buffer": false,
+  "demo_file_name": "lift_medium_expert_v2.npy",
+  "experimental_runs": 1,
+  "offline": false
+}
