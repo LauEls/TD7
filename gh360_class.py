@@ -12,8 +12,6 @@ class RL_GH360:
     def __init__(self, env_name, exp_runs, config_file_path):
         load_dir = config_file_path
         self.exp_run = 0
-        self.stop = False
-        self.pause = False
 
         kwargs_fpath = os.path.join(load_dir, "variant.json")
         try:
@@ -39,22 +37,6 @@ class RL_GH360:
         self.env = gym.make('gh360_gym/'+env_name, **env_config)
         self.eval_env = self.env
 
-        # parser = argparse.ArgumentParser()
-        # RL
-        # parser.add_argument('--use_checkpoints', default=True)
-        # # Evaluation
-        # parser.add_argument("--timesteps_before_training", default=25e3, type=int)
-        # parser.add_argument("--eval_freq", default=5e3, type=int)
-        # parser.add_argument("--eval_eps", default=5, type=int)
-        # parser.add_argument("--max_timesteps", default=5e6, type=int)
-        # parser.add_argument("--ep_length", default=500, type=int)
-        # File
-        # parser.add_argument('--file_name', default=None)
-        # parser.add_argument('--d4rl_path', default="./d4rl_datasets", type=str)
-        # parser.add_argument('--result_path', default="./results", type=str)
-        # parser.add_argument('--rollout', default=False, type=bool)
-        # args = parser.parse_args()
-
         self.use_checkpoints = True
         self.ep_length = variant["episode_length"]
         self.timesteps_before_training = self.ep_length*50
@@ -62,17 +44,6 @@ class RL_GH360:
         self.max_timesteps = self.ep_length*10000
         self.init_buffer_paths = variant["init_buffer_paths"]
         self.eval_eps = 1
-
-        # args.ep_length = variant["episode_length"]
-        # args.timesteps_before_training = args.ep_length*50
-        # args.eval_freq = args.ep_length*10
-        # args.max_timesteps = args.ep_length*10000
-        # # variant["hyperparameters"]["buffer_size"] = args.ep_length*2000
-        # # variant["hyperparameters"]["batch_size"] = int(args.ep_length/2)
-        # args.init_buffer_paths = variant["init_buffer_paths"]
-        
-        # args.eval_eps = 1
-
 
         if self.offline:
             expert_paths = np.load(os.path.join("demonstrations/",variant["demo_file_name"]), allow_pickle=True)
@@ -85,9 +56,6 @@ class RL_GH360:
             paths = np.concatenate((expert_paths, random_paths))
             self.use_checkpoints = False
             self.eval_during_training = variant["eval_during_training"]
-
-        # if args.file_name is None:
-        #     args.file_name = f"TD7_{env_name}_{seed}"
 
 
         self.result_path = os.path.join(load_dir, "run_"+str(self.exp_run))
@@ -139,7 +107,7 @@ class RL_GH360:
             self.train_online()
 
 
-    def train_online(self):
+    def train_online(self, stop_event=None):
         t = 0
         if self.RL_agent.continue_learning:
             buffer_paths = np.load(self.result_path+"/buffer_paths.npy", allow_pickle=True)
@@ -203,11 +171,8 @@ class RL_GH360:
                 state, done = self.env.reset(), False
                 ep_total_reward, ep_timesteps = 0, 0
                 ep_num += 1 
-
-                while self.pause:
-                    time.sleep(0.1)
                 
-                if self.stop:
+                if stop_event.is_set():
                     self.save_training_state()
                     return
 

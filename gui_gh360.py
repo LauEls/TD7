@@ -3,8 +3,10 @@ import re
 import sys
 import TKinterModernThemes as TKMT
 import tkinter as tk
-from gh360_class import RL_GH360
+from threading import Event, Thread
 
+from gh360_class import RL_GH360
+from dummy_class import Dummy
 
 class GH360LearningGUI(TKMT.ThemedTKinterFrame):
     def __init__(self):
@@ -44,6 +46,8 @@ class GH360LearningGUI(TKMT.ThemedTKinterFrame):
         self.btn_start.state(["disabled"])
         self.btn_stop = self.AccentButton("Stop", row=6, col=1, command=self.stop_experiment)
         self.btn_stop.state(["disabled"])
+
+        self.stop_learning = Event()
 
         self.run()
 
@@ -85,6 +89,7 @@ class GH360LearningGUI(TKMT.ThemedTKinterFrame):
         self.btn_load_config.state(["disabled"])
 
         self.learning_class = RL_GH360(self.env_name.get(), self.experimental_runs, self.config_path + self.config_folder_name.get())
+        # self.learning_class = Dummy()
 
         self.btn_start.state(["!disabled"])
 
@@ -92,13 +97,16 @@ class GH360LearningGUI(TKMT.ThemedTKinterFrame):
         # Placeholder for starting experiment
         print("Starting experiment...")
         self.btn_start.state(["disabled"])
-        self.learning_class.start_learning()
+        self.learning_thread = Thread(target=self.learning_class.train_online, args=(self.stop_learning,))
+        self.learning_thread.start()
         self.btn_stop.state(["!disabled"])
 
     def stop_experiment(self):
         # Placeholder for stopping experiment
         print("Stopping experiment...")
         self.btn_stop.state(["disabled"])
+        self.stop_learning.set()
+        self.learning_thread.join()
         self.btn_start.state(["!disabled"])
 
 GH360LearningGUI()
