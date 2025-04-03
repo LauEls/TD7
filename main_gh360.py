@@ -136,7 +136,7 @@ def maybe_evaluate_and_print(RL_agent, eval_env, evals, t, start_time, args, d4r
 if __name__ == "__main__":
     experimental_runs = 1
     for i in range(experimental_runs):
-        load_dir = "runs/door/real_gh360/motor_vel/online/v6_eef_vel_test"
+        load_dir = "runs/door/real_gh360/eef_vel/online/v1_refactor_test"
 
         kwargs_fpath = os.path.join(load_dir, "variant.json")
         try:
