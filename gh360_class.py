@@ -10,10 +10,10 @@ import time
 
 class RL_GH360:
     def __init__(self, env_name, exp_runs, config_file_path):
-        load_dir = config_file_path
+        self.load_dir = config_file_path
         self.exp_run = 0
 
-        kwargs_fpath = os.path.join(load_dir, "variant.json")
+        kwargs_fpath = os.path.join(self.load_dir, "variant.json")
         try:
             with open(kwargs_fpath) as f:
                 variant = json.load(f)
@@ -21,7 +21,7 @@ class RL_GH360:
             print("Error opening default controller filepath at: {}. "
                 "Please check filepath and try again.".format(kwargs_fpath))
             
-        state_file = os.path.join(load_dir, "state.json")
+        state_file = os.path.join(self.load_dir, "state.json")
         try:
             with open(state_file) as f:
                 state = json.load(f)
@@ -57,9 +57,12 @@ class RL_GH360:
             self.use_checkpoints = False
             self.eval_during_training = variant["eval_during_training"]
 
-
-        self.result_path = os.path.join(load_dir, "run_"+str(self.exp_run))
-
+        if not self.load_training_state(): 
+            self.t = 0
+            self.continue_training = False
+        else:
+            self.continue_training = True
+        self.result_path = os.path.join(self.load_dir, "run_"+str(self.exp_run))
         if not os.path.exists(self.result_path):
             os.makedirs(self.result_path)
         
@@ -97,6 +100,8 @@ class RL_GH360:
         print("Max action: ", max_action)
         hp = TD7.Hyperparameters(**variant["hyperparameters"])
         hp.dir_path = self.result_path
+        if self.continue_training:
+            hp.continue_learning = True
         
         self.RL_agent = TD7.Agent(state_dim, action_dim, max_action, offline=self.offline, hp=hp)
 
@@ -108,24 +113,26 @@ class RL_GH360:
 
 
     def train_online(self, stop_event=None):
-        t = 0
-        if self.RL_agent.continue_learning:
-            buffer_paths = np.load(self.result_path+"/buffer_paths.npy", allow_pickle=True)
-            self.RL_agent.replay_buffer.load_paths(buffer_paths)
-        elif self.init_buffer_paths:
-            buffer_paths = np.load(self.result_path+"/init_buffer_paths.npy", allow_pickle=True)
-            self.RL_agent.replay_buffer.load_paths(buffer_paths)
-            print(f"Loaded initial buffer paths of length: {len(buffer_paths[0]['observations'])}")
-            print(f"Buffer size: {self.RL_agent.replay_buffer.size}")
-            t = self.RL_agent.replay_buffer.size-1
+        # t = 0
+        # if self.t > 0:
+        #     buffer_paths = np.load(self.result_path+"/buffer_paths.npy", allow_pickle=True)
+        #     self.RL_agent.replay_buffer.load_paths(buffer_paths)
+        # elif self.init_buffer_paths:
+        #     buffer_paths = np.load(self.result_path+"/init_buffer_paths.npy", allow_pickle=True)
+        #     self.RL_agent.replay_buffer.load_paths(buffer_paths)
+        #     print(f"Loaded initial buffer paths of length: {len(buffer_paths[0]['observations'])}")
+        #     print(f"Buffer size: {self.RL_agent.replay_buffer.size}")
+        #     t = self.RL_agent.replay_buffer.size-1
             
 
         self.evals = []
         start_time = time.time()
-        allow_train = False
+        if self.t >= self.timesteps_before_training: allow_train = True
+        else: allow_train = False
 
         state, ep_finished = self.env.reset(), False
-        ep_total_reward, ep_timesteps, ep_num = 0, 0, 1
+        ep_total_reward, ep_timesteps,= 0, 0
+        ep_num = t % self.ep_length + 1
 
         # for i in range(int(args.max_timesteps+1)):
         while t < int(self.max_timesteps+1):
@@ -218,4 +225,25 @@ class RL_GH360:
         self.RL_agent.replay_buffer.save_paths(os.path.join(self.result_path,"buffer_paths.npy"))
         self.RL_agent.replay_buffer.save_priority(os.path.join(self.result_path, "priority.npy"))
         self.RL_agent.save_class_variables(self.result_path)
+
+        data = dict()
+        data['experiment_run'] = self.exp_run
+        data['t'] = self.t
+        print("saving data: ", data)
+
+        json.dump(data, open(os.path.join(self.load_dir,'training_state.json'), 'w'))
         pass
+
+    def load_training_state(self):
+        try:
+            with open(os.path.join(self.load_dir,'training_state.json')) as f:
+                data = json.load(f)
+        except FileNotFoundError:
+            return False
+        # with open(os.path.join(self.result_path,'training_state.json')) as f:
+        #     data = json.load(f)
+        self.exp_run = data['experiment_run']
+        self.t = data['t']
+        print("loaded data: ", data)
+        
+        return True
