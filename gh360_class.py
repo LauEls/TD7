@@ -175,11 +175,11 @@ class RL_GH360:
                         print("Saving initial buffer paths")
                         self.RL_agent.replay_buffer.save_paths(self.result_path+"/init_buffer_paths.npy")
 
-                state, done = self.env.reset(), False
+                state, info = self.env.reset()
                 ep_total_reward, ep_timesteps = 0, 0
                 ep_num += 1 
                 
-                if stop_event.is_set():
+                if stop_event.is_set() or not info["reset_success"]:
                     self.t += 1
                     self.save_training_state()
                     return
