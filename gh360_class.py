@@ -21,13 +21,13 @@ class RL_GH360:
             print("Error opening default controller filepath at: {}. "
                 "Please check filepath and try again.".format(kwargs_fpath))
             
-        state_file = os.path.join(self.load_dir, "state.json")
-        try:
-            with open(state_file) as f:
-                state = json.load(f)
-        except FileNotFoundError:
-            print("Error opening default controller filepath at: {}. "
-                "Please check filepath and try again.".format(state_file))
+        # state_file = os.path.join(self.load_dir, "state.json")
+        # try:
+        #     with open(state_file) as f:
+        #         state = json.load(f)
+        # except FileNotFoundError:
+        #     print("Error opening default controller filepath at: {}. "
+        #         "Please check filepath and try again.".format(state_file))
             
         env_config = variant["environment_kwargs"]
         env_name = variant["environment_kwargs"].pop("env_name")
@@ -132,11 +132,11 @@ class RL_GH360:
 
         state, ep_finished = self.env.reset(), False
         ep_total_reward, ep_timesteps,= 0, 0
-        ep_num = t % self.ep_length + 1
+        ep_num = self.t % self.ep_length + 1
 
         # for i in range(int(args.max_timesteps+1)):
-        while t < int(self.max_timesteps+1):
-            self.maybe_evaluate_and_print(t, start_time)
+        while self.t < int(self.max_timesteps+1):
+            self.maybe_evaluate_and_print(self.t, start_time)
             
             if allow_train:
                 action = self.RL_agent.select_action(np.array(state))
@@ -164,14 +164,14 @@ class RL_GH360:
 
             if ep_finished: 
                 print(f"Reward: {ep_total_reward}")
-                print(f"Total T: {t+1} Episode Num: {ep_num} Episode T: {ep_timesteps} Reward: {ep_total_reward:.3f}")
+                print(f"Total T: {self.t+1} Episode Num: {ep_num} Episode T: {ep_timesteps} Reward: {ep_total_reward:.3f}")
 
                 if allow_train and self.use_checkpoints:
                     self.RL_agent.maybe_train_and_checkpoint(ep_timesteps, ep_total_reward)
 
-                if t >= self.timesteps_before_training:
+                if self.t >= self.timesteps_before_training:
                     allow_train = True
-                    if t >= self.timesteps_before_training and t <= (self.timesteps_before_training+ep_timesteps):
+                    if self.t >= self.timesteps_before_training and self.t <= (self.timesteps_before_training+ep_timesteps):
                         print("Saving initial buffer paths")
                         self.RL_agent.replay_buffer.save_paths(self.result_path+"/init_buffer_paths.npy")
 
@@ -180,10 +180,11 @@ class RL_GH360:
                 ep_num += 1 
                 
                 if stop_event.is_set():
+                    self.t += 1
                     self.save_training_state()
                     return
 
-            t += 1
+            self.t += 1
 
         # Save final model
         self.RL_agent.save_model(self.result_path)
