@@ -33,6 +33,7 @@ class RL_GH360:
         env_name = variant["environment_kwargs"].pop("env_name")
         seed = variant["seed"]
         self.offline = variant["offline"]
+        demo_buffer = variant["demo_buffer"]
 
         self.env = gym.make('gh360_gym/'+env_name, **env_config)
         self.eval_env = self.env
@@ -103,7 +104,12 @@ class RL_GH360:
         if self.continue_training:
             hp.continue_learning = True
         
-        self.RL_agent = TD7.Agent(state_dim, action_dim, max_action, offline=self.offline, hp=hp)
+        self.RL_agent = TD7.Agent(state_dim, action_dim, max_action, demo_buffer=demo_buffer, offline=self.offline, hp=hp)
+        if demo_buffer:
+            paths = np.load(os.path.join("demonstrations/",variant["demo_file_name"]), allow_pickle=True)
+            self.RL_agent.demo_buffer.load_paths(paths)
+            self.timesteps_before_training -= self.RL_agent.demo_buffer.size
+            if self.timesteps_before_training < 256: self.timesteps_before_training = 256
 
     def start_learning(self):
         if self.offline:

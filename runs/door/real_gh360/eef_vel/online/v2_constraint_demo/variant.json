@@ -15,6 +15,8 @@
     },
     "episode_length": 130,
     "original_episode_length": 130,
+    "demo_buffer": true,
+    "demo_file_name": "gh360_door_demonstration_v6.npy",
     "seed": 2,
     "offline": false,
     "eval_during_training": true,
