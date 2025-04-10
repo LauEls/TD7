@@ -14,8 +14,8 @@ import robosuite as suite
 from robosuite.utils.input_utils import *
 import sys
 from robosuite.wrappers import GymWrapper
-sys.path.insert(0, '/home/laurenz/phd_project/sac/sac_2')
-from wrappers import NormalizedBoxEnv
+# sys.path.insert(0, '/home/laurenz/phd_project/sac/sac_2')
+# from wrappers import NormalizedBoxEnv
 
 def relu_weights_normal_init(tensor):
     size = tensor.size()[0]
@@ -101,14 +101,14 @@ if __name__ == "__main__":
     np.random.seed(seed)
     torch.manual_seed(seed)
 
-    training = False
+    training = True
 
     # load_dir = "/home/laurenz/phd_project/TD7/runs/door_mirror/gh360/joint_velocity/online/v6_cont_after_offline/"
-    config_file = '/home/laurenz/phd_project/TD7/runs/door/real_gh360/eef_vel/online/v1_refactor_test/variant.json'
+    config_file = '/home/gh360/TD7/runs/door/real_gh360/eef_vel/online/v2_constraint_demo/variant.json'
     # load_dir = "../../sac_2/runs/data/stack/panda/osc_pose/with_demo/v4_obs_opt/"
 
     # demo_file_path = "/home/laurenz/phd_project/TD7/demonstrations/robosuite_door_mirror_demonstration_v3_expert.npy"
-    demo_file_path = "/home/laurenz/phd_project/ros2_gh360_ws/src/gh360/gh360_demonstration/data/spacemouse_demonstrations/door/gh360_door_demonstration_v2.npy"
+    demo_file_path = "/home/gh360/ros2_gh360_ws/src/gh360/gh360_demonstration/data/spacemouse_demonstrations/door/gh360_door_demonstration_v6.npy"
     # demo_file_path = "/home/laurenz/phd_project/sac/scripts/robosuite_env_solved/demonstrations/stack/stack_random_no_noise_test_v2.npy"
     
 
@@ -121,12 +121,15 @@ if __name__ == "__main__":
         
     env_config = variant["environment_kwargs"]
     env_name = variant["environment_kwargs"].pop("env_name")
-    #variant["environment_kwargs"].pop("max_joint_pos")
-    #variant["environment_kwargs"].pop("min_joint_pos")
-    # variant["environment_kwargs"].pop("max_current")
+    # variant["environment_kwargs"].pop("max_joint_pos")
+    # variant["environment_kwargs"].pop("min_joint_pos")
+    # variant["environment_kwargs"].pop("input_max")
+    # variant["environment_kwargs"].pop("input_min")
+    # variant["environment_kwargs"].pop("max_motor_current")
+    # variant["environment_kwargs"].pop("min_motor_current")
 
-    raw_env = gym.make('gh360_gym/'+env_name, **env_config)
-    env = NormalizedBoxEnv(raw_env)
+    env = gym.make('gh360_gym/'+env_name, **env_config)
+    # env = NormalizedBoxEnv(raw_env)
     env.reset()
 
     ep_length = variant["episode_length"]
@@ -160,6 +163,7 @@ if __name__ == "__main__":
             i = int(np.random.uniform(0, len(demos)))
             # print("i: ",i)
             obs = demos[i]["observations"]
+            # print(f"obs: {obs}")
             actions = demos[i]["actions"]
             actions = torch.from_numpy(actions).float().to(t_device)
 
@@ -187,7 +191,7 @@ if __name__ == "__main__":
     else:
         policy.load_checkpoint("policy")
 
-    obs = env.reset()
+    obs, info = env.reset()
     total_reward = 0
     for i in range(ep_length):
         action = policy.get_action(obs)

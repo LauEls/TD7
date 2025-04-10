@@ -130,7 +130,7 @@ class RL_GH360:
         if self.t >= self.timesteps_before_training: allow_train = True
         else: allow_train = False
 
-        state, ep_finished = self.env.reset(), False
+        state, info = self.env.reset()
         ep_total_reward, ep_timesteps,= 0, 0
         ep_num = self.t % self.ep_length + 1
 
@@ -203,7 +203,8 @@ class RL_GH360:
 
             total_reward = np.zeros(self.eval_eps)
             for ep in range(self.eval_eps):
-                state, done = self.eval_env.reset(), False
+                state, info = self.eval_env.reset()
+                done = False
                 cntr = 0
                 while not done and cntr < self.ep_length:
                     action = self.RL_agent.select_action(np.array(state), self.use_checkpoints, use_exploration=False)

@@ -4,9 +4,8 @@ import numpy as np
 import gh360_gym
 
 if __name__ == "__main__":
-    config_file = '/home/laurenz/phd_project/TD7/runs/door/real_gh360/eef_vel/online/v1_refactor_test/variant.json'
-    demo_file_path = "/home/laurenz/phd_project/ros2_gh360_ws/src/gh360/gh360_demonstration/data/spacemouse_demonstrations/door/gh360_door_demonstration_v2.npy"
-    
+    config_file = '/home/gh360/TD7/runs/door/real_gh360/eef_vel/online/v2_constraint_demo/variant.json'
+    demo_file_path = "/home/gh360/ros2_gh360_ws/src/gh360/gh360_demonstration/data/spacemouse_demonstrations/door/gh360_door_demonstration_v6.npy"
 
     try:
         with open(config_file) as f:
@@ -17,6 +16,8 @@ if __name__ == "__main__":
         
     env_config = variant["environment_kwargs"]
     env_name = variant["environment_kwargs"].pop("env_name")
+    # variant["environment_kwargs"].pop("input_max")
+    # variant["environment_kwargs"].pop("input_min")
     #variant["environment_kwargs"].pop("max_joint_pos")
     #variant["environment_kwargs"].pop("min_joint_pos")
     # variant["environment_kwargs"].pop("max_current")
