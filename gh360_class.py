@@ -58,14 +58,16 @@ class RL_GH360:
             self.use_checkpoints = False
             self.eval_during_training = variant["eval_during_training"]
 
-        if not self.load_training_state(): 
-            self.t = 0
-            self.continue_training = False
-        else:
-            self.continue_training = True
+        self.continue_training = self.load_training_state()
         self.result_path = os.path.join(self.load_dir, "run_"+str(self.exp_run))
         if not os.path.exists(self.result_path):
             os.makedirs(self.result_path)
+        if not self.continue_training: 
+            self.t = 0
+            self.evals = []
+        else:
+            self.evals = np.load(os.path.join(self.result_path,"results.npy"), allow_pickle=True)
+        
         
 
         
@@ -131,14 +133,14 @@ class RL_GH360:
         #     t = self.RL_agent.replay_buffer.size-1
             
 
-        self.evals = []
+        # self.evals = []
         start_time = time.time()
         if self.t >= self.timesteps_before_training: allow_train = True
         else: allow_train = False
 
         state, info = self.env.reset()
         ep_total_reward, ep_timesteps,= 0, 0
-        ep_num = self.t % self.ep_length + 1
+        ep_num = int(self.t/self.ep_length) + 1
 
         # for i in range(int(args.max_timesteps+1)):
         while self.t < int(self.max_timesteps+1):
@@ -253,5 +255,9 @@ class RL_GH360:
         self.exp_run = data['experiment_run']
         self.t = data['t']
         print("loaded data: ", data)
+
+        
+
+
         
         return True
