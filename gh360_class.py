@@ -7,9 +7,12 @@ import numpy as np
 import argparse
 import torch
 import time
+import signal
+import subprocess
 
 class RL_GH360:
     def __init__(self, env_name, exp_runs, config_file_path):
+        self.path_ros2_ws = "~/ros2_gh360_ws"
         self.load_dir = config_file_path
         self.exp_run = 0
 
@@ -120,6 +123,7 @@ class RL_GH360:
             self.train_online()
 
 
+
     def train_online(self, stop_event=None):
         # t = 0
         # if self.t > 0:
@@ -134,6 +138,7 @@ class RL_GH360:
             
 
         # self.evals = []
+        self.record_process = self.start_record_rosbag("rosbag_"+str(time.time()))
         start_time = time.time()
         if self.t >= self.timesteps_before_training: allow_train = True
         else: allow_train = False
@@ -195,10 +200,11 @@ class RL_GH360:
             self.t += 1
 
         # Save final model
-        self.RL_agent.save_model(self.result_path)
-        self.RL_agent.replay_buffer.save_paths(os.path.join(self.result_path,"buffer_paths.npy"))
-        self.RL_agent.replay_buffer.save_priority(os.path.join(self.result_path, "priority.npy"))
-        self.RL_agent.save_class_variables(self.result_path)
+        self.save_training_state()
+        # self.RL_agent.save_model(self.result_path)
+        # self.RL_agent.replay_buffer.save_paths(os.path.join(self.result_path,"buffer_paths.npy"))
+        # self.RL_agent.replay_buffer.save_priority(os.path.join(self.result_path, "priority.npy"))
+        # self.RL_agent.save_class_variables(self.result_path)
     
     def train_offline(self):
         pass
@@ -242,7 +248,7 @@ class RL_GH360:
         print("saving data: ", data)
 
         json.dump(data, open(os.path.join(self.load_dir,'training_state.json'), 'w'))
-        pass
+        self.stop_record_rosbag()
 
     def load_training_state(self):
         try:
@@ -255,9 +261,31 @@ class RL_GH360:
         self.exp_run = data['experiment_run']
         self.t = data['t']
         print("loaded data: ", data)
-
-        
-
-
         
         return True
+    
+    def start_record_rosbag(self, rosbag_name):
+        topic_list = ""
+        topic_list += " /gh360/motor_states_sorted"
+        topic_list += " /gh360/joint_states"
+        topic_list += " /gh360/eef_pose"
+        topic_list += " /gh360/motor_goal_velocity"
+        topic_list += " /door/environment_observations"
+        topic_list += " /gh360_control/cmd_eef_vel"
+        topic_list += " /gh360_control/cmd_joint_vel"
+        topic_list += " /gh360_control/cmd_joint_pos"
+        topic_list += " /gh360_control/cmd_motor_pos"
+
+        pre_command = f'source {self.path_ros2_ws}/install/setup.bash;'
+        
+        process_command = f'{pre_command} ros2 bag record -o {self.result_path}/{rosbag_name}{topic_list}'
+        # process_command += ' -a'
+        record_process = subprocess.Popen(process_command, shell=True, executable="/bin/bash", preexec_fn=os.setsid)
+
+        return record_process
+    
+    def stop_record_rosbag(self):
+        self.get_logger().info("Stop Recording")
+        if self.record_process.poll() is None:
+            os.killpg(os.getpgid(self.record_process.pid), signal.SIGINT)
+            self.record_process.wait()
