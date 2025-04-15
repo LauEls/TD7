@@ -1,0 +1,1 @@
+{"eps_since_update": 0, "timesteps_since_update": 0, "max_eps_before_update": 1, "min_return": 100000000.0, "best_min_return": 113.36245120460302, "max": 38.12811279296875, "min": 1.9093994296781602e-07, "max_target": 37.505706787109375, "min_target": 1.9093994296781602e-07, "training_steps": 11960, "buffer_max_priority": 4.210840702056885}
