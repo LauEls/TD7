@@ -47,7 +47,7 @@ class RL_GH360:
         self.eval_freq = self.ep_length*10
         self.max_timesteps = self.ep_length*10000
         self.init_buffer_paths = variant["init_buffer_paths"]
-        self.eval_eps = 1
+        self.eval_eps = 5
 
         if self.offline:
             expert_paths = np.load(os.path.join("demonstrations/",variant["demo_file_name"]), allow_pickle=True)
@@ -210,7 +210,7 @@ class RL_GH360:
         pass
 
     def maybe_evaluate_and_print(self, t, start_time):
-        if t % self.eval_freq == 0 and t > 0:
+        if t % self.eval_freq == 0:
             print("---------------------------------------")
             print(f"Evaluation at {t} time steps")
             print(f"Total time passed: {round((time.time()-start_time)/60.,2)} min(s)")
