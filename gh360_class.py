@@ -138,7 +138,7 @@ class RL_GH360:
             
 
         # self.evals = []
-        self.record_process = self.start_record_rosbag("rosbag_"+str(time.time()))
+        self.record_process = self.start_record_rosbag("rosbag_"+str(int(time.time())))
         start_time = time.time()
         if self.t >= self.timesteps_before_training: allow_train = True
         else: allow_train = False
@@ -215,6 +215,8 @@ class RL_GH360:
             print(f"Evaluation at {t} time steps")
             print(f"Total time passed: {round((time.time()-start_time)/60.,2)} min(s)")
 
+            ep_succ = False
+
             total_reward = np.zeros(self.eval_eps)
             for ep in range(self.eval_eps):
                 state, info = self.eval_env.reset()
@@ -225,6 +227,9 @@ class RL_GH360:
                     state, reward, done, _ = self.eval_env.step(action)
                     total_reward[ep] += reward
                     cntr += 1
+
+                if reward == 1:
+                    ep_succ = True
                             
             print(f"Average total reward over {self.eval_eps} episodes: {total_reward.mean():.3f}")
 
@@ -234,6 +239,23 @@ class RL_GH360:
             # np.save(f"./results/{args.file_name}", evals)
             np.save(os.path.join(self.result_path,"results.npy"), self.evals)
 
+            ep_cntr = self.eval_eps
+            while ep_succ and ep_cntr < 10:
+                state, info = self.eval_env.reset()
+                done = False
+                cntr = 0
+                while not done and cntr < self.ep_length:
+                    action = self.RL_agent.select_action(np.array(state), self.use_checkpoints, use_exploration=False)
+                    state, reward, done, _ = self.eval_env.step(action)
+                    total_reward[ep] += reward
+                    cntr += 1
+
+                if reward == 1:
+                    ep_succ = True
+
+                ep_cntr += 1
+
+            print(f"Total amount of successful evaluation episodes: {ep_cntr}")
             self.eval_env.reset()
 
     def save_training_state(self):
