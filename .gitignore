@@ -162,3 +162,7 @@ cython_debug/
 #.idea/
 demonstrations/
 *buffer_paths.npy
+
+
+#rosbags
+*.db3
