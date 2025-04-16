@@ -169,7 +169,7 @@ class Agent(object):
 			max_action, normalize_actions=True, prioritized=True)
 		
 		if demo_buffer:
-			self.demo_buffer = buffer.LAP(state_dim, action_dim, self.device, hp.buffer_size, int(hp.batch_size*0.5), max_action, normalize_actions=True, prioritized=False)
+			self.demo_buffer = buffer.LAP(state_dim, action_dim, self.device, hp.buffer_size, int(hp.batch_size*0.1), max_action, normalize_actions=True, prioritized=False)
 			self.replay_buffer.batch_size = int(hp.batch_size-self.demo_buffer.batch_size)
 		else:
 			self.demo_buffer = None

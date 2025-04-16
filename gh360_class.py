@@ -45,9 +45,9 @@ class RL_GH360:
         self.ep_length = variant["episode_length"]
         self.timesteps_before_training = self.ep_length*50
         self.eval_freq = self.ep_length*10
-        self.max_timesteps = self.ep_length*10000
+        self.max_timesteps = self.ep_length*200
         self.init_buffer_paths = variant["init_buffer_paths"]
-        self.eval_eps = 5
+        self.eval_eps = 10
 
         if self.offline:
             expert_paths = np.load(os.path.join("demonstrations/",variant["demo_file_name"]), allow_pickle=True)
@@ -239,23 +239,23 @@ class RL_GH360:
             # np.save(f"./results/{args.file_name}", evals)
             np.save(os.path.join(self.result_path,"results.npy"), self.evals)
 
-            ep_cntr = self.eval_eps
-            while ep_succ and ep_cntr < 10:
-                state, info = self.eval_env.reset()
-                done = False
-                cntr = 0
-                while not done and cntr < self.ep_length:
-                    action = self.RL_agent.select_action(np.array(state), self.use_checkpoints, use_exploration=False)
-                    state, reward, done, _ = self.eval_env.step(action)
-                    total_reward[ep] += reward
-                    cntr += 1
+            # ep_cntr = self.eval_eps
+            # while ep_succ and ep_cntr < 10:
+            #     state, info = self.eval_env.reset()
+            #     done = False
+            #     cntr = 0
+            #     while not done and cntr < self.ep_length:
+            #         action = self.RL_agent.select_action(np.array(state), self.use_checkpoints, use_exploration=False)
+            #         state, reward, done, _ = self.eval_env.step(action)
+            #         total_reward[ep] += reward
+            #         cntr += 1
 
-                if reward == 1:
-                    ep_succ = True
+            #     if reward == 1:
+            #         ep_succ = True
 
-                ep_cntr += 1
+            #     ep_cntr += 1
 
-            print(f"Total amount of successful evaluation episodes: {ep_cntr}")
+            # print(f"Total amount of successful evaluation episodes: {ep_cntr}")
             self.eval_env.reset()
 
     def save_training_state(self):
