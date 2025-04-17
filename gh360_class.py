@@ -112,6 +112,19 @@ class RL_GH360:
         self.RL_agent = TD7.Agent(state_dim, action_dim, max_action, demo_buffer=demo_buffer, offline=self.offline, hp=hp)
         if demo_buffer:
             paths = np.load(os.path.join("demonstrations/",variant["demo_file_name"]), allow_pickle=True)
+            demo_episodes = variant["demo_episodes"]
+            if demo_episodes >= len(paths): demo_episodes = len(paths)
+            else:
+                i_plus = int(len(paths)/demo_episodes)
+                reduced_paths = []
+                i = 0
+                while i < len(paths):
+                    reduced_paths.append(paths[i])
+                    i += i_plus
+                    print("i: ", i)
+                paths = reduced_paths
+                
+            print(f"demonstraition episodes: {len(paths)}")
             self.RL_agent.demo_buffer.load_paths(paths)
             self.timesteps_before_training -= self.RL_agent.demo_buffer.size
             if self.timesteps_before_training < 256: self.timesteps_before_training = 256

@@ -2,7 +2,7 @@
     "algorithm": "TD7",
     "hyperparameters":{
       "buffer_size": 1000000,
-      "demo_buffer_batch_size": 0.25
+      "demo_buffer_batch_size": 0.5
     },
     "environment_kwargs": {
         "env_name": "Door-v0",
@@ -19,7 +19,7 @@
     "eval_episodes": 5,
     "demo_buffer": true,
     "demo_file_name": "gh360_door_demonstration_v8.npy",
-    "demo_episodes": 20,
+    "demo_episodes": 10,
     "seed": 5,
     "offline": false,
     "eval_during_training": true,
