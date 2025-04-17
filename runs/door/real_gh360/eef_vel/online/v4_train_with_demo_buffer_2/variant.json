@@ -1,7 +1,8 @@
 {
     "algorithm": "TD7",
     "hyperparameters":{
-      "buffer_size": 1000000
+      "buffer_size": 1000000,
+      "demo_buffer_batch_size": 0.5
     },
     "environment_kwargs": {
         "env_name": "Door-v0",
@@ -14,7 +15,8 @@
         "min_motor_current": [-588.0, -1196.1599999999999, -631.68, -661.92, -685.4399999999999, -178.07999999999998, -1727.04, -601.4399999999999, -420.0, -624.9599999999999, -924.0, -682.0799999999999, -487.2]
     },
     "episode_length": 130,
-    "original_episode_length": 130,
+    "max_episodes": 200,
+    "eval_episodes": 5,
     "demo_buffer": true,
     "demo_file_name": "gh360_door_demonstration_v8.npy",
     "seed": 5,

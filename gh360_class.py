@@ -45,9 +45,9 @@ class RL_GH360:
         self.ep_length = variant["episode_length"]
         self.timesteps_before_training = self.ep_length*50
         self.eval_freq = self.ep_length*10
-        self.max_timesteps = self.ep_length*150
+        self.max_timesteps = self.ep_length*variant["max_episodes"] #10000
         self.init_buffer_paths = variant["init_buffer_paths"]
-        self.eval_eps = 5
+        self.eval_eps = variant["eval_episodes"]
 
         if self.offline:
             expert_paths = np.load(os.path.join("demonstrations/",variant["demo_file_name"]), allow_pickle=True)

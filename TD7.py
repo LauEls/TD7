@@ -57,6 +57,7 @@ class Hyperparameters:
 	#Continue learning
 	continue_learning: bool = False
 	dir_path: str = ''
+	demo_buffer_batch_size: float = 0.5 # 50% of batch size
 
 
 def AvgL1Norm(x, eps=1e-8):
@@ -169,7 +170,7 @@ class Agent(object):
 			max_action, normalize_actions=True, prioritized=True)
 		
 		if demo_buffer:
-			self.demo_buffer = buffer.LAP(state_dim, action_dim, self.device, hp.buffer_size, int(hp.batch_size*0.25), max_action, normalize_actions=True, prioritized=False)
+			self.demo_buffer = buffer.LAP(state_dim, action_dim, self.device, hp.buffer_size, int(hp.batch_size*hp.demo_buffer_batch_size), max_action, normalize_actions=True, prioritized=False)
 			self.replay_buffer.batch_size = int(hp.batch_size-self.demo_buffer.batch_size)
 		else:
 			self.demo_buffer = None
