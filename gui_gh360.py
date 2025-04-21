@@ -35,10 +35,10 @@ class GH360LearningGUI(TKMT.ThemedTKinterFrame):
         self.config_folder_name = tk.StringVar(value=self.config_folder_option_menu_list[0])
         self.opmen_config_folder = self.OptionMenu(self.config_folder_option_menu_list, self.config_folder_name, row=3, col=1)
 
-        self.Text("Experimental Runs: ", row=4, col=0)
-        self.experimental_runs = tk.IntVar(value=1)
-        exp_runs_obj = self.NumericalSpinbox(1,10,1,self.experimental_runs, row=4, col=1)
-        exp_runs_obj.state(["readonly"])
+        # self.Text("Experimental Runs: ", row=4, col=0)
+        # self.experimental_runs = tk.IntVar(value=1)
+        # exp_runs_obj = self.NumericalSpinbox(1,10,1,self.experimental_runs, row=4, col=1)
+        # exp_runs_obj.state(["readonly"])
         
 
         self.btn_load_config = self.AccentButton("Load Config", row=5, col=0, colspan=2, command=self.load_config)
@@ -88,7 +88,7 @@ class GH360LearningGUI(TKMT.ThemedTKinterFrame):
         print("Loading config...")
         self.btn_load_config.state(["disabled"])
 
-        self.learning_class = RL_GH360(self.env_name.get(), self.experimental_runs, self.config_path + self.config_folder_name.get())
+        self.learning_class = RL_GH360(self.config_path + self.config_folder_name.get())
         # self.learning_class = Dummy()
 
         self.btn_start.state(["!disabled"])
@@ -97,7 +97,7 @@ class GH360LearningGUI(TKMT.ThemedTKinterFrame):
         # Placeholder for starting experiment
         print("Starting experiment...")
         self.btn_start.state(["disabled"])
-        self.learning_thread = Thread(target=self.learning_class.train_online, args=(self.stop_learning,))
+        self.learning_thread = Thread(target=self.learning_class.start_learning, args=(self.stop_learning,))
         self.learning_thread.start()
         self.btn_stop.state(["!disabled"])
 

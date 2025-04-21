@@ -1,0 +1,67 @@
+rosbag2_bagfile_information:
+  version: 4
+  storage_identifier: sqlite3
+  relative_file_paths:
+    - rosbag_1745055828_0.db3
+  duration:
+    nanoseconds: 14407850477401
+  starting_time:
+    nanoseconds_since_epoch: 1745055829776748295
+  message_count: 1658917
+  topics_with_message_count:
+    - topic_metadata:
+        name: /door/environment_observations
+        type: gh360_interfaces/msg/DoorEnv
+        serialization_format: cdr
+        offered_qos_profiles: ""
+      message_count: 140114
+    - topic_metadata:
+        name: /gh360/eef_pose
+        type: geometry_msgs/msg/Pose
+        serialization_format: cdr
+        offered_qos_profiles: ""
+      message_count: 144080
+    - topic_metadata:
+        name: /gh360/joint_states
+        type: sensor_msgs/msg/JointState
+        serialization_format: cdr
+        offered_qos_profiles: ""
+      message_count: 288160
+    - topic_metadata:
+        name: /gh360/motor_goal_velocity
+        type: gh360_interfaces/msg/SetMotorVelocities
+        serialization_format: cdr
+        offered_qos_profiles: ""
+      message_count: 342831
+    - topic_metadata:
+        name: /gh360_control/cmd_joint_vel
+        type: sensor_msgs/msg/JointState
+        serialization_format: cdr
+        offered_qos_profiles: ""
+      message_count: 256780
+    - topic_metadata:
+        name: /gh360_control/cmd_motor_pos
+        type: std_msgs/msg/Float64MultiArray
+        serialization_format: cdr
+        offered_qos_profiles: ""
+      message_count: 0
+    - topic_metadata:
+        name: /gh360/motor_states_sorted
+        type: gh360_interfaces/msg/PortStatus
+        serialization_format: cdr
+        offered_qos_profiles: ""
+      message_count: 144079
+    - topic_metadata:
+        name: /gh360_control/cmd_eef_vel
+        type: geometry_msgs/msg/Twist
+        serialization_format: cdr
+        offered_qos_profiles: ""
+      message_count: 256780
+    - topic_metadata:
+        name: /gh360_control/cmd_joint_pos
+        type: std_msgs/msg/Float64MultiArray
+        serialization_format: cdr
+        offered_qos_profiles: ""
+      message_count: 86093
+  compression_format: ""
+  compression_mode: ""

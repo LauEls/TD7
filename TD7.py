@@ -346,12 +346,14 @@ class Agent(object):
 		# End evaluation of current policy early
 		if self.min_return < self.best_min_return:
 			self.train_and_reset()
+			print("evaluation of current policy ended early")
 
 		# Update checkpoint
 		elif self.eps_since_update == self.max_eps_before_update:
 			self.best_min_return = self.min_return
 			self.checkpoint_actor.load_state_dict(self.actor.state_dict())
 			self.checkpoint_encoder.load_state_dict(self.fixed_encoder.state_dict())
+			print("checkpoint actor and encoder updated")
 			
 			self.train_and_reset()
 

@@ -11,7 +11,7 @@ import signal
 import subprocess
 
 class RL_GH360:
-    def __init__(self, env_name, exp_runs, config_file_path):
+    def __init__(self, config_file_path):
         self.path_ros2_ws = "~/ros2_gh360_ws"
         self.load_dir = config_file_path
         self.exp_run = 0
@@ -33,15 +33,19 @@ class RL_GH360:
         #         "Please check filepath and try again.".format(state_file))
             
         env_config = variant["environment_kwargs"]
-        env_name = variant["environment_kwargs"].pop("env_name")
-        seed = variant["seed"]
+        self.env_name = variant["environment_kwargs"].pop("env_name")
+        self.original_seed = variant["seed"]
         self.offline = variant["offline"]
-        demo_buffer = variant["demo_buffer"]
+        self.demo_buffer = variant["demo_buffer"]
+        self.max_experiment_runs = variant["max_experiment_runs"]
+        if self.demo_buffer:
+            self.demo_file_name = variant["demo_file_name"]
+            self.demo_episodes = variant["demo_episodes"]
 
-        self.env = gym.make('gh360_gym/'+env_name, **env_config)
+        self.env = gym.make('gh360_gym/'+self.env_name, **env_config)
         self.eval_env = self.env
 
-        self.use_checkpoints = True
+        self.use_checkpoints = False
         self.ep_length = variant["episode_length"]
         self.timesteps_before_training = self.ep_length*50
         self.eval_freq = self.ep_length*10
@@ -61,6 +65,12 @@ class RL_GH360:
             self.use_checkpoints = False
             self.eval_during_training = variant["eval_during_training"]
 
+        self.hp = TD7.Hyperparameters(**variant["hyperparameters"])
+
+        self.init_run()
+
+
+    def init_run(self):
         self.continue_training = self.load_training_state()
         self.result_path = os.path.join(self.load_dir, "run_"+str(self.exp_run))
         if not os.path.exists(self.result_path):
@@ -69,14 +79,17 @@ class RL_GH360:
             self.t = 0
             self.evals = []
         else:
-            self.evals = np.load(os.path.join(self.result_path,"results.npy"), allow_pickle=True).tolist()
+            if self.t > 0:
+                self.evals = np.load(os.path.join(self.result_path,"results.npy"), allow_pickle=True).tolist()
+            else:
+                self.evals = []
         
         
-
         
-
+        
+        seed = self.original_seed + self.exp_run
         print("---------------------------------------")
-        print(f"Algorithm: TD7, Env: {env_name}, Seed: {seed}")
+        print(f"Algorithm: TD7, Env: {self.env_name}, Seed: {seed}")
         print("---------------------------------------")
 
         self.env.seed(seed)
@@ -104,15 +117,16 @@ class RL_GH360:
         print("State dim: ", state_dim)
         print("Action dim: ", action_dim)
         print("Max action: ", max_action)
-        hp = TD7.Hyperparameters(**variant["hyperparameters"])
-        hp.dir_path = self.result_path
-        if self.continue_training:
-            hp.continue_learning = True
         
-        self.RL_agent = TD7.Agent(state_dim, action_dim, max_action, demo_buffer=demo_buffer, offline=self.offline, hp=hp)
-        if demo_buffer:
-            paths = np.load(os.path.join("demonstrations/",variant["demo_file_name"]), allow_pickle=True)
-            demo_episodes = variant["demo_episodes"]
+        self.hp.dir_path = self.result_path
+        if self.continue_training and self.t > 0:
+            self.hp.continue_learning = True
+        else: self.hp.continue_learning = False
+        
+        self.RL_agent = TD7.Agent(state_dim, action_dim, max_action, demo_buffer=self.demo_buffer, offline=self.offline, hp=self.hp)
+        if self.demo_buffer:
+            paths = np.load(os.path.join("demonstrations/",self.demo_file_name), allow_pickle=True)
+            demo_episodes = self.demo_episodes
             if demo_episodes >= len(paths): demo_episodes = len(paths)
             else:
                 i_plus = int(len(paths)/demo_episodes)
@@ -129,11 +143,22 @@ class RL_GH360:
             self.timesteps_before_training -= self.RL_agent.demo_buffer.size
             if self.timesteps_before_training < 256: self.timesteps_before_training = 256
 
-    def start_learning(self):
+    def start_learning(self, stop_event=None):
         if self.offline:
             self.train_offline()
         else:
-            self.train_online()
+            experiment_finished = False
+            while not experiment_finished:
+                print(f"exp_run: {self.exp_run}")
+                print(f"max_experiment_runs: {self.max_experiment_runs}")
+                if not self.train_online(stop_event=stop_event):
+                    self.stop_record_rosbag()
+                    return
+                self.stop_record_rosbag()
+                if self.exp_run < self.max_experiment_runs:
+                    self.init_run()
+                else:
+                    experiment_finished = True
 
 
 
@@ -185,15 +210,19 @@ class RL_GH360:
 
             state = next_state
 
-            if allow_train and not self.use_checkpoints:
-                self.RL_agent.train()
+            # if allow_train and not self.use_checkpoints:
+            #     self.RL_agent.train()
 
             if ep_finished: 
                 print(f"Reward: {ep_total_reward}")
                 print(f"Total T: {self.t+1} Episode Num: {ep_num} Episode T: {ep_timesteps} Reward: {ep_total_reward:.3f}")
 
-                if allow_train and self.use_checkpoints:
-                    self.RL_agent.maybe_train_and_checkpoint(ep_timesteps, ep_total_reward)
+                if allow_train:
+                    if self.use_checkpoints:
+                        self.RL_agent.maybe_train_and_checkpoint(ep_timesteps, ep_total_reward)
+                    else:
+                        for _ in range(ep_timesteps):
+                            self.RL_agent.train()
 
                 if self.t >= self.timesteps_before_training:
                     allow_train = True
@@ -208,12 +237,15 @@ class RL_GH360:
                 if stop_event.is_set() or not info["reset_success"]:
                     self.t += 1
                     self.save_training_state()
-                    return
+                    return False
 
             self.t += 1
 
         # Save final model
+        self.exp_run += 1
+        self.t = 0
         self.save_training_state()
+        return True
         # self.RL_agent.save_model(self.result_path)
         # self.RL_agent.replay_buffer.save_paths(os.path.join(self.result_path,"buffer_paths.npy"))
         # self.RL_agent.replay_buffer.save_priority(os.path.join(self.result_path, "priority.npy"))
@@ -251,6 +283,8 @@ class RL_GH360:
             self.evals.append(total_reward)
             # np.save(f"./results/{args.file_name}", evals)
             np.save(os.path.join(self.result_path,"results.npy"), self.evals)
+            
+            if self.t > 0: self.save_training_state()
 
             # ep_cntr = self.eval_eps
             # while ep_succ and ep_cntr < 10:
@@ -283,7 +317,7 @@ class RL_GH360:
         print("saving data: ", data)
 
         json.dump(data, open(os.path.join(self.load_dir,'training_state.json'), 'w'))
-        self.stop_record_rosbag()
+        
 
     def load_training_state(self):
         try:
