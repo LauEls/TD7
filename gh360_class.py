@@ -184,6 +184,7 @@ class RL_GH360:
         state, info = self.env.reset()
         ep_total_reward, ep_timesteps,= 0, 0
         ep_num = int(self.t/self.ep_length) + 1
+        self.evaluated = False
 
         # for i in range(int(args.max_timesteps+1)):
         while self.t < int(self.max_timesteps+1):
@@ -216,6 +217,7 @@ class RL_GH360:
             if ep_finished: 
                 print(f"Reward: {ep_total_reward}")
                 print(f"Total T: {self.t+1} Episode Num: {ep_num} Episode T: {ep_timesteps} Reward: {ep_total_reward:.3f}")
+                
 
                 if allow_train:
                     if self.use_checkpoints:
@@ -240,6 +242,10 @@ class RL_GH360:
                     return False
 
             self.t += 1
+
+            if ep_finished and self.evaluated:
+                self.evaluated = False
+                self.save_training_state()
 
         # Save final model
         self.exp_run += 1
@@ -284,7 +290,7 @@ class RL_GH360:
             # np.save(f"./results/{args.file_name}", evals)
             np.save(os.path.join(self.result_path,"results.npy"), self.evals)
             
-            if self.t > 0: self.save_training_state()
+            
 
             # ep_cntr = self.eval_eps
             # while ep_succ and ep_cntr < 10:
@@ -304,6 +310,10 @@ class RL_GH360:
 
             # print(f"Total amount of successful evaluation episodes: {ep_cntr}")
             self.eval_env.reset()
+            self.evaluated = True
+        
+
+        
 
     def save_training_state(self):
         self.RL_agent.save_model(self.result_path)
