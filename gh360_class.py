@@ -67,11 +67,15 @@ class RL_GH360:
 
         self.hp = TD7.Hyperparameters(**variant["hyperparameters"])
 
-        self.init_run()
+        
 
 
-    def init_run(self):
-        self.continue_training = self.load_training_state()
+    def init_run(self, exp_run=-1):
+        if exp_run == -1:
+            self.continue_training = self.load_training_state()
+        else:
+            self.exp_run = exp_run
+            self.t = 0
         self.result_path = os.path.join(self.load_dir, "run_"+str(self.exp_run))
         if not os.path.exists(self.result_path):
             os.makedirs(self.result_path)
@@ -144,6 +148,8 @@ class RL_GH360:
             if self.timesteps_before_training < 256: self.timesteps_before_training = 256
 
     def start_learning(self, stop_event=None):
+        self.init_run()
+
         if self.offline:
             self.train_offline()
         else:
@@ -160,7 +166,9 @@ class RL_GH360:
                 else:
                     experiment_finished = True
 
-
+    def start_rollout(self, stop_event=None, exp_run=0):
+        self.init_run(exp_run=exp_run)
+        self.rollout(stop_event=stop_event)
 
     def train_online(self, stop_event=None):
         # t = 0
@@ -259,6 +267,37 @@ class RL_GH360:
     
     def train_offline(self):
         pass
+
+    def rollout(self, stop_event=None):
+        total_reward = np.zeros(10)
+        eval_eps = 10
+        for ep in range(eval_eps):
+            print("---------------------------------------")
+            print(f"Evaluation {ep}")
+            state, info = self.eval_env.reset(), False
+            state, info = self.eval_env.special_reset(ep)
+
+            if stop_event.is_set() or not info["reset_success"]:
+                    self.t += 1
+                    self.save_training_state()
+                    return False
+            
+            cntr = 0
+            while cntr < self.ep_length:
+                action = self.RL_agent.select_action(np.array(state), self.use_checkpoints, use_exploration=False)
+                state, reward, done, _ = self.eval_env.step(action)
+                # eval_env.render()
+                total_reward[ep] += reward
+                cntr += 1
+            
+            print(f"Episode {ep} reward: {total_reward[ep]:.3f}")
+            if reward == 1:
+                print(f"Episode {ep} successful")
+
+            
+
+        print(f"Average total reward over {eval_eps} episodes: {total_reward.mean():.3f}")
+        print("---------------------------------------")
 
     def maybe_evaluate_and_print(self, t, start_time):
         if t % self.eval_freq == 0:

@@ -192,14 +192,17 @@ if __name__ == "__main__":
         policy.load_checkpoint("policy")
 
     obs, info = env.reset()
-    total_reward = 0
-    for i in range(ep_length):
-        action = policy.get_action(obs)
-        action = action.cpu().detach().numpy()
-        print("Action: ", action)
-        print("Action Shape: ", action.shape)
-        obs, reward, done, _ = env.step(action)
-        total_reward += reward
+    
+    for j in range(10):
+        obs, info = env.special_reset(j)
+        total_reward = 0
+        for i in range(ep_length):
+            action = policy.get_action(obs)
+            action = action.cpu().detach().numpy()
+            print("Action: ", action)
+            print("Action Shape: ", action.shape)
+            obs, reward, done, _ = env.step(action)
+            total_reward += reward
 
-    print("Total Reward: ", total_reward)
+        print("Total Reward: ", total_reward)
     env.reset()

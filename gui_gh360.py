@@ -33,7 +33,7 @@ class GH360LearningGUI(TKMT.ThemedTKinterFrame):
         self.Text("Config Folder: ", row=3, col=0)
         self.config_folder_option_menu_list = self.parse_config_folders()
         self.config_folder_name = tk.StringVar(value=self.config_folder_option_menu_list[0])
-        self.opmen_config_folder = self.OptionMenu(self.config_folder_option_menu_list, self.config_folder_name, row=3, col=1)
+        self.open_config_folder = self.OptionMenu(self.config_folder_option_menu_list, self.config_folder_name, row=3, col=1)
 
         # self.Text("Experimental Runs: ", row=4, col=0)
         # self.experimental_runs = tk.IntVar(value=1)
@@ -47,6 +47,12 @@ class GH360LearningGUI(TKMT.ThemedTKinterFrame):
         self.btn_stop = self.AccentButton("Stop", row=6, col=1, command=self.stop_experiment)
         self.btn_stop.state(["disabled"])
 
+        self.Text("Config Folder: ", row=7, col=0)
+        self.experiment_folder_option_menu_list = self.find_folders(self.config_path + self.config_folder_name.get())
+        self.experiment_folder_name = tk.StringVar(value=self.experiment_folder_option_menu_list[0])
+        self.open_experiment_folder = self.OptionMenu(self.experiment_folder_option_menu_list, self.experiment_folder_name, row=7, col=1)
+        self.btn_rollout = self.AccentButton("Rollout", row=8, col=0, colspan=2, command=self.rollout_experiment)
+
         self.stop_learning = Event()
 
         self.run()
@@ -54,10 +60,10 @@ class GH360LearningGUI(TKMT.ThemedTKinterFrame):
     def options_changed(self, *args):
         self.config_folder_option_menu_list = self.parse_config_folders()
         self.config_folder_name = tk.StringVar(value=self.config_folder_option_menu_list[0])
-        self.opmen_config_folder.set_menu(self.config_folder_name.get(), *self.config_folder_option_menu_list)
+        self.open_config_folder.set_menu(self.config_folder_name.get(), *self.config_folder_option_menu_list)
 
     def parse_config_folders(self):
-        config_folders = []
+        
 
         config_path = "runs/"
         #Environment
@@ -72,16 +78,19 @@ class GH360LearningGUI(TKMT.ThemedTKinterFrame):
             config_path += "motor_vel/"
 
         config_path += self.learning_mode_name.get() + "/"
+        self.config_path = config_path
+        return self.find_folders(config_path)
 
-        # dir_lvl = 0
-        for root, dirs, files in os.walk(config_path):
+    def find_folders(self, path):
+        folders = []
+
+        for root, dirs, files in os.walk(path):
             for dir in dirs:
-                config_folders.append(dir)
+                folders.append(dir)
                 print("Found config folder:", dir)
             break
 
-        self.config_path = config_path
-        return config_folders
+        return folders
     
     def load_config(self):
         # Placeholder for loading config
@@ -107,6 +116,14 @@ class GH360LearningGUI(TKMT.ThemedTKinterFrame):
         self.btn_stop.state(["disabled"])
         self.stop_learning.set()
         self.learning_thread.join()
-        self.btn_start.state(["!disabled"])
+        self.btn_load_config.state(["!disabled"])
+
+    def rollout_experiment(self):
+        print("Rollout experiment...")
+        self.btn_start.state(["disabled"])
+        self.btn_rollout.state(["disabled"])
+        exp_run = self.experiment_folder_name.get()[-1]
+        self.learning_thread = Thread(target=self.learning_class.start_rollout, args=(self.stop_learning, exp_run))
+        self.learning_thread.start()
 
 GH360LearningGUI()

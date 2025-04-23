@@ -166,3 +166,4 @@ demonstrations/
 
 #rosbags
 *.db3
+*.bkp
