@@ -71,11 +71,13 @@ class RL_GH360:
 
 
     def init_run(self, exp_run=-1):
+        print(f"exp_run: {exp_run}")
         if exp_run == -1:
             self.continue_training = self.load_training_state()
         else:
+            self.continue_training = True 
             self.exp_run = exp_run
-            self.t = 0
+            self.t = 130
         self.result_path = os.path.join(self.load_dir, "run_"+str(self.exp_run))
         if not os.path.exists(self.result_path):
             os.makedirs(self.result_path)
@@ -271,15 +273,15 @@ class RL_GH360:
     def rollout(self, stop_event=None):
         total_reward = np.zeros(10)
         eval_eps = 10
+        print("---------------------------------------")
+        print(f"rollout for experiment: {self.exp_run}")
         for ep in range(eval_eps):
             print("---------------------------------------")
             print(f"Evaluation {ep}")
-            state, info = self.eval_env.reset(), False
+            state, info = self.eval_env.reset()
             state, info = self.eval_env.special_reset(ep)
 
             if stop_event.is_set() or not info["reset_success"]:
-                    self.t += 1
-                    self.save_training_state()
                     return False
             
             cntr = 0
@@ -298,6 +300,7 @@ class RL_GH360:
 
         print(f"Average total reward over {eval_eps} episodes: {total_reward.mean():.3f}")
         print("---------------------------------------")
+        self.eval_env.reset()
 
     def maybe_evaluate_and_print(self, t, start_time):
         if t % self.eval_freq == 0:

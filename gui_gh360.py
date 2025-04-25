@@ -34,6 +34,7 @@ class GH360LearningGUI(TKMT.ThemedTKinterFrame):
         self.config_folder_option_menu_list = self.parse_config_folders()
         self.config_folder_name = tk.StringVar(value=self.config_folder_option_menu_list[0])
         self.open_config_folder = self.OptionMenu(self.config_folder_option_menu_list, self.config_folder_name, row=3, col=1)
+        self.config_folder_name.trace_add("write", self.config_changed)
 
         # self.Text("Experimental Runs: ", row=4, col=0)
         # self.experimental_runs = tk.IntVar(value=1)
@@ -47,11 +48,13 @@ class GH360LearningGUI(TKMT.ThemedTKinterFrame):
         self.btn_stop = self.AccentButton("Stop", row=6, col=1, command=self.stop_experiment)
         self.btn_stop.state(["disabled"])
 
-        self.Text("Config Folder: ", row=7, col=0)
+        self.Text("Experiment Folder: ", row=7, col=0)
         self.experiment_folder_option_menu_list = self.find_folders(self.config_path + self.config_folder_name.get())
         self.experiment_folder_name = tk.StringVar(value=self.experiment_folder_option_menu_list[0])
         self.open_experiment_folder = self.OptionMenu(self.experiment_folder_option_menu_list, self.experiment_folder_name, row=7, col=1)
+
         self.btn_rollout = self.AccentButton("Rollout", row=8, col=0, colspan=2, command=self.rollout_experiment)
+        self.btn_rollout.state(["disabled"])
 
         self.stop_learning = Event()
 
@@ -59,12 +62,17 @@ class GH360LearningGUI(TKMT.ThemedTKinterFrame):
 
     def options_changed(self, *args):
         self.config_folder_option_menu_list = self.parse_config_folders()
-        self.config_folder_name = tk.StringVar(value=self.config_folder_option_menu_list[0])
+        # self.config_folder_name = tk.StringVar(value=self.config_folder_option_menu_list[0])
+        self.config_folder_name.set(self.config_folder_option_menu_list[0])
         self.open_config_folder.set_menu(self.config_folder_name.get(), *self.config_folder_option_menu_list)
+        
+    def config_changed(self, *args):
+        self.experiment_folder_option_menu_list = self.find_folders(self.config_path + self.config_folder_name.get())
+        # self.experiment_folder_name = tk.StringVar(value=self.experiment_folder_option_menu_list[0])
+        self.experiment_folder_name.set(self.experiment_folder_option_menu_list[0])
+        self.open_experiment_folder.set_menu(self.experiment_folder_name.get(), *self.experiment_folder_option_menu_list)
 
     def parse_config_folders(self):
-        
-
         config_path = "runs/"
         #Environment
         if self.env_name.get() == "Door":
@@ -90,17 +98,19 @@ class GH360LearningGUI(TKMT.ThemedTKinterFrame):
                 print("Found config folder:", dir)
             break
 
+        if len(folders) == 0: folders.append(" ")
+
         return folders
     
     def load_config(self):
         # Placeholder for loading config
         print("Loading config...")
         self.btn_load_config.state(["disabled"])
-
+        print(f"config folder name: {self.config_folder_name.get()}")
         self.learning_class = RL_GH360(self.config_path + self.config_folder_name.get())
-        # self.learning_class = Dummy()
 
         self.btn_start.state(["!disabled"])
+        self.btn_rollout.state(["!disabled"])
 
     def start_experiment(self):
         # Placeholder for starting experiment
@@ -122,8 +132,10 @@ class GH360LearningGUI(TKMT.ThemedTKinterFrame):
         print("Rollout experiment...")
         self.btn_start.state(["disabled"])
         self.btn_rollout.state(["disabled"])
-        exp_run = self.experiment_folder_name.get()[-1]
-        self.learning_thread = Thread(target=self.learning_class.start_rollout, args=(self.stop_learning, exp_run))
+        print(f"experiment run: {self.experiment_folder_name.get()}")
+        exp_run = int(self.experiment_folder_name.get()[-1])
+        self.learning_thread = Thread(target=self.learning_class.start_rollout, args=(self.stop_learning, exp_run,))
         self.learning_thread.start()
+        self.btn_stop.state(["!disabled"])
 
 GH360LearningGUI()
