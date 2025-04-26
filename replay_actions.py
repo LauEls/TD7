@@ -2,10 +2,11 @@ import json
 import gym
 import numpy as np
 import gh360_gym
+import random
 
 if __name__ == "__main__":
-    config_file = '/home/gh360/TD7/runs/door/real_gh360/eef_vel/online/v2_constraint_demo/variant.json'
-    demo_file_path = "/home/gh360/ros2_gh360_ws/src/gh360/gh360_demonstration/data/spacemouse_demonstrations/door/gh360_door_demonstration_v6.npy"
+    config_file = 'runs/door/real_gh360/eef_vel/online/v8_corl_with_demos/variant.json'
+    demo_file_path = "demonstrations/gh360_door_demonstration_v8.npy"
 
     try:
         with open(config_file) as f:
@@ -29,8 +30,32 @@ if __name__ == "__main__":
 
     demos = np.load(demo_file_path, allow_pickle=True)
 
-    for demo in demos:
-        for action in demo["actions"]:
-            env.step(action)
+    # for demo in demos:
 
-        env.reset()
+    #     for action in demo["actions"]:
+    #         env.step(action)
+
+    #     env.reset()
+
+    
+    obs, info = env.reset()
+    
+    total_reward = np.zeros(10)
+    for j in range(10):
+        obs, info = env.reset()
+        obs, info = env.special_reset(j)
+        demo = random.choice(demos)
+
+        # total_reward = 0
+        for action in demo["actions"]:
+            
+            # obs, reward, done, _ = env.step(action)
+            obs, reward, done, _ = env.step(action)
+            total_reward[j] += reward
+
+        print(f"Episode {j} reward: {total_reward[j]:.3f}")
+        if reward == 1:
+            print(f"Episode {j} successful")
+
+        # print("Total Reward: ", total_reward)
+    env.reset()

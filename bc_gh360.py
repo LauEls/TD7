@@ -97,6 +97,7 @@ class policy_network(nn.Module):
 if __name__ == "__main__":
     seed=random.randint(0, 100000)
     seed = int(seed)
+    seed = 5
     random.seed(seed)
     np.random.seed(seed)
     torch.manual_seed(seed)
@@ -104,11 +105,11 @@ if __name__ == "__main__":
     training = True
 
     # load_dir = "/home/laurenz/phd_project/TD7/runs/door_mirror/gh360/joint_velocity/online/v6_cont_after_offline/"
-    config_file = '/home/gh360/TD7/runs/door/real_gh360/eef_vel/online/v2_constraint_demo/variant.json'
+    config_file = '/home/gh360/TD7/runs/door/real_gh360/eef_vel/online/v8_corl_with_demos/variant.json'
     # load_dir = "../../sac_2/runs/data/stack/panda/osc_pose/with_demo/v4_obs_opt/"
 
     # demo_file_path = "/home/laurenz/phd_project/TD7/demonstrations/robosuite_door_mirror_demonstration_v3_expert.npy"
-    demo_file_path = "/home/gh360/ros2_gh360_ws/src/gh360/gh360_demonstration/data/spacemouse_demonstrations/door/gh360_door_demonstration_v6.npy"
+    demo_file_path = "/home/gh360/ros2_gh360_ws/src/gh360/gh360_demonstration/data/spacemouse_demonstrations/door/gh360_door_demonstration_v8.npy"
     # demo_file_path = "/home/laurenz/phd_project/sac/scripts/robosuite_env_solved/demonstrations/stack/stack_random_no_noise_test_v2.npy"
     
 
@@ -193,16 +194,22 @@ if __name__ == "__main__":
 
     obs, info = env.reset()
     
+    total_reward = np.zeros(10)
     for j in range(10):
+        obs, info = env.reset()
         obs, info = env.special_reset(j)
-        total_reward = 0
+        # total_reward = 0
         for i in range(ep_length):
             action = policy.get_action(obs)
             action = action.cpu().detach().numpy()
-            print("Action: ", action)
-            print("Action Shape: ", action.shape)
+            # print("Action: ", action)
+            # print("Action Shape: ", action.shape)
             obs, reward, done, _ = env.step(action)
-            total_reward += reward
+            total_reward[j] += reward
 
-        print("Total Reward: ", total_reward)
+        print(f"Episode {j} reward: {total_reward[j]:.3f}")
+        if reward == 1:
+            print(f"Episode {j} successful")
+
+        # print("Total Reward: ", total_reward)
     env.reset()
