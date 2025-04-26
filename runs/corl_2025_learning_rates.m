@@ -7,9 +7,15 @@ rl_with_demo_run_0_raw = readmatrix(td7_file_base+"v8_corl_with_demos/run_0/resu
 rl_with_demo_run_1_raw = readmatrix(td7_file_base+"v8_corl_with_demos/run_1/results.csv");
 rl_with_demo_run_2_raw = readmatrix(td7_file_base+"v8_corl_with_demos/run_2/results.csv");
 
-rl_without_demo_run_0_raw = readmatrix(td7_file_base+"v9_corl_without_demos/run_0/results.csv");
-rl_without_demo_run_1_raw = readmatrix(td7_file_base+"v9_corl_without_demos/run_1/results.csv");
-% rl_without_demo_run_2_raw = readmatrix(td7_file_base+"v9_corl_without_demos/run_2/results.csv");
+rl_without_demo_run_0_raw = readmatrix(td7_file_base+"v10_test/run_0/results.csv");
+rl_without_demo_run_1_raw = readmatrix(td7_file_base+"v10_test/run_1/results.csv");
+rl_without_demo_run_2_raw = readmatrix(td7_file_base+"v10_test/run_2/results.csv");
+
+bc_run_0_raw = readmatrix(td7_file_base+"v8_corl_with_demos/bc_run_0/results.csv");
+bc_run_1_raw = readmatrix(td7_file_base+"v8_corl_with_demos/bc_run_1/results.csv");
+bc_run_2_raw = readmatrix(td7_file_base+"v8_corl_with_demos/bc_run_2/results.csv");
+bc_run_3_raw = readmatrix(td7_file_base+"v8_corl_with_demos/bc_run_3/results.csv");
+bc_run_4_raw = readmatrix(td7_file_base+"v8_corl_with_demos/bc_run_4/results.csv");
 
 
 %%
@@ -24,6 +30,13 @@ rl_with_demo_run_2_mean = mean(rl_with_demo_run_2_raw,2);
 
 rl_without_demo_run_0_mean = mean(rl_without_demo_run_0_raw,2);
 rl_without_demo_run_1_mean = mean(rl_without_demo_run_1_raw,2);
+rl_without_demo_run_2_mean = mean(rl_without_demo_run_2_raw,2);
+
+bc_run_0_mean = mean(bc_run_0_raw,2);
+bc_run_1_mean = mean(bc_run_1_raw,2);
+bc_run_2_mean = mean(bc_run_2_raw,2);
+bc_run_3_mean = mean(bc_run_3_raw,2);
+bc_run_4_mean = mean(bc_run_4_raw,2);
 
 rl_with_demo_run_0_mean = rl_with_demo_run_0_mean/episode_length;
 rl_with_demo_run_1_mean = rl_with_demo_run_1_mean/episode_length;
@@ -31,9 +44,23 @@ rl_with_demo_run_2_mean = rl_with_demo_run_2_mean/episode_length;
 
 rl_without_demo_run_0_mean = rl_without_demo_run_0_mean/episode_length;
 rl_without_demo_run_1_mean = rl_without_demo_run_1_mean/episode_length;
-% rl_without_demo_run_2_mean = rl_without_demo_run_2_mean/episode_length;
+rl_without_demo_run_2_mean = rl_without_demo_run_2_mean/episode_length;
+
+bc_run_0_mean = bc_run_0_mean/episode_length;
+bc_run_1_mean = bc_run_1_mean/episode_length;
+bc_run_2_mean = bc_run_2_mean/episode_length;
+bc_run_3_mean = bc_run_3_mean/episode_length;
+bc_run_4_mean = bc_run_4_mean/episode_length;
+
+bc_run_0_mean_extended = repelem(bc_run_0_mean,1,21);
+bc_run_1_mean_extended = repelem(bc_run_1_mean,1,21);
+bc_run_2_mean_extended = repelem(bc_run_2_mean,1,21);
+bc_run_3_mean_extended = repelem(bc_run_3_mean,1,21);
+bc_run_4_mean_extended = repelem(bc_run_4_mean,1,21);
 
 td7_x_values = (0:evaluation_frequency*episode_length/1000:maximum_timesteps/1000);
+offset = episode_length*20/1000;
+td7_x_values2 = (offset:evaluation_frequency*episode_length/1000:maximum_timesteps/1000+offset);
 
 alpha  = 0.3;
 line_width = 4;
@@ -41,8 +68,10 @@ error = 'std';
 %%
 close all;
 
+
 rl_with_demo_trans = [transpose(rl_with_demo_run_0_mean); transpose(rl_with_demo_run_1_mean); transpose(rl_with_demo_run_2_mean)];
-rl_without_demo_trans = [transpose(rl_without_demo_run_0_mean); transpose(rl_without_demo_run_1_mean)];
+rl_without_demo_trans = [transpose(rl_without_demo_run_0_mean); transpose(rl_without_demo_run_1_mean); transpose(rl_without_demo_run_2_mean)];
+bc = [bc_run_0_mean_extended; bc_run_1_mean_extended; bc_run_2_mean_extended; bc_run_3_mean_extended; bc_run_4_mean_extended];
 
 % exp_2_trans = [transpose(exp_2_mean)];
 % exp_3_trans = [transpose(exp_3_mean)];
@@ -89,8 +118,10 @@ options_5.x_axis     = td7_x_values;
 figure('Position',[0 0 1920 1440]);
 hold on
 % plot_areaerrorbar(exp_2_trans, options_3);
+plot_areaerrorbar(bc, options_4);
 plot_areaerrorbar(rl_without_demo_trans, options_5);
 plot_areaerrorbar(rl_with_demo_trans, options_3);
+
 
 %plot_areaerrorbar(exp_3_trans, options_4);
 %plot_areaerrorbar(exp_1_trans, options_2);
@@ -98,12 +129,12 @@ plot_areaerrorbar(rl_with_demo_trans, options_3);
 
 
 
-% xlim([0 0.5])
+xlim([0 26])
 ylim([0 1])
-lgd = legend('', 'RL', '', 'RL with demonstration buffer', 'Location','best');
+%lgd = legend('', 'BC', '', 'TD7', '', 'TD7 with demonstration buffer', 'Location','best');
 %lgd.NumColumns = 3;
 xlabel('Time Steps (1K)','FontSize',16)
-ylabel('Total Reward','FontSize',16)
+ylabel('Normalized Reward','FontSize',16)
 set(gca,'FontSize',55)
 %set(gca,'FontSize',18)
 
