@@ -146,6 +146,7 @@ class RL_GH360:
                 
             print(f"demonstraition episodes: {len(paths)}")
             self.RL_agent.demo_buffer.load_paths(paths)
+            print(f"demo buffer size: {self.RL_agent.demo_buffer.size}")
             self.timesteps_before_training -= self.RL_agent.demo_buffer.size
             if self.timesteps_before_training < 256: self.timesteps_before_training = 256
 
