@@ -76,7 +76,7 @@ close all;
 
 
 % rl_with_demo_trans = [transpose(rl_with_demo_run_0_mean); transpose(rl_with_demo_run_1_mean); transpose(rl_with_demo_run_2_mean); transpose(rl_with_demo_run_3_mean); transpose(rl_with_demo_run_4_mean)];
-rl_with_demo_trans = [transpose(rl_with_demo_run_2_mean); transpose(rl_with_demo_run_3_mean); transpose(rl_with_demo_run_4_mean)];
+rl_with_demo_trans = [transpose(rl_with_demo_run_0_mean); transpose(rl_with_demo_run_1_mean); transpose(rl_with_demo_run_2_mean); transpose(rl_with_demo_run_3_mean); transpose(rl_with_demo_run_4_mean)];
 rl_without_demo_trans = [transpose(rl_without_demo_run_0_mean); transpose(rl_without_demo_run_1_mean); transpose(rl_without_demo_run_2_mean)];
 bc = [bc_run_0_mean_extended; bc_run_1_mean_extended; bc_run_2_mean_extended; bc_run_3_mean_extended; bc_run_4_mean_extended];
 

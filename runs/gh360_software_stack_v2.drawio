@@ -1,6 +1,6 @@
 <mxfile host="Electron" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/26.2.2 Chrome/134.0.6998.178 Electron/35.1.2 Safari/537.36" version="26.2.2">
   <diagram name="Page-1" id="4pJjC9Qg1J32eKeOlhUU">
-    <mxGraphModel dx="1182" dy="706" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+    <mxGraphModel dx="827" dy="494" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -45,13 +45,13 @@
         <mxCell id="N7Ri_mD_c3Wh3fdWuei0-5" value="RL Algorithm" style="rounded=1;whiteSpace=wrap;html=1;fontStyle=1;fontSize=16;" parent="1" vertex="1">
           <mxGeometry x="970" y="160" width="140" height="80" as="geometry" />
         </mxCell>
-        <mxCell id="N7Ri_mD_c3Wh3fdWuei0-7" value="" style="endArrow=none;dashed=1;html=1;rounded=0;curved=0;strokeColor=#00A806;strokeWidth=3;exitX=0.75;exitY=1;exitDx=0;exitDy=0;entryX=0.75;entryY=0;entryDx=0;entryDy=0;" parent="1" edge="1" target="N7Ri_mD_c3Wh3fdWuei0-4" source="N7Ri_mD_c3Wh3fdWuei0-4">
+        <mxCell id="N7Ri_mD_c3Wh3fdWuei0-7" value="" style="endArrow=none;dashed=1;html=1;rounded=0;curved=0;strokeColor=#00A806;strokeWidth=3;exitX=0.75;exitY=1;exitDx=0;exitDy=0;entryX=0.75;entryY=0;entryDx=0;entryDy=0;" parent="1" source="N7Ri_mD_c3Wh3fdWuei0-4" target="N7Ri_mD_c3Wh3fdWuei0-4" edge="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
             <mxPoint x="520" y="480" as="sourcePoint" />
             <mxPoint x="520" y="400" as="targetPoint" />
             <Array as="points">
-              <mxPoint x="885" y="260" />
-              <mxPoint x="1120" y="260" />
+              <mxPoint x="885" y="370" />
+              <mxPoint x="1120" y="370" />
               <mxPoint x="1120" y="130" />
               <mxPoint x="885" y="130" />
             </Array>
@@ -105,7 +105,7 @@
         <mxCell id="N7Ri_mD_c3Wh3fdWuei0-37" value="RS-485 / SPI" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontColor=#C90B00;fontStyle=1;fontSize=16;" parent="1" vertex="1">
           <mxGeometry x="220" y="130" width="120" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="jL5VY4ZHj_sI5JTQTYHx-3" value="" style="endArrow=none;dashed=1;html=1;rounded=0;curved=0;strokeColor=#0B00A8;strokeWidth=3;exitX=0.25;exitY=0;exitDx=0;exitDy=0;entryX=0.716;entryY=-0.005;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="N7Ri_mD_c3Wh3fdWuei0-2" target="N7Ri_mD_c3Wh3fdWuei0-4">
+        <mxCell id="jL5VY4ZHj_sI5JTQTYHx-3" value="" style="endArrow=none;dashed=1;html=1;rounded=0;curved=0;strokeColor=#0B00A8;strokeWidth=3;exitX=0.25;exitY=0;exitDx=0;exitDy=0;entryX=0.716;entryY=-0.005;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="N7Ri_mD_c3Wh3fdWuei0-2" target="N7Ri_mD_c3Wh3fdWuei0-4" edge="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
             <mxPoint x="620" y="70" as="sourcePoint" />
             <mxPoint x="620" y="150" as="targetPoint" />
@@ -115,6 +115,15 @@
               <mxPoint x="860" y="130" />
               <mxPoint x="880" y="130" />
             </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="VbFCEq_pJcvv4Pv47fEn-1" value="Demonstration&lt;br&gt;through&lt;br&gt;Teleoperation" style="rounded=1;whiteSpace=wrap;html=1;fontStyle=1;fontSize=16;" vertex="1" parent="1">
+          <mxGeometry x="970" y="280" width="140" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="VbFCEq_pJcvv4Pv47fEn-2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.75;entryDx=0;entryDy=0;endArrow=classic;endFill=1;startArrow=classic;startFill=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;" edge="1" parent="1" source="VbFCEq_pJcvv4Pv47fEn-1" target="N7Ri_mD_c3Wh3fdWuei0-4">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="970" y="270" as="sourcePoint" />
+            <mxPoint x="920" y="270" as="targetPoint" />
           </mxGeometry>
         </mxCell>
       </root>

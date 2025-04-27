@@ -47,7 +47,7 @@ class RL_GH360:
 
         self.use_checkpoints = False
         self.ep_length = variant["episode_length"]
-        self.timesteps_before_training = self.ep_length*50
+        
         self.eval_freq = self.ep_length*10
         self.max_timesteps = self.ep_length*variant["max_episodes"] #10000
         self.init_buffer_paths = variant["init_buffer_paths"]
@@ -91,7 +91,7 @@ class RL_GH360:
                 self.evals = []
         
         
-        
+        self.timesteps_before_training = self.ep_length*50
         
         seed = self.original_seed + self.exp_run
         print("---------------------------------------")
@@ -147,8 +147,9 @@ class RL_GH360:
             print(f"demonstraition episodes: {len(paths)}")
             self.RL_agent.demo_buffer.load_paths(paths)
             print(f"demo buffer size: {self.RL_agent.demo_buffer.size}")
-            self.timesteps_before_training -= self.RL_agent.demo_buffer.size
-            if self.timesteps_before_training < 256: self.timesteps_before_training = 256
+            # self.timesteps_before_training -= self.RL_agent.demo_buffer.size
+            # if self.timesteps_before_training < 256: self.timesteps_before_training = 256
+            self.timesteps_before_training = 256
 
     def start_learning(self, stop_event=None):
         self.init_run()
