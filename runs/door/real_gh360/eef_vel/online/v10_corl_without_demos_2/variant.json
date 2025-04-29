@@ -17,7 +17,7 @@
     "max_episodes": 200,
     "eval_episodes": 5,
     "demo_buffer": false,
-    "max_experiment_runs": 3,
+    "max_experiment_runs": 5,
     "seed": 1,
     "offline": false,
     "eval_during_training": true,
