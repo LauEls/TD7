@@ -3,8 +3,8 @@ close all;
 
 % td7_file_base = "lift/panda/osc_pose/online/";
 td7_file_base = "door/real_gh360/eef_vel/online/";
-rl_with_demo_run_0_raw = readmatrix(td7_file_base+"v12_corl_with_demos_3/run_0/results.csv");
-rl_with_demo_run_1_raw = readmatrix(td7_file_base+"v12_corl_with_demos_3/run_1/results.csv");
+rl_with_demo_run_0_raw = readmatrix(td7_file_base+"v13_corl_with_demos_4/run_0/results.csv");
+rl_with_demo_run_1_raw = readmatrix(td7_file_base+"v13_corl_with_demos_4/run_1/results.csv");
 rl_with_demo_run_2_raw = readmatrix(td7_file_base+"v12_corl_with_demos_3/run_2/results.csv");
 rl_with_demo_run_3_raw = readmatrix(td7_file_base+"v12_corl_with_demos_3/run_3/results.csv");
 rl_with_demo_run_4_raw = readmatrix(td7_file_base+"v12_corl_with_demos_3/run_4/results.csv");
@@ -12,6 +12,8 @@ rl_with_demo_run_4_raw = readmatrix(td7_file_base+"v12_corl_with_demos_3/run_4/r
 rl_without_demo_run_0_raw = readmatrix(td7_file_base+"v10_corl_without_demos_2/run_0/results.csv");
 rl_without_demo_run_1_raw = readmatrix(td7_file_base+"v10_corl_without_demos_2/run_1/results.csv");
 rl_without_demo_run_2_raw = readmatrix(td7_file_base+"v10_corl_without_demos_2/run_2/results.csv");
+rl_without_demo_run_3_raw = readmatrix(td7_file_base+"v10_corl_without_demos_2/run_3/results.csv");
+rl_without_demo_run_4_raw = readmatrix(td7_file_base+"v10_corl_without_demos_2/run_4/results.csv");
 
 bc_run_0_raw = readmatrix(td7_file_base+"v8_corl_with_demos/bc_run_0/results.csv");
 bc_run_1_raw = readmatrix(td7_file_base+"v8_corl_with_demos/bc_run_1/results.csv");
@@ -35,6 +37,8 @@ rl_with_demo_run_4_mean = mean(rl_with_demo_run_4_raw,2);
 rl_without_demo_run_0_mean = mean(rl_without_demo_run_0_raw,2);
 rl_without_demo_run_1_mean = mean(rl_without_demo_run_1_raw,2);
 rl_without_demo_run_2_mean = mean(rl_without_demo_run_2_raw,2);
+rl_without_demo_run_3_mean = mean(rl_without_demo_run_3_raw,2);
+rl_without_demo_run_4_mean = mean(rl_without_demo_run_4_raw,2);
 
 bc_run_0_mean = mean(bc_run_0_raw,2);
 bc_run_1_mean = mean(bc_run_1_raw,2);
@@ -51,6 +55,8 @@ rl_with_demo_run_4_mean = rl_with_demo_run_4_mean/episode_length;
 rl_without_demo_run_0_mean = rl_without_demo_run_0_mean/episode_length;
 rl_without_demo_run_1_mean = rl_without_demo_run_1_mean/episode_length;
 rl_without_demo_run_2_mean = rl_without_demo_run_2_mean/episode_length;
+rl_without_demo_run_3_mean = rl_without_demo_run_3_mean/episode_length;
+rl_without_demo_run_4_mean = rl_without_demo_run_4_mean/episode_length;
 
 bc_run_0_mean = bc_run_0_mean/episode_length;
 bc_run_1_mean = bc_run_1_mean/episode_length;
@@ -75,9 +81,9 @@ error = 'std';
 close all;
 
 
-% rl_with_demo_trans = [transpose(rl_with_demo_run_0_mean); transpose(rl_with_demo_run_1_mean); transpose(rl_with_demo_run_2_mean); transpose(rl_with_demo_run_3_mean); transpose(rl_with_demo_run_4_mean)];
-rl_with_demo_trans = [transpose(rl_with_demo_run_2_mean); transpose(rl_with_demo_run_3_mean); transpose(rl_with_demo_run_4_mean)];
-rl_without_demo_trans = [transpose(rl_without_demo_run_0_mean); transpose(rl_without_demo_run_1_mean); transpose(rl_without_demo_run_2_mean)];
+rl_with_demo_trans = [transpose(rl_with_demo_run_0_mean); transpose(rl_with_demo_run_1_mean); transpose(rl_with_demo_run_2_mean); transpose(rl_with_demo_run_3_mean); transpose(rl_with_demo_run_4_mean)];
+% rl_with_demo_trans = [transpose(rl_with_demo_run_2_mean); transpose(rl_with_demo_run_3_mean); transpose(rl_with_demo_run_4_mean)];
+rl_without_demo_trans = [transpose(rl_without_demo_run_0_mean); transpose(rl_without_demo_run_1_mean); transpose(rl_without_demo_run_2_mean); transpose(rl_without_demo_run_3_mean); transpose(rl_without_demo_run_4_mean)];
 bc = [bc_run_0_mean_extended; bc_run_1_mean_extended; bc_run_2_mean_extended; bc_run_3_mean_extended; bc_run_4_mean_extended];
 
 % exp_2_trans = [transpose(exp_2_mean)];
@@ -138,7 +144,7 @@ plot_areaerrorbar(rl_with_demo_trans, options_3);
 
 xlim([0 26])
 ylim([0 1])
-%lgd = legend('', 'BC', '', 'TD7', '', 'TD7 with demonstration buffer', 'Location','best');
+%lgd = legend('', 'BC', '', 'TD7', '', 'TD7+Demos', 'Location','best');
 %lgd.NumColumns = 3;
 xlabel('Time Steps (1K)','FontSize',16)
 ylabel('Normalized Reward','FontSize',16)
