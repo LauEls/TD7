@@ -173,6 +173,7 @@ class RL_GH360:
     def start_rollout(self, stop_event=None, exp_run=0):
         self.init_run(exp_run=exp_run)
         self.rollout(stop_event=stop_event)
+        self.stop_record_rosbag()
 
     def train_online(self, stop_event=None):
         # t = 0
@@ -273,6 +274,7 @@ class RL_GH360:
         pass
 
     def rollout(self, stop_event=None):
+        self.record_process = self.start_record_rosbag("final_eval_rosbag_"+str(int(time.time())))
         total_reward = np.zeros(10)
         eval_eps = 10
         print("---------------------------------------")

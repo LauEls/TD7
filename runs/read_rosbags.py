@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from rclpy.serialization import deserialize_message
 from gh360_interfaces.msg import PortStatus
 from sensor_msgs.msg import JointState
+from geometry_msgs.msg import Twist
 
 @dataclass
 class ROSBagMsg:
@@ -15,8 +16,13 @@ class ROSBagMsg:
 file_base = 'door/real_gh360/eef_vel/online/v8_corl_with_demos/run_2/'
 bag_name = 'rosbag_1745229620'
 rosbag_path = file_base + bag_name
-joint_states_path = file_base + 'joint_states.csv'
-motor_states_path = file_base + 'motor_states.csv'
+# joint_states_path = file_base + 'joint_states.csv'
+# motor_states_path = file_base + 'motor_states.csv'
+# goal_eef_vel_path = file_base + 'goal_eef_vel.csv'
+joint_states_path = file_base + 'joint_states_test.csv'
+motor_states_path = file_base + 'motor_states_test.csv'
+goal_eef_vel_path = file_base + 'goal_eef_vel_test.csv'
+
 
 rosbag_reader = rosbag2_py.SequentialReader()
 storage_options = rosbag2_py._storage.StorageOptions(
@@ -27,6 +33,7 @@ rosbag_reader.open(storage_options, converter_options)
 
 joint_states = []
 motor_states = []
+goal_eef_vels = []
 
 while rosbag_reader.has_next():
     topic, msg, t = rosbag_reader.read_next()
@@ -39,9 +46,14 @@ while rosbag_reader.has_next():
         msg_dec = deserialize_message(msg, PortStatus)
         motor_states.append(ROSBagMsg(t, msg_dec))
 
+    elif topic.endswith('/gh360_control/cmd_eef_vel'):
+        msg_dec = deserialize_message(msg, Twist)
+        goal_eef_vels.append(ROSBagMsg(t, msg_dec))
+
 
 print(f"Joint states: {len(joint_states)}")
 print(f"Motor states: {len(motor_states)}")
+print(f"Goal end-effector velocities: {len(goal_eef_vels)}")
 
 csv_joint_state_positions = np.array([joint_state.data.position for joint_state in joint_states])
 csv_joint_state_times = np.array([joint_state.time for joint_state in joint_states])
@@ -57,6 +69,11 @@ for motor_state in motor_states:
     csv_motor_states.append(new_motor_state)
 csv_motor_states = np.array(csv_motor_states)
 
+csv_goal_eef_velocities = np.array([[goal_eef_vel.data.linear.x, goal_eef_vel.data.linear.y, goal_eef_vel.data.linear.z, goal_eef_vel.data.angular.x, goal_eef_vel.data.angular.y, goal_eef_vel.data.angular.z] for goal_eef_vel in goal_eef_vels])
+csv_goal_eef_vel_times = np.array([goal_eef_vel.time for goal_eef_vel in goal_eef_vels])
+csv_goal_eef_vel_times = csv_goal_eef_vel_times.reshape(-1, 1)
+csv_goal_eef_vels = np.concatenate((csv_goal_eef_vel_times, csv_goal_eef_velocities), axis=1)
+
 with open(joint_states_path, mode='w') as csv_file:
     csvwriter = csv.writer(csv_file)
     csvwriter.writerows(csv_joint_states)
@@ -64,6 +81,10 @@ with open(joint_states_path, mode='w') as csv_file:
 with open(motor_states_path, mode='w') as csv_file:
     csvwriter = csv.writer(csv_file)
     csvwriter.writerows(csv_motor_states)
+
+with open(goal_eef_vel_path, mode='w') as csv_file:
+    csvwriter = csv.writer(csv_file)
+    csvwriter.writerows(csv_goal_eef_vels)
 
 
 
