@@ -45,6 +45,8 @@ class RL_GH360:
         self.env = gym.make('gh360_gym/'+self.env_name, **env_config)
         self.eval_env = self.env
 
+        print("Environment initialization successful")
+
         self.use_checkpoints = False
         self.ep_length = variant["episode_length"]
         
