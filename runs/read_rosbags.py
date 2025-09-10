@@ -13,15 +13,17 @@ class ROSBagMsg:
     data: any
 
 
-file_base = 'door/real_gh360/eef_vel/online/v8_corl_with_demos/run_2/'
-bag_name = 'rosbag_1745229620'
+# file_base = 'door/real_gh360/eef_vel/online/v8_corl_with_demos/run_2/'
+# bag_name = 'rosbag_1745229620'
+file_base = 'door/real_gh360/eef_vel/online/v14_video_recording/run_0/'
+bag_name = 'rosbag_1746173971'
 rosbag_path = file_base + bag_name
-# joint_states_path = file_base + 'joint_states.csv'
-# motor_states_path = file_base + 'motor_states.csv'
-# goal_eef_vel_path = file_base + 'goal_eef_vel.csv'
-joint_states_path = file_base + 'joint_states_test.csv'
-motor_states_path = file_base + 'motor_states_test.csv'
-goal_eef_vel_path = file_base + 'goal_eef_vel_test.csv'
+joint_states_path = file_base + 'joint_states.csv'
+motor_states_path = file_base + 'motor_states.csv'
+goal_eef_vel_path = file_base + 'goal_eef_vel.csv'
+# joint_states_path = file_base + 'final_eval_joint_states.csv'
+# motor_states_path = file_base + 'final_eval_motor_states.csv'
+# goal_eef_vel_path = file_base + 'final_eval_goal_eef_vel.csv'
 
 
 rosbag_reader = rosbag2_py.SequentialReader()
