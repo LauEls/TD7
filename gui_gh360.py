@@ -19,8 +19,37 @@ class GH360LearningGUI(TKMT.ThemedTKinterFrame):
         self.sim_name.trace_add("write", self.sim_option_changed)
         self.sim = False
 
+        self.Text("Environment: ", row=1, col=0)
+        self.env_option_menu_list = ["Door"]
+        self.env_name = tk.StringVar(value=self.env_option_menu_list[0])
+        self.OptionMenu(self.env_option_menu_list, self.env_name, row=1, col=1)
+        self.env_name.trace_add("write", self.options_changed)
+
+        if self.sim_name.get() == "False":
+            self.Text("Controller: ", row=2, col=0)
+            self.controller_option_menu_list = ["EEF Velocity", "Motor Velocity"]
+            self.controller_name = tk.StringVar(value=self.controller_option_menu_list[0])
+            self.controller_option_menu = self.OptionMenu(self.controller_option_menu_list, self.controller_name, row=2, col=1)
+            self.controller_name.trace_add("write", self.options_changed)
+        elif self.sim_name.get() == "True":
+            self.Text("Controller: ", row=2, col=0)
+            self.controller_option_menu_list = ["OSC Pose"]
+            self.controller_name = tk.StringVar(value=self.controller_option_menu_list[0])
+            self.controller_option_menu = self.OptionMenu(self.controller_option_menu_list, self.controller_name, row=2, col=1)
+            self.controller_name.trace_add("write", self.options_changed)
         
-        self.update_gui_fields()
+        self.Text("Learning Mode: ", row=3, col=0)
+        self.learning_mode_option_menu_list = ["online", "offline"]
+        self.learning_mode_name = tk.StringVar(value=self.learning_mode_option_menu_list[0])
+        self.OptionMenu(self.learning_mode_option_menu_list, self.learning_mode_name, row=3, col=1)
+        self.learning_mode_name.trace_add("write", self.options_changed)
+
+        self.Text("Config Folder: ", row=4, col=0)
+        self.config_folder_option_menu_list = self.parse_config_folders()
+        self.config_folder_name = tk.StringVar(value=self.config_folder_option_menu_list[0])
+        self.open_config_folder = self.OptionMenu(self.config_folder_option_menu_list, self.config_folder_name, row=4, col=1)
+        self.config_folder_name.trace_add("write", self.config_changed)
+        # self.update_gui_fields()
         # self.Text("Experimental Runs: ", row=4, col=0)
         # self.experimental_runs = tk.IntVar(value=1)
         # exp_runs_obj = self.NumericalSpinbox(1,10,1,self.experimental_runs, row=4, col=1)
@@ -45,37 +74,6 @@ class GH360LearningGUI(TKMT.ThemedTKinterFrame):
 
         self.run()
 
-    def update_gui_fields(self):
-        self.Text("Environment: ", row=1, col=0)
-        self.env_option_menu_list = ["Door"]
-        self.env_name = tk.StringVar(value=self.env_option_menu_list[0])
-        self.OptionMenu(self.env_option_menu_list, self.env_name, row=1, col=1)
-        self.env_name.trace_add("write", self.options_changed)
-
-        if self.sim_name.get() == "False":
-            self.Text("Controller: ", row=2, col=0)
-            self.controller_option_menu_list = ["EEF Velocity", "Motor Velocity"]
-            self.controller_name = tk.StringVar(value=self.controller_option_menu_list[0])
-            self.OptionMenu(self.controller_option_menu_list, self.controller_name, row=2, col=1)
-            self.controller_name.trace_add("write", self.options_changed)
-        elif self.sim_name.get() == "True":
-            self.Text("Controller: ", row=2, col=0)
-            self.controller_option_menu_list = ["OSC Pose"]
-            self.controller_name = tk.StringVar(value=self.controller_option_menu_list[0])
-            self.OptionMenu(self.controller_option_menu_list, self.controller_name, row=2, col=1)
-            self.controller_name.trace_add("write", self.options_changed)
-        
-        self.Text("Learning Mode: ", row=3, col=0)
-        self.learning_mode_option_menu_list = ["online", "offline"]
-        self.learning_mode_name = tk.StringVar(value=self.learning_mode_option_menu_list[0])
-        self.OptionMenu(self.learning_mode_option_menu_list, self.learning_mode_name, row=3, col=1)
-        self.learning_mode_name.trace_add("write", self.options_changed)
-
-        self.Text("Config Folder: ", row=4, col=0)
-        self.config_folder_option_menu_list = self.parse_config_folders()
-        self.config_folder_name = tk.StringVar(value=self.config_folder_option_menu_list[0])
-        self.open_config_folder = self.OptionMenu(self.config_folder_option_menu_list, self.config_folder_name, row=4, col=1)
-        self.config_folder_name.trace_add("write", self.config_changed)
 
     def sim_option_changed(self, *args):
         self.options_changed()
@@ -83,9 +81,15 @@ class GH360LearningGUI(TKMT.ThemedTKinterFrame):
             self.sim = True
         else:
             self.sim = False
-        self.update_gui_fields()
 
     def options_changed(self, *args):
+        if self.sim_name.get() == "False":
+            self.controller_option_menu_list = ["EEF Velocity", "Motor Velocity"]
+        elif self.sim_name.get() == "True":
+            self.controller_option_menu_list = ["OSC Pose"]
+        self.controller_name.set(self.controller_option_menu_list[0])
+        self.controller_option_menu.set_menu(self.controller_name.get(), *self.controller_option_menu_list)
+
         self.config_folder_option_menu_list = self.parse_config_folders()
         # self.config_folder_name = tk.StringVar(value=self.config_folder_option_menu_list[0])
         self.config_folder_name.set(self.config_folder_option_menu_list[0])

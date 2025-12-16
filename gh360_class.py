@@ -2,22 +2,26 @@ import TD7
 import os
 import json
 import gym
-import gh360_gym
+
 import numpy as np
 import argparse
 import torch
 import time
 import signal
 import subprocess
-import robosuite as suite
-from robosuite.wrappers import GymWrapper
-from util import NormalizedBoxEnv
+
+
 
 class RL_GH360:
     def __init__(self, config_file_path, sim=False):
         self.sim = sim
         if not self.sim:
+            import gh360_gym
             self.path_ros2_ws = "~/ros2_gh360_ws"
+        else:
+            import robosuite as suite
+            from robosuite.wrappers import GymWrapper
+            from util import NormalizedBoxEnv
         self.load_dir = config_file_path
         self.exp_run = 0
 
