@@ -9,10 +9,15 @@ import torch
 import time
 import signal
 import subprocess
+import robosuite as suite
+from robosuite.wrappers import GymWrapper
+from util import NormalizedBoxEnv
 
 class RL_GH360:
-    def __init__(self, config_file_path):
-        self.path_ros2_ws = "~/ros2_gh360_ws"
+    def __init__(self, config_file_path, sim=False):
+        self.sim = sim
+        if not self.sim:
+            self.path_ros2_ws = "~/ros2_gh360_ws"
         self.load_dir = config_file_path
         self.exp_run = 0
 
@@ -33,7 +38,11 @@ class RL_GH360:
         #         "Please check filepath and try again.".format(state_file))
             
         env_config = variant["environment_kwargs"]
-        self.env_name = variant["environment_kwargs"].pop("env_name")
+        if self.sim:
+            self.env_name = variant["environment_kwargs"]["env_name"]
+            self.render = variant["render"]
+        else:
+            self.env_name = variant["environment_kwargs"].pop("env_name")
         self.original_seed = variant["seed"]
         self.offline = variant["offline"]
         self.demo_buffer = variant["demo_buffer"]
@@ -42,7 +51,33 @@ class RL_GH360:
             self.demo_file_name = variant["demo_file_name"]
             self.demo_episodes = variant["demo_episodes"]
 
-        self.env = gym.make('gh360_gym/'+self.env_name, **env_config)
+        if self.sim:
+            controller = env_config.pop("controller")
+            if controller in set(suite.ALL_CONTROLLERS):
+                print("Controller: "+controller)
+                # This is a default controller
+                controller_config = suite.load_controller_config(default_controller=controller)
+                
+                if "controller_config" in env_config.keys():
+                    controller_settings = env_config.pop("controller_config")
+                    for config in controller_settings:
+                        controller_config[config] = controller_settings[config]
+            else:
+                # This is a string to the custom controller
+                controller_config = suite.load_controller_config(custom_fpath=controller)
+
+            suite_env = suite.make(**env_config,
+							#  has_renderer=variant["render"],
+							has_renderer=True,
+							has_offscreen_renderer=False,
+							use_object_obs=True,
+							use_camera_obs=False,
+							controller_configs=controller_config,
+							)
+            self.env = NormalizedBoxEnv(GymWrapper(suite_env))
+        else:
+            self.env = gym.make('gh360_gym/'+self.env_name, **env_config)
+
         self.eval_env = self.env
 
         self.use_checkpoints = False
@@ -77,7 +112,7 @@ class RL_GH360:
         else:
             self.continue_training = True 
             self.exp_run = exp_run
-            self.t = 130
+            self.t = self.ep_length
         self.result_path = os.path.join(self.load_dir, "run_"+str(self.exp_run))
         if not os.path.exists(self.result_path):
             os.makedirs(self.result_path)
@@ -162,9 +197,10 @@ class RL_GH360:
                 print(f"exp_run: {self.exp_run}")
                 print(f"max_experiment_runs: {self.max_experiment_runs}")
                 if not self.train_online(stop_event=stop_event):
-                    self.stop_record_rosbag()
+                    if not self.sim: self.stop_record_rosbag()
                     return
-                self.stop_record_rosbag()
+                
+                if not self.sim: self.stop_record_rosbag()
                 if self.exp_run < self.max_experiment_runs:
                     self.init_run()
                 else:
@@ -173,7 +209,7 @@ class RL_GH360:
     def start_rollout(self, stop_event=None, exp_run=0):
         self.init_run(exp_run=exp_run)
         self.rollout(stop_event=stop_event)
-        self.stop_record_rosbag()
+        if not self.sim: self.stop_record_rosbag()
 
     def train_online(self, stop_event=None):
         # t = 0
@@ -189,12 +225,17 @@ class RL_GH360:
             
 
         # self.evals = []
-        self.record_process = self.start_record_rosbag("rosbag_"+str(int(time.time())))
+        if not self.sim:
+            self.record_process = self.start_record_rosbag("rosbag_"+str(int(time.time())))
         start_time = time.time()
         if self.t >= self.timesteps_before_training: allow_train = True
         else: allow_train = False
 
-        state, info = self.env.reset()
+        if self.sim:
+            state = self.env.reset()
+            info = {"reset_success": True}
+        else:
+            state, info = self.env.reset()
         ep_total_reward, ep_timesteps,= 0, 0
         ep_num = int(self.t/self.ep_length) + 1
         self.evaluated = False
@@ -210,13 +251,15 @@ class RL_GH360:
 
             next_state, reward, ep_finished, _ = self.env.step(action) 
             
-            
+            if self.sim and self.render: self.env.render()
+
             ep_total_reward += reward
             ep_timesteps += 1
 
             if ep_timesteps >= self.ep_length: 
                 ep_finished = 1
-                self.env.step(np.zeros(self.RL_agent.action_dim))
+                if not self.sim:
+                    self.env.step(np.zeros(self.RL_agent.action_dim))
             # done = float(ep_finished) if ep_timesteps < 500 else 0
             done = ep_finished
             
@@ -245,7 +288,12 @@ class RL_GH360:
                         print("Saving initial buffer paths")
                         self.RL_agent.replay_buffer.save_paths(self.result_path+"/init_buffer_paths.npy")
 
-                state, info = self.env.reset()
+
+                if self.sim:
+                    state = self.env.reset()
+                    info = {"reset_success": True}
+                else:
+                    state, info = self.env.reset()
                 ep_total_reward, ep_timesteps = 0, 0
                 ep_num += 1 
                 
@@ -274,7 +322,8 @@ class RL_GH360:
         pass
 
     def rollout(self, stop_event=None):
-        self.record_process = self.start_record_rosbag("final_eval_rosbag_"+str(int(time.time())))
+        if not self.sim:
+            self.record_process = self.start_record_rosbag("final_eval_rosbag_"+str(int(time.time())))
         total_reward = np.zeros(10)
         eval_eps = 10
         print("---------------------------------------")
@@ -282,8 +331,12 @@ class RL_GH360:
         for ep in range(eval_eps):
             print("---------------------------------------")
             print(f"Evaluation {ep}")
-            state, info = self.eval_env.reset()
-            state, info = self.eval_env.special_reset(ep)
+            if self.sim:
+                state = self.eval_env.reset()
+                info = {"reset_success": True}
+            else:
+                state, info = self.eval_env.reset()
+                state, info = self.eval_env.special_reset(ep)
 
             if stop_event.is_set() or not info["reset_success"]:
                     return False
@@ -316,7 +369,10 @@ class RL_GH360:
 
             total_reward = np.zeros(self.eval_eps)
             for ep in range(self.eval_eps):
-                state, info = self.eval_env.reset()
+                if self.sim:
+                    state = self.eval_env.reset()
+                else:
+                    state, info = self.eval_env.reset()
                 done = False
                 cntr = 0
                 while not done and cntr < self.ep_length:

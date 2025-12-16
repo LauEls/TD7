@@ -2,6 +2,30 @@ import pandas
 import numpy as np
 import matplotlib.pyplot as plt
 
+def find_start_time(goal_eef_vels):
+    episode_start_times = []
+
+    for i in range(1, goal_eef_vels.shape[0]):
+        ep_start = True
+        for j in range(1, goal_eef_vels.shape[1]):
+            if goal_eef_vels[i, j] == 0.0 or goal_eef_vels[i-1, j] != 0.0:
+                ep_start = False
+                break
+
+        if ep_start:
+            episode_start_times.append(goal_eef_vels[i-1, 0])
+
+    return episode_start_times
+
+def find_start_state(start_times, states):
+    episode_start_states = []
+
+    for ep_start_time in start_times:
+        closest_idx = np.argmin(np.abs(states[:, 0] - ep_start_time))
+        episode_start_states.append(states[closest_idx, 1:])
+
+    return episode_start_states
+
 def find_start_states(goal_eef_vels, joint_states, motor_states):
     episode_start_times = []
 
@@ -50,6 +74,9 @@ def calc_variance(joint_mean, motor_mean, ep_start_joint_states, ep_start_motor_
 panda_goal_eef_vel = pandas.read_csv('door/real_gh360/eef_vel/online/v14_video_recording/run_0/goal_eef_vel.csv')
 panda_joint_states = pandas.read_csv('door/real_gh360/eef_vel/online/v14_video_recording/run_0/joint_states.csv')
 panda_motor_states = pandas.read_csv('door/real_gh360/eef_vel/online/v14_video_recording/run_0/motor_states.csv')
+panda_eef_poses = pandas.read_csv('door/real_gh360/eef_vel/online/v14_video_recording/run_0/eef_pose.csv')
+panda_env_observations = pandas.read_csv('door/real_gh360/eef_vel/online/v14_video_recording/run_0/environment_observations.csv')
+
 panda_final_eval_goal_eef_vel = pandas.read_csv('door/real_gh360/eef_vel/online/v14_video_recording/run_0/final_eval_goal_eef_vel.csv')
 panda_final_eval_joint_states = pandas.read_csv('door/real_gh360/eef_vel/online/v14_video_recording/run_0/final_eval_joint_states.csv')
 panda_final_eval_motor_states = pandas.read_csv('door/real_gh360/eef_vel/online/v14_video_recording/run_0/final_eval_motor_states.csv')
@@ -57,6 +84,8 @@ panda_final_eval_motor_states = pandas.read_csv('door/real_gh360/eef_vel/online/
 goal_eef_vel = panda_goal_eef_vel.to_numpy()
 joint_states = panda_joint_states.to_numpy()
 motor_states = panda_motor_states.to_numpy()
+eef_poses = panda_eef_poses.to_numpy()
+env_observations = panda_env_observations.to_numpy()
 
 final_eval_goal_eef_vel = panda_final_eval_goal_eef_vel.to_numpy()
 final_eval_joint_states = panda_final_eval_joint_states.to_numpy()
@@ -64,6 +93,15 @@ final_eval_motor_states = panda_final_eval_motor_states.to_numpy()
 
 ep_start_joint_states, ep_start_motor_states = find_start_states(goal_eef_vel, joint_states, motor_states)
 final_eval_ep_start_joint_states, final_eval_ep_start_motor_states = find_start_states(final_eval_goal_eef_vel, final_eval_joint_states, final_eval_motor_states)
+
+start_times = find_start_time(goal_eef_vel)
+ep_start_eef_poses = find_start_state(start_times, eef_poses)
+ep_start_env_observations = find_start_state(start_times, env_observations)
+ep_start_eef_poses = np.array(ep_start_eef_poses)
+ep_start_env_observations = np.array(ep_start_env_observations)
+print(f"Mean Start EEF Pose: {np.mean(ep_start_eef_poses, axis=0)}")
+print(f"Mean Start Env Observations: {np.mean(ep_start_env_observations, axis=0)}")
+
 
 # ep_start_joint_states = np.concatenate((ep_start_joint_states, final_eval_ep_start_joint_states), axis=0)
 # ep_start_motor_states = np.concatenate((ep_start_motor_states, final_eval_ep_start_motor_states), axis=0)
@@ -144,6 +182,10 @@ plt.yticks([0, 5, 10, 15, 20, 25], ["0", "5", "10", "15", "20", "25"], color="bl
 plt.xticks(theta, metrics + [metrics[0]], color="black", size=12)
 plt.legend(loc="upper right", bbox_to_anchor=(1.1, 1.05))
 plt.show()
+
+
+
+
 
 # print(final_eval_joint_mean)
 # print("Joint variances:")
