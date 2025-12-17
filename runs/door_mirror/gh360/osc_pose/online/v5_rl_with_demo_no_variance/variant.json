@@ -29,7 +29,7 @@
   "max_episodes": 200,
   "eval_episodes": 5,
   "demo_buffer": true,
-  "demo_file_name": "gh360_sim_door_demonstration_no_variance_v1.npy",
+  "demo_file_name": "gh360_sim_door_demonstration_no_variance_v2.npy",
   "demo_episodes": 20,
   "max_experiment_runs": 5,
   "offline": false,
