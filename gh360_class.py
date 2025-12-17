@@ -174,13 +174,16 @@ class RL_GH360:
             demo_episodes = self.demo_episodes
             if demo_episodes >= len(paths): demo_episodes = len(paths)
             else:
-                i_plus = int(len(paths)/demo_episodes)
                 reduced_paths = []
-                i = 0
-                while i < len(paths):
+                for i in range(demo_episodes):
                     reduced_paths.append(paths[i])
-                    i += i_plus
-                    print("i: ", i)
+                # i_plus = int(len(paths)/demo_episodes)
+                # reduced_paths = []
+                # i = 0
+                # while i < len(paths):
+                #     reduced_paths.append(paths[i])
+                #     i += i_plus
+                #     print("i: ", i)
                 paths = reduced_paths
                 
             print(f"demonstraition episodes: {len(paths)}")
