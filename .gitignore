@@ -160,7 +160,9 @@ cython_debug/
 #  and can be added to the global gitignore or merged into this file.  For a more nuclear
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
-demonstrations/
+demonstrations/*.npy
+!demonstrations/gh360_sim_door_demonstration_no_variance_v2.npy
+!demonstrations/gh360_sim_door_demonstration_with_variance_v1.npy
 *buffer_paths.npy
 
 
