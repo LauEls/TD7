@@ -1954,3 +1954,9 @@ WARNING: Linesearch objective is not convex
 Tue Dec 16 16:22:18 2025
 WARNING: Linesearch objective is not convex
 
+Wed Dec 17 16:32:51 2025
+WARNING: Linesearch objective is not convex
+
+Wed Dec 17 16:32:51 2025
+WARNING: Linesearch objective is not convex
+
