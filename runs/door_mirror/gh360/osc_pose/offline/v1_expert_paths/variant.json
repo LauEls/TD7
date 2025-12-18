@@ -1,0 +1,39 @@
+{
+  "algorithm": "TD7",
+  "render": false,
+  "hyperparameters":{
+    "buffer_size": 1000000
+  },
+  "environment_kwargs": {
+    "control_freq": 20,
+    "controller": "OSC_POSE",
+    "env_name": "DoorMirror",
+    "grasp_check": false,
+    "obs_optimization": true,
+    "table_offset": [-0.43, 0.412, 0.81],
+    "door_x_variance": [-0.01, 0.01],
+    "door_y_variance": [-0.01, 0.01],
+    "door_rot_variance": [-0.17, 0.17],
+    "hard_reset": false,
+    "horizon": 500,
+    "ignore_done": true,
+    "reward_scale": 1.0,
+    "gripper_types": "HookGripper",
+    "robots": [
+      "GH360"
+    ]
+  },
+  "seed": 1,
+  "episode_length": 500,
+  "max_episodes": 200,
+  "eval_episodes": 10,
+  "demo_buffer": true,
+  "demo_file_name": "gh360_sim_door_demonstration_with_variance_v1.npy",
+  "demo_episodes": 20,
+  "max_experiment_runs": 5,
+  "eval_during_training": true,
+  "init_buffer_paths": false,
+  "offline": true,
+  "random_paths": false,
+  "medium_expert_paths": false
+}

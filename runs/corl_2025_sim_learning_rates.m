@@ -22,6 +22,18 @@ rl_without_demo_with_variance_run_2_raw = readmatrix(td7_file_base+"v6_rl_with_v
 rl_without_demo_with_variance_run_3_raw = readmatrix(td7_file_base+"v6_rl_with_variance/run_3/results.csv");
 rl_without_demo_with_variance_run_4_raw = readmatrix(td7_file_base+"v6_rl_with_variance/run_4/results.csv");
 
+rl_with_demo_no_variance_run_0_raw = readmatrix(td7_file_base+"v5_rl_with_demo_no_variance/run_0/results.csv");
+rl_with_demo_no_variance_run_1_raw = readmatrix(td7_file_base+"v5_rl_with_demo_no_variance/run_1/results.csv");
+rl_with_demo_no_variance_run_2_raw = readmatrix(td7_file_base+"v5_rl_with_demo_no_variance/run_2/results.csv");
+rl_with_demo_no_variance_run_3_raw = readmatrix(td7_file_base+"v5_rl_with_demo_no_variance/run_3/results.csv");
+rl_with_demo_no_variance_run_4_raw = readmatrix(td7_file_base+"v5_rl_with_demo_no_variance/run_4/results.csv");
+
+rl_with_demo_with_variance_run_0_raw = readmatrix(td7_file_base+"v7_rl_with_demo_with_variance/run_0/results.csv");
+rl_with_demo_with_variance_run_1_raw = readmatrix(td7_file_base+"v7_rl_with_demo_with_variance/run_1/results.csv");
+rl_with_demo_with_variance_run_2_raw = readmatrix(td7_file_base+"v7_rl_with_demo_with_variance/run_2/results.csv");
+rl_with_demo_with_variance_run_3_raw = readmatrix(td7_file_base+"v7_rl_with_demo_with_variance/run_3/results.csv");
+rl_with_demo_with_variance_run_4_raw = readmatrix(td7_file_base+"v7_rl_with_demo_with_variance/run_4/results.csv");
+
 
 
 %%
@@ -42,6 +54,18 @@ rl_without_demo_with_variance_run_2_mean = mean(rl_without_demo_with_variance_ru
 rl_without_demo_with_variance_run_3_mean = mean(rl_without_demo_with_variance_run_3_raw,2);
 rl_without_demo_with_variance_run_4_mean = mean(rl_without_demo_with_variance_run_4_raw,2);
 
+rl_with_demo_no_variance_run_0_mean = mean(rl_with_demo_no_variance_run_0_raw,2);
+rl_with_demo_no_variance_run_1_mean = mean(rl_with_demo_no_variance_run_1_raw,2);
+rl_with_demo_no_variance_run_2_mean = mean(rl_with_demo_no_variance_run_2_raw,2);
+rl_with_demo_no_variance_run_3_mean = mean(rl_with_demo_no_variance_run_3_raw,2);
+rl_with_demo_no_variance_run_4_mean = mean(rl_with_demo_no_variance_run_4_raw,2);
+
+rl_with_demo_with_variance_run_0_mean = mean(rl_with_demo_with_variance_run_0_raw,2);
+rl_with_demo_with_variance_run_1_mean = mean(rl_with_demo_with_variance_run_1_raw,2);
+rl_with_demo_with_variance_run_2_mean = mean(rl_with_demo_with_variance_run_2_raw,2);
+rl_with_demo_with_variance_run_3_mean = mean(rl_with_demo_with_variance_run_3_raw,2);
+rl_with_demo_with_variance_run_4_mean = mean(rl_with_demo_with_variance_run_4_raw,2);
+
 rl_without_demo_no_variance_run_0_mean = rl_without_demo_no_variance_run_0_mean/episode_length;
 rl_without_demo_no_variance_run_1_mean = rl_without_demo_no_variance_run_1_mean/episode_length;
 rl_without_demo_no_variance_run_2_mean = rl_without_demo_no_variance_run_2_mean/episode_length;
@@ -53,6 +77,18 @@ rl_without_demo_with_variance_run_1_mean = rl_without_demo_with_variance_run_1_m
 rl_without_demo_with_variance_run_2_mean = rl_without_demo_with_variance_run_2_mean/episode_length;
 rl_without_demo_with_variance_run_3_mean = rl_without_demo_with_variance_run_3_mean/episode_length;
 rl_without_demo_with_variance_run_4_mean = rl_without_demo_with_variance_run_4_mean/episode_length;
+
+rl_with_demo_no_variance_run_0_mean = rl_with_demo_no_variance_run_0_mean/episode_length;
+rl_with_demo_no_variance_run_1_mean = rl_with_demo_no_variance_run_1_mean/episode_length;
+rl_with_demo_no_variance_run_2_mean = rl_with_demo_no_variance_run_2_mean/episode_length;
+rl_with_demo_no_variance_run_3_mean = rl_with_demo_no_variance_run_3_mean/episode_length;
+rl_with_demo_no_variance_run_4_mean = rl_with_demo_no_variance_run_4_mean/episode_length;
+
+rl_with_demo_with_variance_run_0_mean = rl_with_demo_with_variance_run_0_mean/episode_length;
+rl_with_demo_with_variance_run_1_mean = rl_with_demo_with_variance_run_1_mean/episode_length;
+rl_with_demo_with_variance_run_2_mean = rl_with_demo_with_variance_run_2_mean/episode_length;
+rl_with_demo_with_variance_run_3_mean = rl_with_demo_with_variance_run_3_mean/episode_length;
+rl_with_demo_with_variance_run_4_mean = rl_with_demo_with_variance_run_4_mean/episode_length;
 
 td7_x_values = (0:evaluation_frequency*episode_length/1000:maximum_timesteps/1000);
 offset = episode_length*20/1000;
@@ -66,8 +102,9 @@ close all;
 
 
 rl_without_demo_no_variance_trans = [transpose(rl_without_demo_no_variance_run_0_mean); transpose(rl_without_demo_no_variance_run_1_mean); transpose(rl_without_demo_no_variance_run_2_mean); transpose(rl_without_demo_no_variance_run_3_mean); transpose(rl_without_demo_no_variance_run_4_mean)];
-% rl_with_demo_trans = [transpose(rl_with_demo_run_2_mean); transpose(rl_with_demo_run_3_mean); transpose(rl_with_demo_run_4_mean)];
 rl_without_demo_with_variance_trans = [transpose(rl_without_demo_with_variance_run_0_mean); transpose(rl_without_demo_with_variance_run_1_mean); transpose(rl_without_demo_with_variance_run_2_mean); transpose(rl_without_demo_with_variance_run_3_mean); transpose(rl_without_demo_with_variance_run_4_mean)];
+rl_with_demo_no_variance_trans = [transpose(rl_with_demo_no_variance_run_0_mean); transpose(rl_with_demo_no_variance_run_1_mean); transpose(rl_with_demo_no_variance_run_2_mean); transpose(rl_with_demo_no_variance_run_3_mean); transpose(rl_with_demo_no_variance_run_4_mean)];
+rl_with_demo_with_variance_trans = [transpose(rl_with_demo_with_variance_run_0_mean); transpose(rl_with_demo_with_variance_run_1_mean); transpose(rl_with_demo_with_variance_run_2_mean); transpose(rl_with_demo_with_variance_run_3_mean); transpose(rl_with_demo_with_variance_run_4_mean)];
 
 % exp_2_trans = [transpose(exp_2_mean)];
 % exp_3_trans = [transpose(exp_3_mean)];
@@ -116,6 +153,8 @@ hold on
 % plot_areaerrorbar(exp_2_trans, options_3);
 plot_areaerrorbar(rl_without_demo_no_variance_trans, options_5);
 plot_areaerrorbar(rl_without_demo_with_variance_trans, options_3);
+plot_areaerrorbar(rl_with_demo_no_variance_trans, options_4);
+plot_areaerrorbar(rl_with_demo_with_variance_trans, options_2);
 
 
 %plot_areaerrorbar(exp_3_trans, options_4);
@@ -126,12 +165,12 @@ plot_areaerrorbar(rl_without_demo_with_variance_trans, options_3);
 
 % xlim([0 26])
 ylim([0 1])
-%lgd = legend('', 'BC', '', 'TD7', '', 'TD7+Demos', 'Location','best');
+lgd = legend('', 'No Demo; No Variance', '', 'No Demo; With Variance', '', 'With Demo; No Variance', '', 'With Demo; With Variance', 'Location','best');
 %lgd.NumColumns = 3;
 xlabel('Time Steps (1K)','FontSize',16)
 ylabel('Normalized Reward','FontSize',16)
-set(gca,'FontSize',55)
-%set(gca,'FontSize',18)
+%set(gca,'FontSize',55)
+set(gca,'FontSize',18)
 
 %title('Variable Impedance Controller Comparison')
 hold off
