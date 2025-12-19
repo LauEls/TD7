@@ -1960,3 +1960,6 @@ WARNING: Linesearch objective is not convex
 Wed Dec 17 16:32:51 2025
 WARNING: Linesearch objective is not convex
 
+Thu Dec 18 15:23:45 2025
+WARNING: Linesearch objective is not convex
+

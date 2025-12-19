@@ -27,7 +27,7 @@
   "episode_length": 500,
   "max_episodes": 200,
   "eval_episodes": 10,
-  "demo_buffer": true,
+  "demo_buffer": false,
   "demo_file_name": "gh360_sim_door_demonstration_with_variance_v1.npy",
   "demo_episodes": 20,
   "max_experiment_runs": 5,
