@@ -101,6 +101,8 @@ ep_start_eef_poses = np.array(ep_start_eef_poses)
 ep_start_env_observations = np.array(ep_start_env_observations)
 print(f"Mean Start EEF Pose: {np.mean(ep_start_eef_poses, axis=0)}")
 print(f"Mean Start Env Observations: {np.mean(ep_start_env_observations, axis=0)}")
+print(f"Median Start EEF Pose: {np.median(ep_start_eef_poses, axis=0)}")
+print(f"Median Start Env Observations: {np.median(ep_start_env_observations, axis=0)}")
 
 
 # ep_start_joint_states = np.concatenate((ep_start_joint_states, final_eval_ep_start_joint_states), axis=0)

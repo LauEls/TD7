@@ -1,3 +1,90 @@
+%% Comparing influence of number of demonstrations
+clear all;
+close all;
+
+td7_file_base = "door_mirror/gh360/osc_pose/online/";
+runs = 5;
+episode_length = 500;
+evaluation_frequency = 10;
+maximum_timesteps = episode_length * 200;
+
+ten_demos_raw = cell(1, runs);
+ten_demos_mean = cell(1,runs);
+twenty_demos_raw = cell(1, runs);
+twenty_demos_mean = cell(1,runs);
+fifty_demos_raw = cell(1, runs);
+fifty_demos_mean = cell(1,runs);
+
+for i=1:runs
+    ten_demos_raw{i} = readmatrix(td7_file_base+"v8_10_demos/run_"+num2str(i-1)+"/results.csv");
+    twenty_demos_raw{i} = readmatrix(td7_file_base+"v9_20_demos/run_"+num2str(i-1)+"/results.csv");
+    fifty_demos_raw{i} = readmatrix(td7_file_base+"v10_50_demos/run_"+num2str(i-1)+"/results.csv");
+
+    ten_demos_mean{i} = mean(ten_demos_raw{i},2)/episode_length;
+    twenty_demos_mean{i} = mean(twenty_demos_raw{i},2)/episode_length;
+    fifty_demos_mean{i} = mean(fifty_demos_raw{i},2)/episode_length;
+end
+
+ten_demos_trans = [transpose(ten_demos_mean{1}); transpose(ten_demos_mean{2}); transpose(ten_demos_mean{3}); transpose(ten_demos_mean{4}); transpose(ten_demos_mean{5})];
+twenty_demos_trans = [transpose(twenty_demos_mean{1}); transpose(twenty_demos_mean{2}); transpose(twenty_demos_mean{3}); transpose(twenty_demos_mean{4}); transpose(twenty_demos_mean{5})];
+fifty_demos_trans = [transpose(fifty_demos_mean{1}); transpose(fifty_demos_mean{2}); transpose(fifty_demos_mean{3}); transpose(fifty_demos_mean{4}); transpose(fifty_demos_mean{5})];
+
+td7_x_values = (0:evaluation_frequency*episode_length/1000:maximum_timesteps/1000);
+alpha  = 0.3;
+line_width = 4;
+error = 'std';
+
+options_2.color_area = [0.8500 0.3250 0.0980];
+options_2.color_line = [0.8500 0.3250 0.0980];
+options_2.alpha      = alpha;
+options_2.line_width = line_width;
+options_2.error      = error;
+options_2.x_axis     = td7_x_values;
+
+options_3.color_area = [0.9290 0.6940 0.1250];
+options_3.color_line = [0.9290 0.6940 0.1250];
+options_3.alpha      = alpha;
+options_3.line_width = line_width;
+options_3.error      = error;
+options_3.x_axis     = td7_x_values;
+
+options_4.color_area = [0.4660 0.6740 0.1880];
+options_4.color_line = [0.4660 0.6740 0.1880];
+options_4.alpha      = alpha;
+options_4.line_width = line_width;
+options_4.error      = error;
+options_4.x_axis     = td7_x_values;
+
+options_5.color_area = [0.4940 0.1840 0.5560];
+options_5.color_line = [0.4940 0.1840 0.5560];
+options_5.alpha      = alpha;
+options_5.line_width = line_width;
+options_5.error      = error;
+options_5.x_axis     = td7_x_values;
+
+
+figure('Position',[0 0 1920 1440]);
+hold on
+plot_areaerrorbar(ten_demos_trans, options_5);
+plot_areaerrorbar(twenty_demos_trans, options_3);
+plot_areaerrorbar(fifty_demos_trans, options_4);
+
+% xlim([0 26])
+ylim([0 1])
+lgd = legend('', '10 Demos', '', '20 Demos', '', '50 Demos', 'Location','best');
+%lgd.NumColumns = 3;
+xlabel('Time Steps (1K)','FontSize',16)
+ylabel('Normalized Reward','FontSize',16)
+%set(gca,'FontSize',55)
+set(gca,'FontSize',18)
+
+%title('Variable Impedance Controller Comparison')
+hold off
+
+
+
+
+%%
 clear all;
 close all;
 
