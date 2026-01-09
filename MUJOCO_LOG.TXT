@@ -2008,3 +2008,54 @@ WARNING: Linesearch objective is not convex
 Fri Dec 19 13:04:40 2025
 WARNING: Linesearch objective is not convex
 
+Wed Jan  7 07:48:48 2026
+WARNING: Linesearch objective is not convex
+
+Wed Jan  7 07:48:48 2026
+WARNING: Linesearch objective is not convex
+
+Wed Jan  7 07:48:48 2026
+WARNING: Linesearch objective is not convex
+
+Wed Jan  7 07:48:48 2026
+WARNING: Linesearch objective is not convex
+
+Wed Jan  7 07:48:48 2026
+WARNING: Linesearch objective is not convex
+
+Wed Jan  7 07:48:48 2026
+WARNING: Linesearch objective is not convex
+
+Wed Jan  7 07:48:48 2026
+WARNING: Linesearch objective is not convex
+
+Wed Jan  7 07:48:48 2026
+WARNING: Linesearch objective is not convex
+
+Wed Jan  7 07:48:48 2026
+WARNING: Linesearch objective is not convex
+
+Wed Jan  7 07:48:48 2026
+WARNING: Linesearch objective is not convex
+
+Wed Jan  7 08:50:46 2026
+WARNING: Linesearch objective is not convex
+
+Wed Jan  7 08:50:46 2026
+WARNING: Linesearch objective is not convex
+
+Wed Jan  7 08:50:46 2026
+WARNING: Linesearch objective is not convex
+
+Wed Jan  7 08:50:46 2026
+WARNING: Linesearch objective is not convex
+
+Wed Jan  7 08:50:46 2026
+WARNING: Linesearch objective is not convex
+
+Wed Jan  7 08:50:46 2026
+WARNING: Linesearch objective is not convex
+
+Wed Jan  7 08:50:46 2026
+WARNING: Linesearch objective is not convex
+
