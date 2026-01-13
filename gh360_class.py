@@ -98,14 +98,14 @@ class RL_GH360:
             print("Expert paths shape: ", expert_paths.shape)
             if variant["random_paths"]:
                 random_paths_file = os.path.join("demonstrations/",variant["demo_file_name"])
-                random_paths_file = random_paths_file[0:-4] + "_random_paths" + random_paths_file[-4:]
+                random_paths_file = random_paths_file[0:-4] + "_random" + random_paths_file[-4:]
                 print(random_paths_file)
                 random_paths = np.load(random_paths_file, allow_pickle=True)
                 print("Random paths shape: ", random_paths.shape)
                 self.offline_paths = np.concatenate((self.offline_paths, random_paths))
-            if variant["medium_expert_paths"]:
+            if variant["gradual_random_paths"]:
                 medium_expert_paths_file = os.path.join("demonstrations/",variant["demo_file_name"])
-                medium_expert_paths_file = medium_expert_paths_file[0:-4] + "_medium_expert_paths" + medium_expert_paths_file[-4:]
+                medium_expert_paths_file = medium_expert_paths_file[0:-4] + "_gradual_random" + medium_expert_paths_file[-4:]
                 print(medium_expert_paths_file)
                 medium_expert_paths = np.load(medium_expert_paths_file, allow_pickle=True)
                 print("Medium expert paths shape: ", medium_expert_paths.shape)
