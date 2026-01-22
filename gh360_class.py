@@ -2,7 +2,7 @@ import TD7
 import os
 import json
 import gym
-import gh360_gym
+
 import numpy as np
 import argparse
 import torch
@@ -10,9 +10,18 @@ import time
 import signal
 import subprocess
 
+
+
 class RL_GH360:
-    def __init__(self, config_file_path):
-        self.path_ros2_ws = "~/ros2_gh360_ws"
+    def __init__(self, config_file_path, sim=False):
+        self.sim = sim
+        if not self.sim:
+            import gh360_gym
+            self.path_ros2_ws = "~/ros2_gh360_ws"
+        else:
+            import robosuite as suite
+            from robosuite.wrappers import GymWrapper
+            from util import NormalizedBoxEnv
         self.load_dir = config_file_path
         self.exp_run = 0
 
@@ -33,7 +42,11 @@ class RL_GH360:
         #         "Please check filepath and try again.".format(state_file))
             
         env_config = variant["environment_kwargs"]
-        self.env_name = variant["environment_kwargs"].pop("env_name")
+        if self.sim:
+            self.env_name = variant["environment_kwargs"]["env_name"]
+            self.render = variant["render"]
+        else:
+            self.env_name = variant["environment_kwargs"].pop("env_name")
         self.original_seed = variant["seed"]
         self.offline = variant["offline"]
         self.demo_buffer = variant["demo_buffer"]
@@ -42,7 +55,33 @@ class RL_GH360:
             self.demo_file_name = variant["demo_file_name"]
             self.demo_episodes = variant["demo_episodes"]
 
-        self.env = gym.make('gh360_gym/'+self.env_name, **env_config)
+        if self.sim:
+            controller = env_config.pop("controller")
+            if controller in set(suite.ALL_CONTROLLERS):
+                print("Controller: "+controller)
+                # This is a default controller
+                controller_config = suite.load_controller_config(default_controller=controller)
+                
+                if "controller_config" in env_config.keys():
+                    controller_settings = env_config.pop("controller_config")
+                    for config in controller_settings:
+                        controller_config[config] = controller_settings[config]
+            else:
+                # This is a string to the custom controller
+                controller_config = suite.load_controller_config(custom_fpath=controller)
+
+            suite_env = suite.make(**env_config,
+							#  has_renderer=variant["render"],
+							has_renderer=True,
+							has_offscreen_renderer=False,
+							use_object_obs=True,
+							use_camera_obs=False,
+							controller_configs=controller_config,
+							)
+            self.env = NormalizedBoxEnv(GymWrapper(suite_env))
+        else:
+            self.env = gym.make('gh360_gym/'+self.env_name, **env_config)
+
         self.eval_env = self.env
 
         print("Environment initialization successful")
@@ -57,15 +96,26 @@ class RL_GH360:
 
         if self.offline:
             expert_paths = np.load(os.path.join("demonstrations/",variant["demo_file_name"]), allow_pickle=True)
+            self.offline_paths = expert_paths
             print("Expert paths shape: ", expert_paths.shape)
-            random_paths_file = os.path.join("demonstrations/",variant["demo_file_name"])
-            random_paths_file = random_paths_file[0:-4] + "_random_paths" + random_paths_file[-4:]
-            print(random_paths_file)
-            random_paths = np.load(random_paths_file, allow_pickle=True)
-            print("Random paths shape: ", random_paths.shape)
-            paths = np.concatenate((expert_paths, random_paths))
-            self.use_checkpoints = False
-            self.eval_during_training = variant["eval_during_training"]
+            if variant["random_paths"]:
+                random_paths_file = os.path.join("demonstrations/",variant["demo_file_name"])
+                random_paths_file = random_paths_file[0:-4] + "_random" + random_paths_file[-4:]
+                print(random_paths_file)
+                random_paths = np.load(random_paths_file, allow_pickle=True)
+                print("Random paths shape: ", random_paths.shape)
+                self.offline_paths = np.concatenate((self.offline_paths, random_paths))
+            if variant["gradual_random_paths"]:
+                medium_expert_paths_file = os.path.join("demonstrations/",variant["demo_file_name"])
+                medium_expert_paths_file = medium_expert_paths_file[0:-4] + "_gradual_random" + medium_expert_paths_file[-4:]
+                print(medium_expert_paths_file)
+                medium_expert_paths = np.load(medium_expert_paths_file, allow_pickle=True)
+                print("Medium expert paths shape: ", medium_expert_paths.shape)
+                self.offline_paths = np.concatenate((self.offline_paths, medium_expert_paths))  
+            print("Total offline paths shape: ", self.offline_paths.shape)
+                
+            # self.use_checkpoints = False
+            # self.eval_during_training = variant["eval_during_training"]
 
         self.hp = TD7.Hyperparameters(**variant["hyperparameters"])
 
@@ -79,7 +129,7 @@ class RL_GH360:
         else:
             self.continue_training = True 
             self.exp_run = exp_run
-            self.t = 130
+            self.t = self.ep_length
         self.result_path = os.path.join(self.load_dir, "run_"+str(self.exp_run))
         if not os.path.exists(self.result_path):
             os.makedirs(self.result_path)
@@ -105,22 +155,22 @@ class RL_GH360:
         torch.manual_seed(seed)
         np.random.seed(seed)
 
-        if self.offline:
-            # print("Expert paths: ", expert_paths[0]['actions'].shape)
-            # print("Random paths: ", random_paths[0]['actions'].shape)
-            # print("Paths: ", paths[0]['observations'].shape)
-            # print("Paths: ", paths[30]['observations'].shape)
-            state_dim = paths[0]['observations'].shape[1]
-            action_dim = paths[0]['actions'].shape[1]
-            max_action = 0.0
-            for path in paths:
-                new_max_action = np.max(np.abs(path['actions']))
-                if new_max_action > max_action: max_action = new_max_action
-            # print("Max action: ", max_action)
-        else:
-            state_dim = self.env.observation_space.shape[0]
-            action_dim = self.env.action_space.shape[0] 
-            max_action = float(self.env.action_space.high[0])
+        # if self.offline:
+        #     # print("Expert paths: ", expert_paths[0]['actions'].shape)
+        #     # print("Random paths: ", random_paths[0]['actions'].shape)
+        #     # print("Paths: ", paths[0]['observations'].shape)
+        #     # print("Paths: ", paths[30]['observations'].shape)
+        #     # state_dim = paths[0]['observations'].shape[1]
+        #     # action_dim = paths[0]['actions'].shape[1]
+        #     # max_action = 0.0
+        #     # for path in paths:
+        #     #     new_max_action = np.max(np.abs(path['actions']))
+        #     #     if new_max_action > max_action: max_action = new_max_action
+        #     # print("Max action: ", max_action)
+        # else:
+        state_dim = self.env.observation_space.shape[0]
+        action_dim = self.env.action_space.shape[0] 
+        max_action = float(self.env.action_space.high[0])
 
         print("State dim: ", state_dim)
         print("Action dim: ", action_dim)
@@ -137,13 +187,16 @@ class RL_GH360:
             demo_episodes = self.demo_episodes
             if demo_episodes >= len(paths): demo_episodes = len(paths)
             else:
-                i_plus = int(len(paths)/demo_episodes)
                 reduced_paths = []
-                i = 0
-                while i < len(paths):
+                for i in range(demo_episodes):
                     reduced_paths.append(paths[i])
-                    i += i_plus
-                    print("i: ", i)
+                # i_plus = int(len(paths)/demo_episodes)
+                # reduced_paths = []
+                # i = 0
+                # while i < len(paths):
+                #     reduced_paths.append(paths[i])
+                #     i += i_plus
+                #     print("i: ", i)
                 paths = reduced_paths
                 
             print(f"demonstraition episodes: {len(paths)}")
@@ -151,31 +204,42 @@ class RL_GH360:
             print(f"demo buffer size: {self.RL_agent.demo_buffer.size}")
             # self.timesteps_before_training -= self.RL_agent.demo_buffer.size
             # if self.timesteps_before_training < 256: self.timesteps_before_training = 256
-            self.timesteps_before_training = 256
+            # self.timesteps_before_training = 256
+            self.timesteps_before_training = self.ep_length*10
+        elif self.offline:
+            self.RL_agent.replay_buffer.load_paths(self.offline_paths)
+            print(f"offline buffer size: {self.RL_agent.replay_buffer.size}")
+            
+
 
     def start_learning(self, stop_event=None):
         self.init_run()
 
-        if self.offline:
-            self.train_offline()
-        else:
-            experiment_finished = False
-            while not experiment_finished:
-                print(f"exp_run: {self.exp_run}")
-                print(f"max_experiment_runs: {self.max_experiment_runs}")
-                if not self.train_online(stop_event=stop_event):
-                    self.stop_record_rosbag()
+        # if self.offline:
+        #     self.train_offline()
+        # else:
+        experiment_finished = False
+        while not experiment_finished:
+            print(f"exp_run: {self.exp_run}")
+            print(f"max_experiment_runs: {self.max_experiment_runs}")
+            if self.offline:
+                if not self.train_offline(stop_event=stop_event):
                     return
-                self.stop_record_rosbag()
-                if self.exp_run < self.max_experiment_runs:
-                    self.init_run()
-                else:
-                    experiment_finished = True
+            else:
+                if not self.train_online(stop_event=stop_event):
+                    if not self.sim: self.stop_record_rosbag()
+                    return
+                
+                if not self.sim: self.stop_record_rosbag()
+            if self.exp_run < self.max_experiment_runs:
+                self.init_run()
+            else:
+                experiment_finished = True
 
     def start_rollout(self, stop_event=None, exp_run=0):
         self.init_run(exp_run=exp_run)
         self.rollout(stop_event=stop_event)
-        self.stop_record_rosbag()
+        if not self.sim: self.stop_record_rosbag()
 
     def train_online(self, stop_event=None):
         # t = 0
@@ -191,12 +255,17 @@ class RL_GH360:
             
 
         # self.evals = []
-        self.record_process = self.start_record_rosbag("rosbag_"+str(int(time.time())))
+        if not self.sim:
+            self.record_process = self.start_record_rosbag("rosbag_"+str(int(time.time())))
         start_time = time.time()
         if self.t >= self.timesteps_before_training: allow_train = True
         else: allow_train = False
 
-        state, info = self.env.reset()
+        if self.sim:
+            state = self.env.reset()
+            info = {"reset_success": True}
+        else:
+            state, info = self.env.reset()
         ep_total_reward, ep_timesteps,= 0, 0
         ep_num = int(self.t/self.ep_length) + 1
         self.evaluated = False
@@ -212,13 +281,15 @@ class RL_GH360:
 
             next_state, reward, ep_finished, _ = self.env.step(action) 
             
-            
+            if self.sim and self.render: self.env.render()
+
             ep_total_reward += reward
             ep_timesteps += 1
 
             if ep_timesteps >= self.ep_length: 
                 ep_finished = 1
-                self.env.step(np.zeros(self.RL_agent.action_dim))
+                if not self.sim:
+                    self.env.step(np.zeros(self.RL_agent.action_dim))
             # done = float(ep_finished) if ep_timesteps < 500 else 0
             done = ep_finished
             
@@ -247,7 +318,12 @@ class RL_GH360:
                         print("Saving initial buffer paths")
                         self.RL_agent.replay_buffer.save_paths(self.result_path+"/init_buffer_paths.npy")
 
-                state, info = self.env.reset()
+
+                if self.sim:
+                    state = self.env.reset()
+                    info = {"reset_success": True}
+                else:
+                    state, info = self.env.reset()
                 ep_total_reward, ep_timesteps = 0, 0
                 ep_num += 1 
                 
@@ -272,11 +348,27 @@ class RL_GH360:
         # self.RL_agent.replay_buffer.save_priority(os.path.join(self.result_path, "priority.npy"))
         # self.RL_agent.save_class_variables(self.result_path)
     
-    def train_offline(self):
-        pass
+    def train_offline(self, stop_event=None):
+        start_time = time.time()
+
+        for t in range(int(self.max_timesteps+1)):
+            self.maybe_evaluate_and_print(t, start_time)
+            self.RL_agent.train()
+
+            if stop_event.is_set():
+                self.t += 1
+                self.save_training_state()
+                return False
+            
+        self.exp_run += 1
+        self.t = 0
+        self.save_training_state()
+        return True
+
 
     def rollout(self, stop_event=None):
-        self.record_process = self.start_record_rosbag("final_eval_rosbag_"+str(int(time.time())))
+        if not self.sim:
+            self.record_process = self.start_record_rosbag("final_eval_rosbag_"+str(int(time.time())))
         total_reward = np.zeros(10)
         eval_eps = 10
         print("---------------------------------------")
@@ -284,8 +376,12 @@ class RL_GH360:
         for ep in range(eval_eps):
             print("---------------------------------------")
             print(f"Evaluation {ep}")
-            state, info = self.eval_env.reset()
-            state, info = self.eval_env.special_reset(ep)
+            if self.sim:
+                state = self.eval_env.reset()
+                info = {"reset_success": True}
+            else:
+                state, info = self.eval_env.reset()
+                state, info = self.eval_env.special_reset(ep)
 
             if stop_event.is_set() or not info["reset_success"]:
                     return False
@@ -318,7 +414,10 @@ class RL_GH360:
 
             total_reward = np.zeros(self.eval_eps)
             for ep in range(self.eval_eps):
-                state, info = self.eval_env.reset()
+                if self.sim:
+                    state = self.eval_env.reset()
+                else:
+                    state, info = self.eval_env.reset()
                 done = False
                 cntr = 0
                 while not done and cntr < self.ep_length:

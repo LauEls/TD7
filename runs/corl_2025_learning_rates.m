@@ -76,7 +76,7 @@ td7_x_values2 = (offset:evaluation_frequency*episode_length/1000:maximum_timeste
 
 alpha  = 0.3;
 line_width = 4;
-error = 'std';
+error = 'var';
 %%
 close all;
 
