@@ -1,3 +1,101 @@
+%% Comparing offline learning with different datasets
+clear all;
+close all;
+
+td7_file_base = "door_mirror/gh360/osc_pose/offline/";
+runs = 5;
+episode_length = 500;
+evaluation_frequency = 10;
+maximum_timesteps = episode_length * 200;
+
+offline_expert_raw = cell(1, runs);
+offline_expert_mean = cell(1,runs);
+offline_random_expert_raw = cell(1, runs);
+offline_random_expert_mean = cell(1,runs);
+offline_gradual_random_expert_raw = cell(1, runs);
+offline_gradual_random_expert_mean = cell(1,runs);
+
+for i=1:runs
+    offline_expert_raw{i} = readmatrix(td7_file_base+"v1_expert_paths/run_"+num2str(i-1)+"/results.csv");
+    offline_random_expert_raw{i} = readmatrix(td7_file_base+"v2_expert_random_paths/run_"+num2str(i-1)+"/results.csv");
+    offline_gradual_random_expert_raw{i} = readmatrix(td7_file_base+"v3_medium_expert_random_paths/run_"+num2str(i-1)+"/results.csv");
+
+    offline_expert_mean{i} = mean(offline_expert_raw{i},2)/episode_length;
+    offline_random_expert_mean{i} = mean(offline_random_expert_raw{i},2)/episode_length;
+    offline_gradual_random_expert_mean{i} = mean(offline_gradual_random_expert_raw{i},2)/episode_length;
+end
+
+offline_expert_trans = [transpose(offline_expert_mean{1}); transpose(offline_expert_mean{2}); transpose(offline_expert_mean{3}); transpose(offline_expert_mean{4}); transpose(offline_expert_mean{5})];
+offline_random_expert_trans = [transpose(offline_random_expert_mean{1}); transpose(offline_random_expert_mean{2}); transpose(offline_random_expert_mean{3}); transpose(offline_random_expert_mean{4}); transpose(offline_random_expert_mean{5})];
+offline_gradual_random_expert_trans = [transpose(offline_gradual_random_expert_mean{1}); transpose(offline_gradual_random_expert_mean{2}); transpose(offline_gradual_random_expert_mean{3}); transpose(offline_gradual_random_expert_mean{4}); transpose(offline_gradual_random_expert_mean{5})];
+
+td7_x_values = (0:evaluation_frequency*episode_length/1000:maximum_timesteps/1000);
+alpha  = 0.3;
+line_width = 4;
+error = 'var';
+
+options_2.color_area = [0.8500 0.3250 0.0980];
+options_2.color_line = [0.8500 0.3250 0.0980];
+options_2.alpha      = alpha;
+options_2.line_width = line_width;
+options_2.error      = error;
+options_2.x_axis     = td7_x_values;
+
+options_3.color_area = [0.9290 0.6940 0.1250];
+options_3.color_line = [0.9290 0.6940 0.1250];
+options_3.alpha      = alpha;
+options_3.line_width = line_width;
+options_3.error      = error;
+options_3.x_axis     = td7_x_values;
+
+options_4.color_area = [0.4660 0.6740 0.1880];
+options_4.color_line = [0.4660 0.6740 0.1880];
+options_4.alpha      = alpha;
+options_4.line_width = line_width;
+options_4.error      = error;
+options_4.x_axis     = td7_x_values;
+
+options_5.color_area = [0.4940 0.1840 0.5560];
+options_5.color_line = [0.4940 0.1840 0.5560];
+options_5.alpha      = alpha;
+options_5.line_width = line_width;
+options_5.error      = error;
+options_5.x_axis     = td7_x_values;
+
+options_6.color_area = [21 5 120]./255;
+options_6.color_line = [21 5 120]./255;
+options_6.alpha      = alpha;
+options_6.line_width = line_width;
+options_6.error      = error;
+options_6.x_axis     = td7_x_values;
+
+options_7.color_area = [0 255 255]./255;
+options_7.color_line = [0 255 255]./255;
+options_7.alpha      = alpha;
+options_7.line_width = line_width;
+options_7.error      = error;
+options_7.x_axis     = td7_x_values;
+
+
+figure('Position',[0 0 1920 1440]);
+hold on
+plot_areaerrorbar(offline_expert_trans, options_5);
+plot_areaerrorbar(offline_random_expert_trans, options_3);
+plot_areaerrorbar(offline_gradual_random_expert_trans, options_4);
+
+% xlim([0 26])
+ylim([0 1])
+lgd = legend('', 'Offline Expert', '', 'Offline Random Expert', '', 'Offline Gradual Random Expert', 'Location','best');
+%lgd.NumColumns = 3;
+xlabel('Time Steps (1K)','FontSize',16)
+ylabel('Normalized Reward','FontSize',16)
+%set(gca,'FontSize',55)
+set(gca,'FontSize',18)
+
+%title('Variable Impedance Controller Comparison')
+hold off
+
+
 %% Comparing influence of number of demonstrations
 clear all;
 close all;
@@ -107,8 +205,8 @@ lgd = legend('', '10 Demos', '', '20 Demos', '', '50 Demos', '', '1 Demo', '', '
 %lgd.NumColumns = 3;
 xlabel('Time Steps (1K)','FontSize',16)
 ylabel('Normalized Reward','FontSize',16)
-%set(gca,'FontSize',55)
-set(gca,'FontSize',18)
+set(gca,'FontSize',55)
+%set(gca,'FontSize',18)
 
 %title('Variable Impedance Controller Comparison')
 hold off
@@ -150,15 +248,62 @@ for i=1:runs
     seventyfive_percenatage_mean{i} = mean(seventyfive_percenatage_raw{i},2)/episode_length;
 end
 
+% ten_percenatage_overall_mean = mean(ten_percenatage_mean);
+
 ten_percenatage_trans = [transpose(ten_percenatage_mean{1}); transpose(ten_percenatage_mean{2}); transpose(ten_percenatage_mean{3}); transpose(ten_percenatage_mean{4}); transpose(ten_percenatage_mean{5})];
 twentyfive_percenatage_trans = [transpose(twentyfive_percenatage_mean{1}); transpose(twentyfive_percenatage_mean{2}); transpose(twentyfive_percenatage_mean{3}); transpose(twentyfive_percenatage_mean{4}); transpose(twentyfive_percenatage_mean{5})];
 fifty_percenatage_trans = [transpose(fifty_percenatage_mean{1}); transpose(fifty_percenatage_mean{2}); transpose(fifty_percenatage_mean{3}); transpose(fifty_percenatage_mean{4}); transpose(fifty_percenatage_mean{5})];
 seventyfive_percenatage_trans = [transpose(seventyfive_percenatage_mean{1}); transpose(seventyfive_percenatage_mean{2}); transpose(seventyfive_percenatage_mean{3}); transpose(seventyfive_percenatage_mean{4}); transpose(seventyfive_percenatage_mean{5})];
 
+ten_percenatage_overall_mean = mean(mean(ten_percenatage_trans));
+twentyfive_percenatage_overall_mean = mean(mean(twentyfive_percenatage_trans));
+fifty_percenatage_overall_mean = mean(mean(fifty_percenatage_trans));
+seventyfive_percenatage_overall_mean = mean(mean(seventyfive_percenatage_trans));
+
+ten_percenatage_overall_var = mean(var(ten_percenatage_trans));
+twentyfive_percenatage_overall_var = mean(var(twentyfive_percenatage_trans));
+fifty_percenatage_overall_var = mean(var(fifty_percenatage_trans));
+seventyfive_percenatage_overall_var = mean(var(seventyfive_percenatage_trans));
+
+bar_data = [ten_percenatage_overall_mean twentyfive_percenatage_overall_mean fifty_percenatage_overall_mean seventyfive_percenatage_overall_mean];
+error_data = [ten_percenatage_overall_var twentyfive_percenatage_overall_var fifty_percenatage_overall_var seventyfive_percenatage_overall_var];
+
 td7_x_values = (0:evaluation_frequency*episode_length/1000:maximum_timesteps/1000);
 alpha  = 0.3;
 line_width = 4;
 error = 'var';
+
+figure('Position',[0 0 1920 1440]);
+hold on;
+% bar(bar_data)
+% set(gca,'xticklabel',{'10%','20%','50%','75%'});
+
+X = categorical({'10% ratio','20% ratio','50% ratio','75% ratio'});
+X = reordercats(X,{'10% ratio','20% ratio','50% ratio','75% ratio'});
+% Y = [10 21 33 52];
+b = bar(X,bar_data);
+% b.LineWidth = line_width;
+b.FaceColor = 'flat';
+b.CData(1,:) = [0.4940 0.1840 0.5560];
+b.CData(2,:) = [0.9290 0.6940 0.1250];
+b.CData(3,:) = [0.4660 0.6740 0.1880];
+b.CData(4,:) = [0.8500 0.3250 0.0980];
+
+e = errorbar(X, bar_data, error_data);
+e.Color = 'black';
+e.LineStyle = 'none';
+e.LineWidth = line_width;
+e.CapSize = 40;
+
+ylim([0.5 0.7])
+hold off;
+
+
+
+% td7_x_values = (0:evaluation_frequency*episode_length/1000:maximum_timesteps/1000);
+% alpha  = 0.3;
+% line_width = 4;
+% error = 'var';
 
 options_2.color_area = [0.8500 0.3250 0.0980];
 options_2.color_line = [0.8500 0.3250 0.0980];

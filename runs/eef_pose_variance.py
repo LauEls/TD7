@@ -141,9 +141,16 @@ def episode_success_times(env_observations):
 def handle_angle_reached_times(env_observations, target_angle=0.6):
     handle_angle_reached_times = []
     for i in range(1, env_observations.shape[0]):
-        if env_observations[i, 3] >= target_angle and env_observations[i-1, 3] < target_angle:
+        if env_observations[i, 3] > target_angle and env_observations[i-1, 3] <= target_angle:
             handle_angle_reached_times.append(i)
     return handle_angle_reached_times
+
+def hinge_angle_reached_times(env_observations, target_angle=0.4):
+    hinge_angle_reached_times = []
+    for i in range(1, env_observations.shape[0]):
+        if env_observations[i, 5] > target_angle and env_observations[i-1, 5] <= target_angle:
+            hinge_angle_reached_times.append(i)
+    return hinge_angle_reached_times
 
 def calculate_trajectory_length(poses):
     length = 0.0
