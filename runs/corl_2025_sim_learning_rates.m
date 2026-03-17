@@ -1,3 +1,117 @@
+%% Final Evaluation
+clear all;
+close all;
+
+% options_2.color_area = [0.8500 0.3250 0.0980];
+% options_2.color_line = [0.8500 0.3250 0.0980];
+% 
+% 
+% options_3.color_area = [0.9290 0.6940 0.1250];
+% options_3.color_line = [0.9290 0.6940 0.1250];
+% 
+% 
+% options_4.color_area = [0.4660 0.6740 0.1880];
+% options_4.color_line = [0.4660 0.6740 0.1880];
+% 
+% 
+% options_5.color_area = [0.4940 0.1840 0.5560];
+% options_5.color_line = [0.4940 0.1840 0.5560];
+
+
+% x = categorical{}
+figure('Position',[0 0 1920 1440]);
+hold on;
+
+bar_categories = {'TD7+Demo','TD7', 'BC', 'Demo Replay'};
+% bar_categories = {'1','2', '3', '4'};
+X = categorical(bar_categories);
+X = reordercats(X,bar_categories);
+Y = [0.96 0.84; 0.0 0.29; 0.74 0.62; 0.28 0.37];
+% X = reordercats(X,{'TD7','TD7+Demo', 'BC', 'Demo Replay'});
+% Y = [10 21 33 52];
+b = bar(X,Y, 'grouped','GroupWidth',0.9, 'BarWidth',0.9);
+
+% axis tight;
+
+
+% Y = [10 21 33 52];
+% b.LineWidth = line_width;
+b(1).FaceAlpha = 0.9;
+b(1).FaceColor = 'flat';
+b(2).FaceAlpha = 0.9;
+b(2).FaceColor = 'flat';
+% b.CData(1,:) = options_2.color_line;
+% b.CData(2,:) = options_6.color_line;
+b(2).CData = [0.8500 0.3250 0.0980];
+b(1).CData = [0.4660 0.6740 0.1880];
+% b.CData(3,:) = options_4.color_line;
+% b.CData(4,:) = options_5.color_line;
+
+b(1).Labels = b(1).YData;
+b(2).Labels = b(2).YData;
+
+% e = errorbar(X, bar_data, error_data);
+% e.Color = 'black';
+% e.LineStyle = 'none';
+% e.LineWidth = line_width;
+% e.CapSize = 40;
+
+%xlabel('Episodes in Demonstration Buffer')
+% ylabel('Mean Reward and Variance')
+ylim([0.0 1.0])
+
+% set(gca,'FontSize',18)
+fontsize(gcf, 30, "points")
+set(gca,'FontSize',55)
+hold off;
+
+%% Final Evaluation v2
+clear all;
+close all;
+
+figure('Position',[0 0 1920 1440]);
+hold on;
+
+bar_categories = {'Success Rate','Mean Reward'};
+X = categorical(bar_categories);
+X = reordercats(X,bar_categories);
+% Y = [0.96 0.84; 0.0 0.29; 0.74 0.62; 0.28 0.37];
+Y = [0.96 0.00 0.74 0.28; 0.84 0.29 0.62 0.37];
+% X = reordercats(X,{'TD7','TD7+Demo', 'BC', 'Demo Replay'});
+% Y = [10 21 33 52];
+b = bar(X,Y, 'grouped','GroupWidth',0.6, 'BarWidth',1.0, 'FaceAlpha',0.9, 'FaceColor','flat');
+
+b(1).CData = [0.8500 0.3250 0.0980];
+b(2).CData = [0.9290 0.6940 0.1250];
+b(3).CData = [0.4660 0.6740 0.1880];
+b(4).CData = [0.4940 0.1840 0.5560];
+
+b(1).Labels = b(1).YData;
+b(2).Labels = b(2).YData;
+b(3).Labels = b(3).YData;
+b(4).Labels = b(4).YData;
+
+% ax = gca;
+% 
+% % Get current x-axis limits
+% currentXlim = xlim(ax);
+% 
+% % Set new x-axis limits to add a margin at the beginning (e.g., a margin of 0.5 units)
+% newXlimMin = currentXlim(1) - 0.5; % Subtract a small value
+% newXlimMax = currentXlim(2); % Keep the max limit the same
+% xlim(ax, [newXlimMin, newXlimMax]);
+
+
+%xlabel('Episodes in Demonstration Buffer')
+% ylabel('Mean Reward and Variance')
+ylim([0.0 1.0])
+
+% set(gca,'FontSize',18)
+fontsize(gcf, 28, "points")
+set(gca,'FontSize',55)
+hold off;
+
+
 %% Comparing offline learning with different datasets
 clear all;
 close all;
@@ -31,8 +145,8 @@ offline_gradual_random_expert_trans = [transpose(offline_gradual_random_expert_m
 
 td7_x_values = (0:evaluation_frequency*episode_length/1000:maximum_timesteps/1000);
 alpha  = 0.3;
-line_width = 4;
-error = 'var';
+line_width = 8;
+error = 'std';
 
 options_2.color_area = [0.8500 0.3250 0.0980];
 options_2.color_line = [0.8500 0.3250 0.0980];
@@ -79,18 +193,18 @@ options_7.x_axis     = td7_x_values;
 
 figure('Position',[0 0 1920 1440]);
 hold on
-plot_areaerrorbar(offline_expert_trans, options_5);
+plot_areaerrorbar(offline_expert_trans, options_2);
 plot_areaerrorbar(offline_random_expert_trans, options_3);
 plot_areaerrorbar(offline_gradual_random_expert_trans, options_4);
 
 % xlim([0 26])
 ylim([0 1])
-lgd = legend('', 'Offline Expert', '', 'Offline Random Expert', '', 'Offline Gradual Random Expert', 'Location','best');
+%lgd = legend('', 'Offline Expert', '', 'Offline Random Expert', '', 'Offline Gradual Random Expert', 'Location','best');
 %lgd.NumColumns = 3;
 xlabel('Time Steps (1K)','FontSize',16)
 ylabel('Normalized Reward','FontSize',16)
-%set(gca,'FontSize',55)
-set(gca,'FontSize',18)
+set(gca,'FontSize',55)
+%set(gca,'FontSize',18)
 
 %title('Variable Impedance Controller Comparison')
 hold off
@@ -142,9 +256,27 @@ ten_demos_trans = [transpose(ten_demos_mean{1}); transpose(ten_demos_mean{2}); t
 twenty_demos_trans = [transpose(twenty_demos_mean{1}); transpose(twenty_demos_mean{2}); transpose(twenty_demos_mean{3}); transpose(twenty_demos_mean{4}); transpose(twenty_demos_mean{5})];
 fifty_demos_trans = [transpose(fifty_demos_mean{1}); transpose(fifty_demos_mean{2}); transpose(fifty_demos_mean{3}); transpose(fifty_demos_mean{4}); transpose(fifty_demos_mean{5})];
 
+
+one_demos_overall_mean = mean(mean(one_demos_trans));
+two_demos_overall_mean = mean(mean(two_demos_trans));
+five_demos_overall_mean = mean(mean(five_demos_trans));
+ten_demos_overall_mean = mean(mean(ten_demos_trans));
+twenty_demos_overall_mean = mean(mean(twenty_demos_trans));
+fifty_demos_overall_mean = mean(mean(fifty_demos_trans));
+
+one_demos_overall_var = mean(var(one_demos_trans));
+two_demos_overall_var = mean(var(two_demos_trans));
+five_demos_overall_var = mean(var(five_demos_trans));
+ten_demos_overall_var = mean(var(ten_demos_trans));
+twenty_demos_overall_var = mean(var(twenty_demos_trans));
+fifty_demos_overall_var = mean(var(fifty_demos_trans));
+
+bar_data = [five_demos_overall_mean ten_demos_overall_mean twenty_demos_overall_mean fifty_demos_overall_mean];
+error_data = [five_demos_overall_var ten_demos_overall_var twenty_demos_overall_var fifty_demos_overall_var];
+
 td7_x_values = (0:evaluation_frequency*episode_length/1000:maximum_timesteps/1000);
 alpha  = 0.3;
-line_width = 4;
+line_width = 8;
 error = 'var';
 
 options_2.color_area = [0.8500 0.3250 0.0980];
@@ -191,17 +323,60 @@ options_7.x_axis     = td7_x_values;
 
 
 figure('Position',[0 0 1920 1440]);
+hold on;
+% bar(bar_data)
+% set(gca,'xticklabel',{'10%','20%','50%','75%'});
+
+X = categorical({'5','10', '20', '50'});
+X = reordercats(X,{'5','10', '20', '50'});
+% Y = [10 21 33 52];
+b = bar(X,bar_data);
+% b.LineWidth = line_width;
+b.FaceAlpha = 0.9;
+b.FaceColor = 'flat';
+% b.CData(1,:) = options_2.color_line;
+% b.CData(2,:) = options_6.color_line;
+b.CData(1,:) = options_2.color_line;
+b.CData(2,:) = options_3.color_line;
+b.CData(3,:) = options_4.color_line;
+b.CData(4,:) = options_5.color_line;
+
+e = errorbar(X, bar_data, error_data);
+e.Color = 'black';
+e.LineStyle = 'none';
+e.LineWidth = line_width;
+e.CapSize = 40;
+
+%xlabel('Episodes in Demonstration Buffer')
+ylabel('Mean Reward and Variance','FontSize',16)
+ylim([0.4 0.7])
+
+% set(gca,'FontSize',18)
+set(gca,'FontSize',55)
+hold off;
+
+
+% td7_x_values = (0:evaluation_frequency*episode_length/1000:maximum_timesteps/1000);
+% alpha  = 0.3;
+% line_width = 4;
+% error = 'var';
+
+
+
+
+figure('Position',[0 0 1920 1440]);
 hold on
-plot_areaerrorbar(ten_demos_trans, options_5);
-plot_areaerrorbar(twenty_demos_trans, options_3);
-plot_areaerrorbar(fifty_demos_trans, options_4);
-plot_areaerrorbar(one_demos_trans, options_2);
-plot_areaerrorbar(two_demos_trans, options_6);
-plot_areaerrorbar(five_demos_trans, options_7);
+plot_areaerrorbar(five_demos_trans, options_2);
+plot_areaerrorbar(ten_demos_trans, options_3);
+plot_areaerrorbar(twenty_demos_trans, options_4);
+plot_areaerrorbar(fifty_demos_trans, options_5);
+%plot_areaerrorbar(one_demos_trans, options_2);
+%plot_areaerrorbar(two_demos_trans, options_6);
+
 
 % xlim([0 26])
 ylim([0 1])
-lgd = legend('', '10 Demos', '', '20 Demos', '', '50 Demos', '', '1 Demo', '', '2 Demos', '', '5 Demos', 'Location','best');
+%lgd = legend('', '10 Demos', '', '20 Demos', '', '50 Demos', '', '5 Demos', 'Location','best');
 %lgd.NumColumns = 3;
 xlabel('Time Steps (1K)','FontSize',16)
 ylabel('Normalized Reward','FontSize',16)
@@ -270,40 +445,8 @@ error_data = [ten_percenatage_overall_var twentyfive_percenatage_overall_var fif
 
 td7_x_values = (0:evaluation_frequency*episode_length/1000:maximum_timesteps/1000);
 alpha  = 0.3;
-line_width = 4;
+line_width = 8;
 error = 'var';
-
-figure('Position',[0 0 1920 1440]);
-hold on;
-% bar(bar_data)
-% set(gca,'xticklabel',{'10%','20%','50%','75%'});
-
-X = categorical({'10% ratio','20% ratio','50% ratio','75% ratio'});
-X = reordercats(X,{'10% ratio','20% ratio','50% ratio','75% ratio'});
-% Y = [10 21 33 52];
-b = bar(X,bar_data);
-% b.LineWidth = line_width;
-b.FaceColor = 'flat';
-b.CData(1,:) = [0.4940 0.1840 0.5560];
-b.CData(2,:) = [0.9290 0.6940 0.1250];
-b.CData(3,:) = [0.4660 0.6740 0.1880];
-b.CData(4,:) = [0.8500 0.3250 0.0980];
-
-e = errorbar(X, bar_data, error_data);
-e.Color = 'black';
-e.LineStyle = 'none';
-e.LineWidth = line_width;
-e.CapSize = 40;
-
-ylim([0.5 0.7])
-hold off;
-
-
-
-% td7_x_values = (0:evaluation_frequency*episode_length/1000:maximum_timesteps/1000);
-% alpha  = 0.3;
-% line_width = 4;
-% error = 'var';
 
 options_2.color_area = [0.8500 0.3250 0.0980];
 options_2.color_line = [0.8500 0.3250 0.0980];
@@ -335,20 +478,62 @@ options_5.x_axis     = td7_x_values;
 
 
 figure('Position',[0 0 1920 1440]);
+hold on;
+% bar(bar_data)
+% set(gca,'xticklabel',{'10%','20%','50%','75%'});
+
+X = categorical({'10%','20%','50%','75%'});
+X = reordercats(X,{'10%','20%','50%','75%'});
+% Y = [10 21 33 52];
+b = bar(X,bar_data);
+% b.LineWidth = line_width;
+b.FaceAlpha = 0.9;
+b.FaceColor = 'flat';
+b.CData(1,:) = options_2.color_line;
+b.CData(2,:) = options_3.color_line;
+b.CData(3,:) = options_4.color_line;
+b.CData(4,:) = options_5.color_line;
+
+e = errorbar(X, bar_data, error_data);
+e.Color = 'black';
+e.LineStyle = 'none';
+e.LineWidth = line_width;
+e.CapSize = 40;
+
+title('Percentage of Demonstration Data in Learning Batch')
+%xlabel('Demonstrations in Learning Batch')
+ylabel('Mean Reward and Variance','FontSize',16)
+ylim([0.5 0.7])
+
+% set(gca,'FontSize',18)
+set(gca,'FontSize',55)
+hold off;
+
+
+
+% td7_x_values = (0:evaluation_frequency*episode_length/1000:maximum_timesteps/1000);
+% alpha  = 0.3;
+% line_width = 4;
+% error = 'var';
+
+
+
+
+figure('Position',[0 0 1920 1440]);
 hold on
-plot_areaerrorbar(ten_percenatage_trans, options_5);
+plot_areaerrorbar(ten_percenatage_trans, options_2);
 plot_areaerrorbar(twentyfive_percenatage_trans, options_3);
 plot_areaerrorbar(fifty_percenatage_trans, options_4);
-plot_areaerrorbar(seventyfive_percenatage_trans, options_2);
+plot_areaerrorbar(seventyfive_percenatage_trans, options_5);
 
 % xlim([0 26])
 ylim([0 1])
-lgd = legend('', '10% ratio', '', '20% ratio', '', '50% ratio', '', '75% ratio', 'Location','best');
+% lgd = legend('', '10% ratio', '', '20% ratio', '', '50% ratio', '', '75% ratio', 'Location','best');
 %lgd.NumColumns = 3;
 xlabel('Time Steps (1K)','FontSize',16)
 ylabel('Normalized Reward','FontSize',16)
-%set(gca,'FontSize',55)
-set(gca,'FontSize',18)
+set(gca,'FontSize',55)
+% set(gca,'FontSize',18)
 
 %title('Variable Impedance Controller Comparison')
 hold off
@@ -528,8 +713,187 @@ set(gca,'FontSize',18)
 %title('Variable Impedance Controller Comparison')
 hold off
 
+%% Comparing full length learning
+clear all;
+close all;
+
+td7_file_base = "door_mirror/gh360/osc_pose/";
+runs = 5;
+episode_length = 500;
+evaluation_frequency = 10;
+episodes = 10000;
+mean_plot = false;
+
+
+
+file_paths = [
+    td7_file_base+"/online/"+"v17_rl_with_demo_full_length";
+    td7_file_base+"/online/"+"v18_rl_without_demo_full_length";
+    td7_file_base+"/offline/"+"v4_medium_expert_paths_full_length";
+];
+
+bar_categories = {''};
+bar_category_label = '';
+
+data = draw_learning_analysis(file_paths, runs, episode_length, evaluation_frequency, episodes, mean_plot, bar_categories, bar_category_label);
+
+%% Comparing different learning methods
+clear all;
+close all;
+
+td7_file_base = "door_mirror/gh360/osc_pose/";
+runs = 5;
+episode_length = 500;
+evaluation_frequency = 10;
+episodes = 200;
+mean_plot = false;
+
+file_paths = [
+    td7_file_base+"/online/"+"v9_20_demos"; % Online RL + Demo
+    td7_file_base+"/online/"+"v19_rl_without_demo"; % Online RL
+    td7_file_base+"/offline/"+"v3_medium_expert_random_paths"; % Offline
+    % BC
+];
+
+bar_categories = {''};
+bar_category_label = '';
+
+data = draw_learning_analysis(file_paths, runs, episode_length, evaluation_frequency, episodes, mean_plot, bar_categories, bar_category_label);
+
+
+%% Comparing Demonstration to Exploration ratio in learning batch
+clear all;
+close all;
+
+td7_file_base = "door_mirror/gh360/osc_pose/online/";
+runs = 5;
+episode_length = 500;
+evaluation_frequency = 10;
+episodes = 200;
+mean_plot = true;
+
+
+
+file_paths = [
+    td7_file_base+"v13_10_ratio";
+    td7_file_base+"v11_25_ratio";
+    td7_file_base+"v9_20_demos";
+    td7_file_base+"v12_75_ratio";
+];
+
+bar_categories = {'10%', '25%', '50%', '75%'};
+bar_category_label = 'Demonstrations in Learning Batch';
+
+data = draw_learning_analysis(file_paths, runs, episode_length, evaluation_frequency, episodes, mean_plot, bar_categories, bar_category_label);
 
 %%
+function option = getOption(iter, episode_length, evaluation_frequency, maximum_timesteps)
+    td7_x_values = (0:evaluation_frequency*episode_length/1000:maximum_timesteps/1000);
+    alpha  = 0.3;
+    line_width = 8;
+    error = 'std';
+    colors = {[0.8500 0.3250 0.0980]; [0.9290 0.6940 0.1250]; [0.4660 0.6740 0.1880]; [0.4940 0.1840 0.5560]; [21 5 120]./255; [0 255 255]./255};
+
+    option.color_area = colors{iter};
+    option.color_line = colors{iter};
+    option.alpha = alpha;
+    option.line_width = line_width;
+    option.error      = error;
+    option.x_axis     = td7_x_values;
+   
+end
+
+function data_mean = draw_learning_analysis(file_paths, runs, episode_length, evaluation_frequency, episodes, mean_plot, bar_categories, bar_category_label)
+    maximum_timesteps = episode_length * episodes;
+    evaluations = episodes/evaluation_frequency+1;
+
+    data = cell(size(file_paths,1), runs);
+    data_mean = cell(size(file_paths,1), runs);
+    data_trans = cell(size(file_paths,1),1);
+    
+    demo = [303.58425876378936 379.84050961932354 393.9671332686742 305.3618362973439 312.18631963501014 335.21817626120776 321.10422960815595 322.1877051093933 387.4116885320301 373.05563995501586 319.3999190978943 268.59024276014486 369.8436111152886 355.0600473635285 367.17086653023966 297.33909141111695 346.05007938467986 331.2123322407663 345.772363427121 366.36275313640635 351.64756210367517 270.44162276974953 396.23024372545103 320.5808254673216 357.7309294815964 360.9186174750906 325.50420508330194 370.0506123849263 361.14031763162535 320.02624306602286 322.20844666327184 319.7311495338364 382.79713636410816 289.5285159767229 346.9746182927988 368.9169901236438 321.72697232517726 327.2626139221626 350.3050501240054 377.3064498479384 321.12500925035374 316.6972973286751 328.22238841747077 353.1643804368879 365.9145708538034 327.42012712492135 316.7627085880502 359.9344037359584 350.9696326816663 291.3304514085871];
+    demo = demo/episode_length;
+%     demo = demo(1:20)/episode_length;
+    size(demo,2)
+    demo_trans = zeros(size(demo,2), episodes/10+1);
+    size(demo_trans)
+    for i=1:(episodes/10+1)
+        demo_trans(:,i) = transpose(demo);
+    end
+%     demo_trans = [transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo)];
+%     demo_trans = [transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo)];
+
+
+    figure('Position',[0 0 1920 1440]);
+    hold on
+    for i=1:size(file_paths)
+        data_trans{i} = zeros(runs,evaluations);
+        for j=1:runs
+            data{i,j} = readmatrix(file_paths(i)+"/run_"+num2str(j-1)+"/results.csv");
+            data_mean{i,j} = mean(data{i,j},2)/episode_length;
+            data_trans{i}(j,:) = transpose(data_mean{i,j});
+        end
+        
+        plot_areaerrorbar(data_trans{i}, getOption(i, episode_length, evaluation_frequency, maximum_timesteps));
+    end
+
+    plot_areaerrorbar(demo_trans, getOption(size(file_paths)+1, episode_length, evaluation_frequency, maximum_timesteps));
+
+    %xlim([0 300])
+    ylim([0 1])
+    % lgd = legend('', '10% ratio', '', '20% ratio', '', '50% ratio', '', '75% ratio', 'Location','best');
+    %lgd.NumColumns = 3;
+    xlabel('Time Steps (1K)','FontSize',16)
+    ylabel('Normalized Reward','FontSize',16)
+    set(gca,'FontSize',55)
+    % set(gca,'FontSize',18)
+    
+    %title('Variable Impedance Controller Comparison')
+    hold off
+
+    if mean_plot == true
+        line_width = 8;
+        data_overall_mean = zeros(size(file_paths,1),1);
+        data_overall_mean_var = zeros(size(file_paths,1),1);
+
+        figure('Position',[0 0 1920 1440]);
+        hold on; 
+
+        for i=1:size(file_paths)
+            data_overall_mean(i) = mean(mean(data_trans{i}));
+            data_overall_mean_var(i) = mean(var(data_trans{i}));
+        end
+
+        X = categorical(bar_categories);
+        X = reordercats(X,bar_categories);
+        % Y = [10 21 33 52];
+        b = bar(X,data_overall_mean);
+        % b.LineWidth = line_width;
+        b.FaceAlpha = 0.9;
+        b.FaceColor = 'flat';
+
+        for i=1:size(file_paths)
+            b.CData(i,:) = getOption(i, episode_length, evaluation_frequency, maximum_timesteps).color_line;
+        end
+
+        e = errorbar(X, data_overall_mean, data_overall_mean_var);
+        e.Color = 'black';
+        e.LineStyle = 'none';
+        e.LineWidth = line_width;
+        e.CapSize = 40;
+
+        xlabel(bar_category_label)
+        ylabel('Mean Reward and Variance','FontSize',16)
+        ylim([0.5 0.7])
+        
+        % set(gca,'FontSize',18)
+        set(gca,'FontSize',55)
+        hold off;
+    end
+
+end
+
+
 
 function avg = calcAverage(x)
     n = 20;             % Number of elements to create the mean over

@@ -15,14 +15,17 @@ class ROSBagMsg:
 
 # file_base = 'door/real_gh360/eef_vel/online/v8_corl_with_demos/run_2/'
 # bag_name = 'rosbag_1745229620'
-file_base = 'door/real_gh360/eef_vel/online/v14_video_recording/run_0/'
-bag_name = 'rosbag_1746173971'
+# file_base = 'door/real_gh360/eef_vel/online/v14_video_recording/run_0/'
+# id = 1746173971
+file_base = 'door/real_gh360/eef_vel/online/v10_corl_without_demos_2/run_2/'
+id = 1745495498
+bag_name = f'rosbag_{id}'
 rosbag_path = file_base + bag_name
-joint_states_path = file_base + 'joint_states.csv'
-motor_states_path = file_base + 'motor_states.csv'
-goal_eef_vel_path = file_base + 'goal_eef_vel.csv'
-eef_pose_path = file_base + 'eef_pose.csv'
-env_obs_path = file_base + 'environment_observations.csv'
+joint_states_path = file_base + f'joint_states_{id}.csv'
+motor_states_path = file_base + f'motor_states_{id}.csv'
+goal_eef_vel_path = file_base + f'goal_eef_vel_{id}.csv'
+eef_pose_path = file_base + f'eef_pose_{id}.csv'
+env_obs_path = file_base + f'environment_observations_{id}.csv'
 # joint_states_path = file_base + 'final_eval_joint_states.csv'
 # motor_states_path = file_base + 'final_eval_motor_states.csv'
 # goal_eef_vel_path = file_base + 'final_eval_goal_eef_vel.csv'

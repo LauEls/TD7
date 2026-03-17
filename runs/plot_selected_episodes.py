@@ -2,7 +2,7 @@ import numpy as np
 import pandas
 import matplotlib.pyplot as plt
 import matplotlib.patheffects as pe
-from matplotlib.ticker import (AutoMinorLocator, MultipleLocator)
+from matplotlib.ticker import (AutoMinorLocator, FormatStrFormatter, MultipleLocator)
 
 
 def filter_eef_poses(eef_poses, event_times):
@@ -264,60 +264,87 @@ def hinge_angle_reached_times(env_observations, target_angle=0.4):
             hinge_angle_reached_times.append([env_observations[i, 0], 3])
     return hinge_angle_reached_times
 
-def plot_trajectories(start_idx, stop_idx, step_size, filtered_poses, x_lims, y_lims, z_lims, trajectory_line_width=5, alpha=0.8):
+def finde_axis_limits(poses, start_idx, stop_idx, step_size, start_pos, door_handle_pos):
+    # x_min, x_max = float('inf'), float('-inf')
+    # y_min, y_max = float('inf'), float('-inf')
+    # z_min, z_max = float('inf'), float('-inf')
+
+    x_min, x_max = start_pos[0]-0.01, door_handle_pos[0]+0.01
+    y_min, y_max = start_pos[1]-0.01, door_handle_pos[1]+0.01
+    z_min, z_max = door_handle_pos[2]-0.01, start_pos[2]+0.01
+
+    for i in range(start_idx, stop_idx+1, step_size):
+        for key in poses:
+            for subseq in poses[key][i]:
+                x_vals = subseq[:, 1]
+                y_vals = subseq[:, 2]
+                z_vals = subseq[:, 3]
+
+                x_min = min(x_min, np.min(x_vals))
+                x_max = max(x_max, np.max(x_vals))
+                y_min = min(y_min, np.min(y_vals))
+                y_max = max(y_max, np.max(y_vals))
+                z_min = min(z_min, np.min(z_vals))
+                z_max = max(z_max, np.max(z_vals))
+
+    return (x_min, x_max), (y_min, y_max), (z_min, z_max)
+
+def plot_trajectories(start_idx, stop_idx, step_size, filtered_poses, trajectory_line_width=5, alpha=0.8, start_text_offset=np.array([0.0, 0.0, 0.0]), door_handle_text_offset=np.array([0.0, 0.0, 0.0]), axis_label_pad=np.array([0, 0, 0]), tick_pad=np.array([0, 0, 0]), tick_num=np.array([3, 5, 6])):
     fig = plt.figure()
     ax = plt.axes(projection='3d')
-    axis_fontsize = 18
+    # axis_fontsize = 26
+    text_fontsize = 32
+    axis_label_fontsize = 32
+    axis_tick_fontsize = 32
+    point_size = 1000
+
+    # plt.rcParams.update({
+    # 'font.size': 26,          # General font size
+    # 'axes.labelsize': 26,     # X and Y label size
+    # 'axes.titlesize': 26, 
+    # })
     # trajectory_line_width = 5
 
     start_pos_2 = np.array([0.09667707, 0.33416114, 0.26332604])
     door_handle_pos = np.array([0.12883546,  0.34898176,  0.16951997])
 
-    start_text = ax.text(start_pos_2[0], start_pos_2[1], start_pos_2[2]+0.01, "Start Position", color='red', size=14, weight='bold')
-    start_text.set_path_effects([
-        pe.Stroke(linewidth=3, foreground='white'), # Border color and width
-        pe.Normal() # Ensures the text is drawn on top of the stroke
-    ])
+    # start_text = ax.text(start_pos_2[0]+start_text_offset[0], start_pos_2[1]+start_text_offset[1], start_pos_2[2]+start_text_offset[2]-0.005, "Start Position",  color='red', weight='bold', fontsize=text_fontsize)
+    # start_text.set_path_effects([
+    #     pe.Stroke(linewidth=3, foreground='white'), # Border color and width
+    #     pe.Normal() # Ensures the text is drawn on top of the stroke
+    # ])
     
-    door_handle_text = ax.text(door_handle_pos[0], door_handle_pos[1], door_handle_pos[2]+0.01, "Door Handle", color='orange', size=14, weight='bold')
-    door_handle_text.set_path_effects([
-        pe.Stroke(linewidth=3, foreground='white'), # Border color and width
-        pe.Normal() # Ensures the text is drawn on top of the stroke
-    ])
+    # door_handle_text = ax.text(door_handle_pos[0]+door_handle_text_offset[0], door_handle_pos[1]+door_handle_text_offset[1], door_handle_pos[2]+door_handle_text_offset[2]-0.005, "Door Handle", color='orange', weight='bold', fontsize=text_fontsize)
+    # door_handle_text.set_path_effects([
+    #     pe.Stroke(linewidth=3, foreground='white'), # Border color and width
+    #     pe.Normal() # Ensures the text is drawn on top of the stroke
+    # ])
+
+    # start_point_legend = ax.scatter3D(start_pos_2[0], start_pos_2[1], start_pos_2[2]+start_text_offset[2], color='red', s=point_size, label='Start')
+    # start_point_legend.set_path_effects([
+    #     pe.Stroke(linewidth=5, foreground='white'), # Border color and width
+    #     pe.Normal() # Ensures the text is drawn on top of the stroke
+    # ])
     
-    start_point = ax.scatter3D(start_pos_2[0], start_pos_2[1], start_pos_2[2], color='red', s=100, label='Start')
+    start_point = ax.scatter3D(start_pos_2[0], start_pos_2[1], start_pos_2[2], color='red', s=point_size, label='Start')
     start_point.set_path_effects([
         pe.Stroke(linewidth=5, foreground='white'), # Border color and width
         pe.Normal() # Ensures the text is drawn on top of the stroke
     ])
+
+    # door_handle_point_legend = ax.scatter3D(door_handle_pos[0], door_handle_pos[1], door_handle_pos[2]+door_handle_text_offset[2], color='orange', s=point_size, label='Door Handle')
+    # door_handle_point_legend.set_path_effects([
+    #     pe.Stroke(linewidth=5, foreground='white'), # Border color and width
+    #     pe.Normal() # Ensures the text is drawn on top of the stroke
+    # ])
     
-    door_handle_point = ax.scatter3D(door_handle_pos[0], door_handle_pos[1], door_handle_pos[2], color='orange', s=100, label='Door Handle')
+    door_handle_point = ax.scatter3D(door_handle_pos[0], door_handle_pos[1], door_handle_pos[2], color='orange', s=point_size, label='Door Handle')
     door_handle_point.set_path_effects([
         pe.Stroke(linewidth=5, foreground='white'), # Border color and width
         pe.Normal() # Ensures the text is drawn on top of the stroke
     ])
 
-    # start_idx = 0
-    # stop_idx = 44
-    # start_idx = 55
-    # stop_idx = 99
-    # # start_idx = 88
-    # # stop_idx = 132
-    # # start_idx = 110
-    # # stop_idx = 154
-    # # start_idx = 165
-    # # stop_idx = 220
-    # step_size = 11
-
-    # # start_idx = 1
-    # # stop_idx = 5
-    # start_idx = 100
-    # stop_idx = 109
-    # # start_idx = 110
-    # # stop_idx = 154
-    # # start_idx = 165
-    # # stop_idx = 220
-    # step_size = 1
+    x_lims, y_lims, z_lims = finde_axis_limits(filtered_poses, start_idx, stop_idx, step_size, start_pos=start_pos_2, door_handle_pos=door_handle_pos)
 
     for i in range(start_idx, stop_idx+1, step_size):
         if len(filtered_poses['free_space'][i]) != 0:
@@ -335,23 +362,33 @@ def plot_trajectories(start_idx, stop_idx, step_size, filtered_poses, x_lims, y_
     # ax.legend()
 
     # ax.set_title('3D EEF Pose Trajectory for last Episode')
-    ax.set_xlabel('X Position (m)', fontsize=axis_fontsize, labelpad=30)
-    ax.set_ylabel('Y Position (m)', fontsize=axis_fontsize, labelpad=30)
-    ax.set_zlabel('Z Position (m)', fontsize=axis_fontsize, labelpad=30)
-
-    # ax.xaxis.set_tick_params(labelsize=axis_fontsize)
-    # ax.yaxis.set_tick_params(labelsize=axis_fontsize)
-    # ax.zaxis.set_tick_params(labelsize=axis_fontsize)
+    ax.set_xlabel('X Position (m)', labelpad=axis_label_pad[0], fontsize=axis_label_fontsize)
+    ax.set_ylabel('Y Position (m)', labelpad=axis_label_pad[1], fontsize=axis_label_fontsize)
+    ax.set_zlabel('Z Position (m)', labelpad=axis_label_pad[2], fontsize=axis_label_fontsize)
+    # ax.xaxis.label.set_visible(False)
+    # ax.yaxis.label.set_visible(False)
+    # ax.zaxis.label.set_visible(False)
     
 
+    ax.xaxis.set_tick_params(labelsize=axis_tick_fontsize, pad=tick_pad[0])
+    ax.yaxis.set_tick_params(labelsize=axis_tick_fontsize, pad=tick_pad[1])
+    ax.zaxis.set_tick_params(labelsize=axis_tick_fontsize, pad=tick_pad[2])
+
+    # ax.xaxis.labelpad = 20
+    # ax.yaxis.labelpad = 20
+    # ax.zaxis.labelpad = 20
+    
+    ax.xaxis.set_major_formatter(FormatStrFormatter('%.2f'))
+    ax.yaxis.set_major_formatter(FormatStrFormatter('%.2f'))
+    ax.zaxis.set_major_formatter(FormatStrFormatter('%.2f'))
     # 1. Define your specific limits
     # x_lims = [0.05, 0.15]
     # y_lims = [0.15, 0.35]
     # z_lims = [0.09, 0.275]
 
-    # ax.set_xticks(np.linspace(x_lims[0], x_lims[1], num=3))
-    # ax.set_yticks(np.linspace(y_lims[0], y_lims[1], num=5))
-    # ax.set_zticks(np.linspace(z_lims[0], z_lims[1], num=6))
+    ax.set_xticks(np.linspace(x_lims[0], x_lims[1], num=tick_num[0]))
+    ax.set_yticks(np.linspace(y_lims[0], y_lims[1], num=tick_num[1]))
+    ax.set_zticks(np.linspace(z_lims[0], z_lims[1], num=tick_num[2]))
 
     ax.autoscale(True)
 
@@ -382,6 +419,7 @@ def plot_trajectories(start_idx, stop_idx, step_size, filtered_poses, x_lims, y_
     # ax.set_zlim([-0.05, 0.3])
 
     ax.view_init(elev=22, azim=45, roll=0)
+    fig.tight_layout()
     
 
 
@@ -389,6 +427,10 @@ if __name__ == "__main__":
     panda_goal_eef_vel = pandas.read_csv('door/real_gh360/eef_vel/online/v14_video_recording/run_0/goal_eef_vel.csv')
     panda_eef_poses = pandas.read_csv('door/real_gh360/eef_vel/online/v14_video_recording/run_0/eef_pose.csv')
     panda_env_obs = pandas.read_csv('door/real_gh360/eef_vel/online/v14_video_recording/run_0/environment_observations.csv')
+
+    # panda_goal_eef_vel = pandas.read_csv('door/real_gh360/eef_vel/online/v10_corl_without_demos_2/run_2/goal_eef_vel_1745495498.csv')
+    # panda_eef_poses = pandas.read_csv('door/real_gh360/eef_vel/online/v10_corl_without_demos_2/run_2/eef_pose_1745495498.csv')
+    # panda_env_obs = pandas.read_csv('door/real_gh360/eef_vel/online/v10_corl_without_demos_2/run_2/environment_observations_1745495498.csv')
 
     goal_eef_vel = panda_goal_eef_vel.to_numpy()
     eef_poses = panda_eef_poses.to_numpy()
@@ -481,40 +523,110 @@ if __name__ == "__main__":
     print(f"Filtered EEF poses:")
     print(f"  Free space poses: {filtered_poses['free_space'][218][0].shape}")
     print(f"  Handle move poses: {filtered_poses['handle_move'][218][0].shape}")
-    print(f"  Hinge move poses: {filtered_poses['hinge_move'][218][0].shape}")
+    # print(f"  Hinge move poses: {filtered_poses['hinge_move'][218][0].shape}")
     # print(f"  Episode success poses: {filtered_poses['episode_success'][218][0].shape}") 
 
-    plot_trajectories(
-        start_idx=0, 
-        stop_idx=44, 
-        step_size=11, 
-        filtered_poses=filtered_poses, 
-        x_lims=[0.0, 0.35], 
-        y_lims=[-0.1, 0.45], 
-        z_lims=[0.09, 0.35], 
-        trajectory_line_width=5
-    )
+    # plot_trajectories(
+    #     start_idx=0, 
+    #     stop_idx=44, 
+    #     step_size=11, 
+    #     filtered_poses=filtered_poses, 
+    #     trajectory_line_width=10,
+    #     # start_text_offset=np.array([0.0, -0.055, -0.013]),
+    #     # door_handle_text_offset=np.array([0.0, 0.003, 0.009]),
+    #     start_text_offset=np.array([0.0, 0.015, 0.3]),
+    #     door_handle_text_offset=np.array([0.0, 0.015, 0.37]),
+    #     axis_label_pad=np.array([20, 60, 37]),
+    #     tick_pad=np.array([0, 30, 15]),
+    #     tick_num=np.array([5, 5, 6])
+    # )
 
-    plot_trajectories(
-        start_idx=55, 
-        stop_idx=99, 
-        step_size=11, 
-        filtered_poses=filtered_poses, 
-        x_lims=[0.05, 0.15], 
-        y_lims=[0.15, 0.35], 
-        z_lims=[0.09, 0.275], 
-        trajectory_line_width=5
-    )
+    # plot_trajectories(
+    #     start_idx=55, 
+    #     stop_idx=99, 
+    #     step_size=11, 
+    #     filtered_poses=filtered_poses, 
+    #     trajectory_line_width=10,
+    #     start_text_offset=np.array([0.0, -0.055, -0.013]),
+    #     door_handle_text_offset=np.array([0.0, 0.003, 0.009]),
+    #     axis_label_pad=np.array([20, 55, 37]),
+    #     tick_pad=np.array([0, 20, 18]),
+    #     tick_num=np.array([5, 5, 6])
+    # )
 
-    plot_trajectories(
-        start_idx=165, 
-        stop_idx=220, 
-        step_size=11, 
-        filtered_poses=filtered_poses, 
-        x_lims=[0.05, 0.12], 
-        y_lims=[0.15, 0.35], 
-        z_lims=[0.09, 0.275], 
-        trajectory_line_width=5
-    )
+    # plot_trajectories(
+    #     start_idx=165, 
+    #     stop_idx=220, 
+    #     step_size=11, 
+    #     filtered_poses=filtered_poses,
+    #     trajectory_line_width=10,
+    #     start_text_offset=np.array([0.0, -0.055, -0.013]),
+    #     door_handle_text_offset=np.array([0.0, -0.003, -0.009]),
+    #     axis_label_pad=np.array([20, 53, 55]),
+    #     tick_pad=np.array([0, 25, 25]),
+    #     tick_num=np.array([3, 5, 6])
+    # )
+
+    # plot_trajectories(
+    #     start_idx=0, 
+    #     stop_idx=60, 
+    #     step_size=15, 
+    #     filtered_poses=filtered_poses, 
+    #     trajectory_line_width=10,
+    #     # start_text_offset=np.array([0.0, -0.055, -0.013]),
+    #     # door_handle_text_offset=np.array([0.0, 0.003, 0.009]),
+    #     start_text_offset=np.array([0.0, 0.015, 0.3]),
+    #     door_handle_text_offset=np.array([0.0, 0.015, 0.37]),
+    #     axis_label_pad=np.array([60, 50, 37]),
+    #     tick_pad=np.array([5, 30, 15]),
+    #     tick_num=np.array([6, 2, 5])
+    # )
+
+    # plot_trajectories(
+    #     start_idx=75, 
+    #     stop_idx=135, 
+    #     step_size=15, 
+    #     filtered_poses=filtered_poses, 
+    #     trajectory_line_width=10,
+    #     # start_text_offset=np.array([0.0, -0.055, -0.013]),
+    #     # door_handle_text_offset=np.array([0.0, 0.003, 0.009]),
+    #     start_text_offset=np.array([0.0, 0.015, 0.3]),
+    #     door_handle_text_offset=np.array([0.0, 0.015, 0.37]),
+    #     axis_label_pad=np.array([40, 35, 40]),
+    #     tick_pad=np.array([5, 20, 15]),
+    #     tick_num=np.array([6, 2, 5])
+    # )
+
+    # plot_trajectories(
+    #     start_idx=150, 
+    #     stop_idx=210, 
+    #     step_size=15, 
+    #     filtered_poses=filtered_poses, 
+    #     trajectory_line_width=10,
+    #     # start_text_offset=np.array([0.0, -0.055, -0.013]),
+    #     # door_handle_text_offset=np.array([0.0, 0.003, 0.009]),
+    #     start_text_offset=np.array([0.0, 0.015, 0.3]),
+    #     door_handle_text_offset=np.array([0.0, 0.015, 0.37]),
+    #     axis_label_pad=np.array([20, 60, 37]),
+    #     tick_pad=np.array([0, 30, 15]),
+    #     tick_num=np.array([5, 5, 6])
+    # )
+
+    # plot_trajectories(
+    #     start_idx=225, 
+    #     stop_idx=300, 
+    #     step_size=15, 
+    #     filtered_poses=filtered_poses, 
+    #     trajectory_line_width=10,
+    #     # start_text_offset=np.array([0.0, -0.055, -0.013]),
+    #     # door_handle_text_offset=np.array([0.0, 0.003, 0.009]),
+    #     start_text_offset=np.array([0.0, 0.015, 0.3]),
+    #     door_handle_text_offset=np.array([0.0, 0.015, 0.37]),
+    #     axis_label_pad=np.array([35, 31, 65]),
+    #     tick_pad=np.array([0, 16, 27]),
+    #     tick_num=np.array([3, 2, 5])
+    # )
+
+
 
     plt.show()

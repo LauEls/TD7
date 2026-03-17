@@ -149,11 +149,12 @@ print(motor_variance)
 print(final_eval_motor_variance)
 
 metrics = ["Shoulder Yaw", "Shoulder Roll", "Shoulder Pitch", "Uppperarm Roll", "Elbow", "Forearm Roll", "Wrist Pitch"]
+# metrics = ["1", "2", "3", "4", "5", "6", "7"]
 theta = np.linspace(0, 2 * np.pi, len(metrics), endpoint=False)
 theta = np.concatenate((theta, [theta[0]]))
 fig, ax = plt.subplots(figsize=(13, 12), subplot_kw={'projection': 'polar'})
 # Title
-ax.set_title("Motor Position [rad*10^3] Variance in Reset Position at Episode Start",y=1.1, fontsize=20)
+# ax.set_title("Motor Position [rad*10^3] Variance in Reset Position at Episode Start",y=1.1, fontsize=20)
 # Direction of the zero angle to the north (upwards)
 ax.set_theta_zero_location("N")
 # Direction of the angles to be counterclockwise
@@ -165,24 +166,29 @@ ax.spines['polar'].set_zorder(1)
 # Color of radial girdlines
 ax.spines['polar'].set_color('lightgrey')
 
-color_palette = ['#339F00', '#0500FF', '#9CDADB', '#FF00DE', '#FF9900', '#FFFFFF']
+color_palette = [(0.8500, 0.3250, 0.0980), (0.9290, 0.6940, 0.1250), (0.4660, 0.6740, 0.1880), (0.4940, 0.1840, 0.5560)]
+linewidth = 8
+marker_size = 20
+alpha = 0.3
+text_size = 56
 
 values = np.concatenate((final_eval_motor_variance, [final_eval_motor_variance[0]]))
-ax.plot(theta, values, linewidth=1.75, linestyle='solid', label="Motor Variance during Final Evaluation", marker='o', markersize=10, color=color_palette[1])
-ax.fill(theta, values, alpha=0.50, color=color_palette[1])  
+ax.plot(theta, values, linewidth=linewidth, linestyle='solid', label="Motor Variance during Final Evaluation", marker='o', markersize=marker_size, color=color_palette[0])
+ax.fill(theta, values, alpha=alpha, color=color_palette[0])  
 values = np.concatenate((motor_variance, [motor_variance[0]]))
-ax.plot(theta, values, linewidth=1.75, linestyle='solid', label="Motor Variance during Training", marker='o', markersize=10, color=color_palette[0])
-ax.fill(theta, values, alpha=0.50, color=color_palette[0])
-values = np.concatenate((final_eval_joint_variance, [final_eval_joint_variance[0]]))
-ax.plot(theta, values, linewidth=1.75, linestyle='solid', label="Joint Variance during Final Evaluation", marker='o', markersize=10, color=color_palette[2])
-ax.fill(theta, values, alpha=0.50, color=color_palette[2])
+ax.plot(theta, values, linewidth=linewidth, linestyle='solid', label="Motor Variance during Training", marker='o', markersize=marker_size, color=color_palette[2])
+ax.fill(theta, values, alpha=alpha, color=color_palette[2])
+# values = np.concatenate((final_eval_joint_variance, [final_eval_joint_variance[0]]))
+# ax.plot(theta, values, linewidth=linewidth, linestyle='solid', label="Joint Variance during Final Evaluation", marker='o', markersize=marker_size, color=color_palette[4])
+# ax.fill(theta, values, alpha=0.50, color=color_palette[2])
 values = np.concatenate((joint_variance, [joint_variance[0]]))
-ax.plot(theta, values, linewidth=1.75, linestyle='solid', label="Joint Variance during Training", marker='o', markersize=10, color=color_palette[4])
-ax.fill(theta, values, alpha=0.50, color=color_palette[4])
-
-plt.yticks([0, 5, 10, 15, 20, 25], ["0", "5", "10", "15", "20", "25"], color="black", size=12)
-plt.xticks(theta, metrics + [metrics[0]], color="black", size=12)
-plt.legend(loc="upper right", bbox_to_anchor=(1.1, 1.05))
+ax.plot(theta, values, linewidth=linewidth, linestyle='solid', label="Joint Variance during Training", marker='o', markersize=marker_size, color=color_palette[3])
+ax.fill(theta, values, alpha=alpha, color=color_palette[3])
+plt.yticks([0, 7, 14, 22], ["0", "7", "14", "22"], color="black", size=text_size)
+plt.xticks(theta, metrics + [metrics[0]], color="black", size=text_size)
+ax.tick_params(labelbottom=False)
+# ax.tick_params(axis='x', pad=100)
+#plt.legend(loc="upper right", bbox_to_anchor=(1.1, 1.15), fontsize=text_size) # bbox_to_anchor=(1.1, 1.05)
 plt.show()
 
 

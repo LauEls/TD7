@@ -21,6 +21,8 @@ bc_run_2_raw = readmatrix(td7_file_base+"v8_corl_with_demos/bc_run_2/results.csv
 bc_run_3_raw = readmatrix(td7_file_base+"v8_corl_with_demos/bc_run_3/results.csv");
 bc_run_4_raw = readmatrix(td7_file_base+"v8_corl_with_demos/bc_run_4/results.csv");
 
+demo = [79.90648863744414 92.19475476089744 90.75468202120203 92.4911099942951 85.60183053493468 80.56252440233385 79.68524319479914 88.51474358324955 80.72426821350581 74.3014089156195 93.19233116293049 84.17644485628907 84.10697754271537 75.77521945581725 95.7394234393072 88.13320713964923 76.83639854933813 87.78119889992546 91.72897566812131 94.4411297190927];
+
 
 %%
 episode_length = 130;
@@ -70,12 +72,14 @@ bc_run_2_mean_extended = repelem(bc_run_2_mean,1,21);
 bc_run_3_mean_extended = repelem(bc_run_3_mean,1,21);
 bc_run_4_mean_extended = repelem(bc_run_4_mean,1,21);
 
+demo = demo/episode_length;
+
 td7_x_values = (0:evaluation_frequency*episode_length/1000:maximum_timesteps/1000);
 offset = episode_length*20/1000;
 td7_x_values2 = (offset:evaluation_frequency*episode_length/1000:maximum_timesteps/1000+offset);
 
 alpha  = 0.3;
-line_width = 4;
+line_width = 8;
 error = 'var';
 %%
 close all;
@@ -85,6 +89,7 @@ rl_with_demo_trans = [transpose(rl_with_demo_run_0_mean); transpose(rl_with_demo
 % rl_with_demo_trans = [transpose(rl_with_demo_run_2_mean); transpose(rl_with_demo_run_3_mean); transpose(rl_with_demo_run_4_mean)];
 rl_without_demo_trans = [transpose(rl_without_demo_run_0_mean); transpose(rl_without_demo_run_1_mean); transpose(rl_without_demo_run_2_mean); transpose(rl_without_demo_run_3_mean); transpose(rl_without_demo_run_4_mean)];
 bc = [bc_run_0_mean_extended; bc_run_1_mean_extended; bc_run_2_mean_extended; bc_run_3_mean_extended; bc_run_4_mean_extended];
+demo_trans = [transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo)];
 
 % exp_2_trans = [transpose(exp_2_mean)];
 % exp_3_trans = [transpose(exp_3_mean)];
@@ -105,6 +110,7 @@ options_2.color_line = [0.8500 0.3250 0.0980];
 options_2.alpha      = alpha;
 options_2.line_width = line_width;
 options_2.error      = error;
+options_2.line_style = '-';
 options_2.x_axis     = td7_x_values;
 
 options_3.color_area = [0.9290 0.6940 0.1250];
@@ -112,6 +118,7 @@ options_3.color_line = [0.9290 0.6940 0.1250];
 options_3.alpha      = alpha;
 options_3.line_width = line_width;
 options_3.error      = error;
+options_3.line_style = '-';
 options_3.x_axis     = td7_x_values;
 
 options_4.color_area = [0.4660 0.6740 0.1880];
@@ -119,6 +126,7 @@ options_4.color_line = [0.4660 0.6740 0.1880];
 options_4.alpha      = alpha;
 options_4.line_width = line_width;
 options_4.error      = error;
+options_4.line_style = '-';
 options_4.x_axis     = td7_x_values;
 
 options_5.color_area = [0.4940 0.1840 0.5560];
@@ -126,14 +134,17 @@ options_5.color_line = [0.4940 0.1840 0.5560];
 options_5.alpha      = alpha;
 options_5.line_width = line_width;
 options_5.error      = error;
+options_5.line_style = '-';
 options_5.x_axis     = td7_x_values;
 
-figure('Position',[0 0 1920 1440]);
+figure('Position',[0 0 1800 1300]);
 hold on
 % plot_areaerrorbar(exp_2_trans, options_3);
+plot_areaerrorbar(rl_without_demo_trans, options_3);
+plot_areaerrorbar(rl_with_demo_trans, options_2);
+plot_areaerrorbar(demo_trans, options_5);
 plot_areaerrorbar(bc, options_4);
-plot_areaerrorbar(rl_without_demo_trans, options_5);
-plot_areaerrorbar(rl_with_demo_trans, options_3);
+
 
 
 %plot_areaerrorbar(exp_3_trans, options_4);
@@ -144,8 +155,8 @@ plot_areaerrorbar(rl_with_demo_trans, options_3);
 
 xlim([0 26])
 ylim([0 1])
-%lgd = legend('', 'BC', '', 'TD7', '', 'TD7+Demos', 'Location','best');
-%lgd.NumColumns = 3;
+lgd = legend('', 'TD7', '', 'TD7+Demos', '', 'BC', '', 'Demonstrations', 'Location','best');
+lgd.NumColumns = 1;
 xlabel('Time Steps (1K)','FontSize',16)
 ylabel('Normalized Reward','FontSize',16)
 set(gca,'FontSize',55)
@@ -207,6 +218,7 @@ function plot_areaerrorbar(data, options)
         options.alpha      = 0.5;
         options.line_width = 2;
         options.error      = 'std';
+        options.line_style = '-';
     end
     if(isfield(options,'x_axis')==0), options.x_axis = 1:size(data,2); end
     options.x_axis = options.x_axis(:);
@@ -231,7 +243,7 @@ function plot_areaerrorbar(data, options)
     set(patch, 'FaceAlpha', options.alpha);
     %hold on;
     plot(options.x_axis, data_mean, 'color', options.color_line, ...
-        'LineWidth', options.line_width);
+        'LineWidth', options.line_width, 'LineStyle', options.line_style);
     %hold off;
     
 end
