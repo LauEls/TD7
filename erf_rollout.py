@@ -2,17 +2,10 @@ import TD7
 import os
 import json
 import gym
+import time
 
 import numpy as np
-import argparse
-import torch
-import time
-import signal
-import subprocess
-
-import robosuite as suite
-from robosuite.wrappers import GymWrapper
-from util import NormalizedBoxEnv
+import gh360_gym
 
 def rollout(eval_env, RL_agent, ep_length=500):
     try:
@@ -21,16 +14,22 @@ def rollout(eval_env, RL_agent, ep_length=500):
             
             cntr = 0
             total_reward = 0
+            start_time = time.time()
             while cntr < ep_length:
                 action = RL_agent.select_action(np.array(state), use_exploration=False)
                 state, reward, done, _ = eval_env.step(action)
                 # eval_env.render()
                 total_reward += reward
                 cntr += 1
+
+                if reward == 1:
+                    print(f"Episode successful")
+                    break
             
             print(f"Episode reward: {total_reward:.3f}")
-            if reward == 1:
-                print(f"Episode successful")
+            end_time = time.time()
+            print("Demonstration Finished in {} seconds".format(end_time - start_time))
+            
         
     except KeyboardInterrupt:
         eval_env.reset()
