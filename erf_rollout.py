@@ -63,8 +63,8 @@ def rollout(eval_env, RL_agent, ep_length=130, log_time_client=None):
 
 
 if __name__ == "__main__":
-    rclpy.init(args=None)
-    load_dir = "runs/door/real_gh360/eef_vel/online/v16_erf"
+    # rclpy.init(args=None)
+    load_dir = "/home/gh360/TD7/runs/door/real_gh360/eef_vel/online/v16_erf"
 
     kwargs_fpath = os.path.join(load_dir, "variant.json")
     try:
