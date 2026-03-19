@@ -6,14 +6,37 @@ import time
 
 import numpy as np
 import gh360_gym
+from gh360_interfaces.srv import LogTime
+from std_msgs.msg import String
+import rclpy
+from rclpy.node import Node
 
-def rollout(eval_env, RL_agent, ep_length=500):
+class LogTimeClient(Node):
+    def __init__(self):
+        super().__init__('gh360_log_time_client')
+        self.cli = self.create_client(LogTime, 'erf_log_time')
+        while not self.cli.wait_for_service(timeout_sec=1.0):
+            self.get_logger().info('service not available, waiting again...')
+        self.req = LogTime.Request()
+
+    def send_request(self, time):
+        username = String()
+        username.data = "GH360"
+        self.req.username = username
+        self.req.time = time
+        self.future = self.cli.call_async(self.req)
+        rclpy.spin_until_future_complete(self, self.future)
+        return self.future.result()
+
+
+def rollout(eval_env, RL_agent, ep_length=130, log_time_client=None):
     try:
         while True:
             state, info = eval_env.reset()
             
             cntr = 0
             total_reward = 0
+            success = False
             start_time = time.time()
             while cntr < ep_length:
                 action = RL_agent.select_action(np.array(state), use_exploration=False)
@@ -24,11 +47,14 @@ def rollout(eval_env, RL_agent, ep_length=500):
 
                 if reward == 1:
                     print(f"Episode successful")
+                    success = True
                     break
             
             print(f"Episode reward: {total_reward:.3f}")
             end_time = time.time()
-            print("Demonstration Finished in {} seconds".format(end_time - start_time))
+            print("Rollout Finished in {} seconds".format(end_time - start_time))
+            if log_time_client and success:
+                log_time_client.send_request(end_time - start_time)
             
         
     except KeyboardInterrupt:
@@ -37,6 +63,7 @@ def rollout(eval_env, RL_agent, ep_length=500):
 
 
 if __name__ == "__main__":
+    rclpy.init(args=None)
     load_dir = "runs/door/real_gh360/eef_vel/online/v16_erf"
 
     kwargs_fpath = os.path.join(load_dir, "variant.json")
@@ -64,4 +91,7 @@ if __name__ == "__main__":
     hp.continue_learning = True
     RL_agent = TD7.Agent(state_dim, action_dim, max_action, hp=hp)
 
-    rollout(env, RL_agent, ep_length)
+    log_time_client = LogTimeClient()
+    rollout(env, RL_agent, ep_length, log_time_client)
+    log_time_client.destroy_node()
+    rclpy.shutdown()
