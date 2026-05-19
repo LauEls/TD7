@@ -1,7 +1,9 @@
 import numpy as np 
 import matplotlib.pyplot as plt 
 
-barWidth = 0.2
+barWidth = 0.1
+space_between_bars = barWidth * 0.2
+space_between_groups = 0.2
 # fig = plt.figure()
 fig = plt.figure(figsize=(18.0, 13.0), dpi=100)
 
@@ -10,10 +12,12 @@ td7 = [0.0, 0.29]
 bc = [0.74, 0.62]
 demo_replay = [0.28, 0.37] 
 
-br1 = np.arange(len(td7_demo)) 
-br2 = [x + barWidth for x in br1] 
-br3 = [x + barWidth for x in br2] 
-br4 = [x + barWidth for x in br3] 
+br1 = np.arange(len(td7_demo))*((barWidth+space_between_bars)*4 + space_between_groups)
+br2 = [x + barWidth + space_between_bars for x in br1] 
+br3 = [x + barWidth + space_between_bars for x in br2] 
+br4 = [x + barWidth + space_between_bars for x in br3] 
+
+print(br1, br2, br3, br4)
 
 bars1 = plt.bar(br1, td7_demo, color=(0.8500, 0.3250, 0.0980), width = barWidth, 
         edgecolor ='black', label ='TD7+Demo') 
@@ -38,7 +42,7 @@ add_labels(bars3)
 add_labels(bars4)
 
 # Increase font sizes
-plt.xticks([r + barWidth * 1.5 for r in range(len(td7_demo))], 
+plt.xticks([r + ((barWidth + space_between_bars) * 4)*0.5 for r in range(len(td7_demo))], 
            ['Success Rate', 'Mean Reward'], fontsize=55)
 plt.yticks(fontsize=55)
 # plt.legend(fontsize=55)

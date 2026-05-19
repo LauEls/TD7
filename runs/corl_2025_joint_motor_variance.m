@@ -69,7 +69,7 @@ for i=2:8
     % plot(t_linear, joint_states_resampled(:,i));
     % hold off
 
-    figure('Position',[0 0 1920 1440]);
+    figure('Position',[0 0 1800 900]);
     hold on
     title("Joint: "+joint_names(i));
     xlabel('Joint Angle [rad]','FontSize',16)
@@ -82,7 +82,7 @@ for i=2:8
     gmPDF = @(x,y) arrayfun(@(x0,y0) pdf(GMModel,[x0 y0]),x,y);
     g = gca;
     
-    scatter(joint_states_resampled(:,i), motor_states_resampled(:,i), 1,"Marker",".")
+    scatter(joint_states_resampled(:,i), motor_states_resampled(:,i), 1,"Marker",".", "MarkerEdgeColor", [102 204 238]./255)
     % contour(motor_joint_state(:,1),motor_joint_state(:,2),y,[0.0001 0.001 0.01 0.05 0.15 0.25 0.35]);
     h = fcontour(gmPDF,[g.XLim g.YLim], "LineWidth",3.0);
     plot(joint_mean(1),joint_mean(2), '.', 'Color','red','MarkerSize',20);

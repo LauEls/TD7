@@ -166,11 +166,12 @@ ax.spines['polar'].set_zorder(1)
 # Color of radial girdlines
 ax.spines['polar'].set_color('lightgrey')
 
-color_palette = [(0.8500, 0.3250, 0.0980), (0.9290, 0.6940, 0.1250), (0.4660, 0.6740, 0.1880), (0.4940, 0.1840, 0.5560)]
+# color_palette = [(0.8500, 0.3250, 0.0980), (0.9290, 0.6940, 0.1250), (0.4660, 0.6740, 0.1880), (0.4940, 0.1840, 0.5560)]
+color_palette = [(238/255, 102/255, 119/255), (204/255, 187/255, 68/255), (34/255, 136/255, 51/255), (102/255, 204/255, 238/255), (170/255, 51/255, 119/255)]
 linewidth = 8
 marker_size = 20
 alpha = 0.3
-text_size = 56
+text_size = 50
 
 values = np.concatenate((final_eval_motor_variance, [final_eval_motor_variance[0]]))
 ax.plot(theta, values, linewidth=linewidth, linestyle='solid', label="Motor Variance during Final Evaluation", marker='o', markersize=marker_size, color=color_palette[0])

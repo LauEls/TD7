@@ -298,6 +298,12 @@ def plot_trajectories(start_idx, stop_idx, step_size, filtered_poses, trajectory
     axis_tick_fontsize = 32
     point_size = 1000
 
+    cb_bright_red = (238/255, 102/255, 119/255)
+    cb_bright_yellow = (204/255, 187/255, 68/255)
+    cb_bright_green = (34/255, 136/255, 51/255)
+    cb_vibrant_red = (204/255, 51/255, 17/255)
+    cb_vibrant_orange = (238/255, 119/255, 51/255)
+
     # plt.rcParams.update({
     # 'font.size': 26,          # General font size
     # 'axes.labelsize': 26,     # X and Y label size
@@ -326,7 +332,7 @@ def plot_trajectories(start_idx, stop_idx, step_size, filtered_poses, trajectory
     #     pe.Normal() # Ensures the text is drawn on top of the stroke
     # ])
     
-    start_point = ax.scatter3D(start_pos_2[0], start_pos_2[1], start_pos_2[2], color='red', s=point_size, label='Start')
+    start_point = ax.scatter3D(start_pos_2[0], start_pos_2[1], start_pos_2[2], color=cb_vibrant_red, s=point_size, label='Start')
     start_point.set_path_effects([
         pe.Stroke(linewidth=5, foreground='white'), # Border color and width
         pe.Normal() # Ensures the text is drawn on top of the stroke
@@ -338,7 +344,7 @@ def plot_trajectories(start_idx, stop_idx, step_size, filtered_poses, trajectory
     #     pe.Normal() # Ensures the text is drawn on top of the stroke
     # ])
     
-    door_handle_point = ax.scatter3D(door_handle_pos[0], door_handle_pos[1], door_handle_pos[2], color='orange', s=point_size, label='Door Handle')
+    door_handle_point = ax.scatter3D(door_handle_pos[0], door_handle_pos[1], door_handle_pos[2], color=cb_vibrant_orange, s=point_size, label='Door Handle')
     door_handle_point.set_path_effects([
         pe.Stroke(linewidth=5, foreground='white'), # Border color and width
         pe.Normal() # Ensures the text is drawn on top of the stroke
@@ -349,13 +355,13 @@ def plot_trajectories(start_idx, stop_idx, step_size, filtered_poses, trajectory
     for i in range(start_idx, stop_idx+1, step_size):
         if len(filtered_poses['free_space'][i]) != 0:
             for j in range(len(filtered_poses['free_space'][i])):
-                ax.plot3D(filtered_poses['free_space'][i][j][:,1], filtered_poses['free_space'][i][j][:,2], filtered_poses['free_space'][i][j][:,3], color=(0.8500, 0.3250, 0.0980), alpha=alpha, label='Free Space', linewidth=trajectory_line_width)
+                ax.plot3D(filtered_poses['free_space'][i][j][:,1], filtered_poses['free_space'][i][j][:,2], filtered_poses['free_space'][i][j][:,3], color=cb_bright_red, alpha=alpha, label='Free Space', linewidth=trajectory_line_width)
         if len(filtered_poses['handle_move'][i]) != 0:
             for j in range(len(filtered_poses['handle_move'][i])):
-                ax.plot3D(filtered_poses['handle_move'][i][j][:,1], filtered_poses['handle_move'][i][j][:,2], filtered_poses['handle_move'][i][j][:, 3], color=(0.9290, 0.6940, 0.1250), alpha=alpha, label='Handle Move', linewidth=trajectory_line_width)
+                ax.plot3D(filtered_poses['handle_move'][i][j][:,1], filtered_poses['handle_move'][i][j][:,2], filtered_poses['handle_move'][i][j][:, 3], color=cb_bright_yellow, alpha=alpha, label='Handle Move', linewidth=trajectory_line_width)
         if len(filtered_poses['hinge_move'][i]) != 0:
             for j in range(len(filtered_poses['hinge_move'][i])):
-                ax.plot3D(filtered_poses['hinge_move'][i][j][:,1], filtered_poses['hinge_move'][i][j][:,2], filtered_poses['hinge_move'][i][j][:,3], color=(0.4660, 0.6740, 0.1880), alpha=alpha, label='Hinge Move', linewidth=trajectory_line_width)
+                ax.plot3D(filtered_poses['hinge_move'][i][j][:,1], filtered_poses['hinge_move'][i][j][:,2], filtered_poses['hinge_move'][i][j][:,3], color=cb_bright_green, alpha=alpha, label='Hinge Move', linewidth=trajectory_line_width)
         # if len(filtered_poses['episode_success'][i]) != 0:
         #     for j in range(len(filtered_poses['episode_success'][i])):
         #         ax.plot3D(filtered_poses['episode_success'][i][j][:,1], filtered_poses['episode_success'][i][j][:,2], filtered_poses['episode_success'][i][j][:,3], 'green', label='Episode Success', linewidth=trajectory_line_width)
@@ -365,9 +371,9 @@ def plot_trajectories(start_idx, stop_idx, step_size, filtered_poses, trajectory
     ax.set_xlabel('X Position (m)', labelpad=axis_label_pad[0], fontsize=axis_label_fontsize)
     ax.set_ylabel('Y Position (m)', labelpad=axis_label_pad[1], fontsize=axis_label_fontsize)
     ax.set_zlabel('Z Position (m)', labelpad=axis_label_pad[2], fontsize=axis_label_fontsize)
-    # ax.xaxis.label.set_visible(False)
-    # ax.yaxis.label.set_visible(False)
-    # ax.zaxis.label.set_visible(False)
+    ax.xaxis.label.set_visible(False)
+    ax.yaxis.label.set_visible(False)
+    ax.zaxis.label.set_visible(False)
     
 
     ax.xaxis.set_tick_params(labelsize=axis_tick_fontsize, pad=tick_pad[0])
@@ -541,31 +547,31 @@ if __name__ == "__main__":
     #     tick_num=np.array([5, 5, 6])
     # )
 
-    # plot_trajectories(
-    #     start_idx=55, 
-    #     stop_idx=99, 
-    #     step_size=11, 
-    #     filtered_poses=filtered_poses, 
-    #     trajectory_line_width=10,
-    #     start_text_offset=np.array([0.0, -0.055, -0.013]),
-    #     door_handle_text_offset=np.array([0.0, 0.003, 0.009]),
-    #     axis_label_pad=np.array([20, 55, 37]),
-    #     tick_pad=np.array([0, 20, 18]),
-    #     tick_num=np.array([5, 5, 6])
-    # )
+    plot_trajectories(
+        start_idx=55, 
+        stop_idx=99, 
+        step_size=11, 
+        filtered_poses=filtered_poses, 
+        trajectory_line_width=10,
+        start_text_offset=np.array([0.0, -0.055, -0.013]),
+        door_handle_text_offset=np.array([0.0, 0.003, 0.009]),
+        axis_label_pad=np.array([20, 55, 37]),
+        tick_pad=np.array([0, 20, 18]),
+        tick_num=np.array([5, 5, 6])
+    )
 
-    # plot_trajectories(
-    #     start_idx=165, 
-    #     stop_idx=220, 
-    #     step_size=11, 
-    #     filtered_poses=filtered_poses,
-    #     trajectory_line_width=10,
-    #     start_text_offset=np.array([0.0, -0.055, -0.013]),
-    #     door_handle_text_offset=np.array([0.0, -0.003, -0.009]),
-    #     axis_label_pad=np.array([20, 53, 55]),
-    #     tick_pad=np.array([0, 25, 25]),
-    #     tick_num=np.array([3, 5, 6])
-    # )
+    plot_trajectories(
+        start_idx=165, 
+        stop_idx=220, 
+        step_size=11, 
+        filtered_poses=filtered_poses,
+        trajectory_line_width=10,
+        start_text_offset=np.array([0.0, -0.055, -0.013]),
+        door_handle_text_offset=np.array([0.0, -0.003, -0.009]),
+        axis_label_pad=np.array([20, 53, 55]),
+        tick_pad=np.array([0, 25, 25]),
+        tick_num=np.array([3, 5, 6])
+    )
 
     # plot_trajectories(
     #     start_idx=0, 

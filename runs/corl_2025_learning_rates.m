@@ -1,6 +1,14 @@
 clear all;
 close all;
 
+cb_blue = [68 119 170]./255;
+cb_cyan = [102 204 238]./255;
+cb_green = [34 136 51]./255;
+cb_yellow = [204 187 68]./255;
+cb_red = [238 102 119]./255;
+cb_purple = [170 51 119]./255;
+cb_grey = [187 187 187]./255;
+
 % td7_file_base = "lift/panda/osc_pose/online/";
 td7_file_base = "door/real_gh360/eef_vel/online/";
 rl_with_demo_run_0_raw = readmatrix(td7_file_base+"v13_corl_with_demos_4/run_0/results.csv");
@@ -80,7 +88,7 @@ td7_x_values2 = (offset:evaluation_frequency*episode_length/1000:maximum_timeste
 
 alpha  = 0.3;
 line_width = 8;
-error = 'var';
+error = 'std';
 %%
 close all;
 
@@ -105,32 +113,32 @@ demo_trans = [transpose(demo) transpose(demo) transpose(demo) transpose(demo) tr
 %sac_no_reward_shaping_no_demo = [transpose(sac_no_reward_shaping_no_demo_run_0_mean);transpose(sac_no_reward_shaping_no_demo_run_1_mean);transpose(sac_no_reward_shaping_no_demo_run_2_mean)];
 
 
-options_2.color_area = [0.8500 0.3250 0.0980];
-options_2.color_line = [0.8500 0.3250 0.0980];
+options_2.color_area = cb_red;
+options_2.color_line = cb_red;
 options_2.alpha      = alpha;
 options_2.line_width = line_width;
 options_2.error      = error;
 options_2.line_style = '-';
 options_2.x_axis     = td7_x_values;
 
-options_3.color_area = [0.9290 0.6940 0.1250];
-options_3.color_line = [0.9290 0.6940 0.1250];
+options_3.color_area = cb_yellow;
+options_3.color_line = cb_yellow;
 options_3.alpha      = alpha;
 options_3.line_width = line_width;
 options_3.error      = error;
 options_3.line_style = '-';
 options_3.x_axis     = td7_x_values;
 
-options_4.color_area = [0.4660 0.6740 0.1880];
-options_4.color_line = [0.4660 0.6740 0.1880];
+options_4.color_area = cb_green;
+options_4.color_line = cb_green;
 options_4.alpha      = alpha;
 options_4.line_width = line_width;
 options_4.error      = error;
 options_4.line_style = '-';
 options_4.x_axis     = td7_x_values;
 
-options_5.color_area = [0.4940 0.1840 0.5560];
-options_5.color_line = [0.4940 0.1840 0.5560];
+options_5.color_area = cb_cyan;
+options_5.color_line = cb_cyan;
 options_5.alpha      = alpha;
 options_5.line_width = line_width;
 options_5.error      = error;
@@ -142,8 +150,8 @@ hold on
 % plot_areaerrorbar(exp_2_trans, options_3);
 plot_areaerrorbar(rl_without_demo_trans, options_3);
 plot_areaerrorbar(rl_with_demo_trans, options_2);
-plot_areaerrorbar(demo_trans, options_5);
 plot_areaerrorbar(bc, options_4);
+plot_areaerrorbar(demo_trans, options_5);
 
 
 
@@ -155,7 +163,7 @@ plot_areaerrorbar(bc, options_4);
 
 xlim([0 26])
 ylim([0 1])
-lgd = legend('', 'TD7', '', 'TD7+Demos', '', 'BC', '', 'Demonstrations', 'Location','best');
+%lgd = legend('', 'TD7', '', 'TD7+Demos', '', 'BC', '', 'Demonstrations', 'Location','best');
 lgd.NumColumns = 1;
 xlabel('Time Steps (1K)','FontSize',16)
 ylabel('Normalized Reward','FontSize',16)

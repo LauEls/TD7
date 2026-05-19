@@ -1,5 +1,17 @@
+%% Colorblind Colors
+cb_blue = [68 119 170]./255;
+cb_cyan = [102 204 238]./255;
+cb_green = [34 136 51]./255;
+cb_yellow = [204 187 68]./255;
+cb_red = [238 102 119]./255;
+cb_purple = [170 51 119]./255;
+cb_grey = [187 187 187]./255;
+
+fig_width = 1800;
+fig_height = 1300;
+
 %% Final Evaluation
-clear all;
+%clear all;
 close all;
 
 % options_2.color_area = [0.8500 0.3250 0.0980];
@@ -19,7 +31,7 @@ close all;
 
 
 % x = categorical{}
-figure('Position',[0 0 1920 1440]);
+figure('Position',[0 0 fig_width fig_height]);
 hold on;
 
 bar_categories = {'TD7+Demo','TD7', 'BC', 'Demo Replay'};
@@ -30,6 +42,7 @@ Y = [0.96 0.84; 0.0 0.29; 0.74 0.62; 0.28 0.37];
 % X = reordercats(X,{'TD7','TD7+Demo', 'BC', 'Demo Replay'});
 % Y = [10 21 33 52];
 b = bar(X,Y, 'grouped','GroupWidth',0.9, 'BarWidth',0.9);
+
 
 % axis tight;
 
@@ -63,13 +76,14 @@ ylim([0.0 1.0])
 % set(gca,'FontSize',18)
 fontsize(gcf, 30, "points")
 set(gca,'FontSize',55)
+% axis tight;
 hold off;
 
 %% Final Evaluation v2
-clear all;
+%clear all;
 close all;
 
-figure('Position',[0 0 1920 1440]);
+figure('Position',[0 0 fig_width fig_height]);
 hold on;
 
 bar_categories = {'Success Rate','Mean Reward'};
@@ -79,17 +93,24 @@ X = reordercats(X,bar_categories);
 Y = [0.96 0.00 0.74 0.28; 0.84 0.29 0.62 0.37];
 % X = reordercats(X,{'TD7','TD7+Demo', 'BC', 'Demo Replay'});
 % Y = [10 21 33 52];
-b = bar(X,Y, 'grouped','GroupWidth',0.6, 'BarWidth',1.0, 'FaceAlpha',0.9, 'FaceColor','flat');
+% b = bar(X,Y, 'grouped','GroupWidth',0.6, 'BarWidth',1.0, 'FaceAlpha',0.9, 'FaceColor','flat');
+b = bar(X,Y, 'grouped','GroupWidth',0.8, 'BarWidth',0.8, 'FaceAlpha',0.9, 'FaceColor','flat');
+%b = bar(X,Y, 'FaceAlpha',0.9, 'FaceColor','flat');
 
-b(1).CData = [0.8500 0.3250 0.0980];
-b(2).CData = [0.9290 0.6940 0.1250];
-b(3).CData = [0.4660 0.6740 0.1880];
-b(4).CData = [0.4940 0.1840 0.5560];
+b(1).CData = cb_red;
+b(2).CData = cb_yellow;
+b(3).CData = cb_green;
+b(4).CData = cb_cyan;
 
 b(1).Labels = b(1).YData;
 b(2).Labels = b(2).YData;
 b(3).Labels = b(3).YData;
 b(4).Labels = b(4).YData;
+
+b(1).Labels(1) = "96%";
+b(2).Labels(1) = "0%";
+b(3).Labels(1) = "74%";
+b(4).Labels(1) = "28%";
 
 % ax = gca;
 % 
@@ -104,16 +125,78 @@ b(4).Labels = b(4).YData;
 
 %xlabel('Episodes in Demonstration Buffer')
 % ylabel('Mean Reward and Variance')
+%ylim([0.0 1.0])
+axis tight;
+
+% set(gca,'FontSize',18)
+fontsize(gcf, 55, "points")
+set(gca,'FontSize',55, 'YTick', [])
+hold off;
+
+%% Final Eval v3
+close all;
+
+figure('Position',[0 0 fig_width/2 fig_height]);
+hold on; 
+
+bar_categories = {'TD7+Demo','TD7', 'BC', 'Demonstrations'};
+Y = [0.96 0.00 0.74 0.28];
+
+X = categorical(bar_categories);
+X = reordercats(X,bar_categories);
+b = bar(X,Y);
+b.FaceAlpha = 0.9;
+b.FaceColor = 'flat';
+
+b.CData(1,:) = cb_red;
+b.CData(2,:) = cb_yellow;
+b.CData(3,:) = cb_green;
+b.CData(4,:) = cb_cyan;
+
+% b.Labels = ["96%" "0%" "74%" "28%"];
+
+fontsize(gcf, 55, "points")
+set(gca,'FontSize',55, 'XTick',[], 'YTick', [])
+hold off;
+
+
+
+figure('Position',[0 0 fig_width/2 fig_height]);
+hold on; 
+
+bar_categories = {'TD7+Demo','TD7', 'BC', 'Demonstrations'};
+Y = [0.84 0.29 0.62 0.37];
+
+X = categorical(bar_categories);
+X = reordercats(X,bar_categories);
+% Y = [10 21 33 52];
+b = bar(X,Y);
+% b.LineWidth = line_width;
+b.FaceAlpha = 0.9;
+b.FaceColor = 'flat';
+
+b.CData(1,:) = cb_red;
+b.CData(2,:) = cb_yellow;
+b.CData(3,:) = cb_green;
+b.CData(4,:) = cb_cyan;
+
+% b.Labels = b.YData;
+% b.Labels = b(2).YData;
+% b(3).Labels = b(3).YData;
+% b(4).Labels = b(4).YData;
+
+% xlabel(bar_category_label)
+% ylabel('Mean Reward and Variance','FontSize',16)
 ylim([0.0 1.0])
 
 % set(gca,'FontSize',18)
-fontsize(gcf, 28, "points")
-set(gca,'FontSize',55)
+fontsize(gcf, 55, "points")
+set(gca,'FontSize',55, 'XTick',[], 'YTick', [])
 hold off;
 
 
 %% Comparing offline learning with different datasets
-clear all;
+% clear all;
 close all;
 
 td7_file_base = "door_mirror/gh360/osc_pose/offline/";
@@ -148,29 +231,35 @@ alpha  = 0.3;
 line_width = 8;
 error = 'std';
 
-options_2.color_area = [0.8500 0.3250 0.0980];
-options_2.color_line = [0.8500 0.3250 0.0980];
+% options_2.color_area = [0.8500 0.3250 0.0980];
+% options_2.color_line = [0.8500 0.3250 0.0980];
+options_2.color_area = [238 102 119]./255;
+options_2.color_line = [238 102 119]./255;
 options_2.alpha      = alpha;
 options_2.line_width = line_width;
 options_2.error      = error;
 options_2.x_axis     = td7_x_values;
 
-options_3.color_area = [0.9290 0.6940 0.1250];
-options_3.color_line = [0.9290 0.6940 0.1250];
+% options_3.color_area = [0.9290 0.6940 0.1250];
+% options_3.color_line = [0.9290 0.6940 0.1250];
+options_3.color_area = [204 187 68]./255;
+options_3.color_line = [204 187 68]./255;
 options_3.alpha      = alpha;
 options_3.line_width = line_width;
 options_3.error      = error;
 options_3.x_axis     = td7_x_values;
 
-options_4.color_area = [0.4660 0.6740 0.1880];
-options_4.color_line = [0.4660 0.6740 0.1880];
+% options_4.color_area = [0.4660 0.6740 0.1880];
+% options_4.color_line = [0.4660 0.6740 0.1880];
+options_4.color_area = [34 136 51]./255;
+options_4.color_line = [34 136 51]./255;
 options_4.alpha      = alpha;
 options_4.line_width = line_width;
 options_4.error      = error;
 options_4.x_axis     = td7_x_values;
 
-options_5.color_area = [0.4940 0.1840 0.5560];
-options_5.color_line = [0.4940 0.1840 0.5560];
+options_5.color_area = cb_blue;
+options_5.color_line = cb_blue;
 options_5.alpha      = alpha;
 options_5.line_width = line_width;
 options_5.error      = error;
@@ -191,7 +280,7 @@ options_7.error      = error;
 options_7.x_axis     = td7_x_values;
 
 
-figure('Position',[0 0 1920 1440]);
+figure('Position',[0 0 fig_width fig_height]);
 hold on
 plot_areaerrorbar(offline_expert_trans, options_2);
 plot_areaerrorbar(offline_random_expert_trans, options_3);
@@ -211,7 +300,7 @@ hold off
 
 
 %% Comparing influence of number of demonstrations
-clear all;
+%clear all;
 close all;
 
 td7_file_base = "door_mirror/gh360/osc_pose/online/";
@@ -279,29 +368,37 @@ alpha  = 0.3;
 line_width = 8;
 error = 'var';
 
-options_2.color_area = [0.8500 0.3250 0.0980];
-options_2.color_line = [0.8500 0.3250 0.0980];
+options_2.color_area = cb_red;
+options_2.color_line = cb_red;
+% options_2.color_area = [0.8500 0.3250 0.0980];
+% options_2.color_line = [0.8500 0.3250 0.0980];
 options_2.alpha      = alpha;
 options_2.line_width = line_width;
 options_2.error      = error;
 options_2.x_axis     = td7_x_values;
 
-options_3.color_area = [0.9290 0.6940 0.1250];
-options_3.color_line = [0.9290 0.6940 0.1250];
+% options_3.color_area = [0.9290 0.6940 0.1250];
+% options_3.color_line = [0.9290 0.6940 0.1250];
+options_3.color_area = cb_yellow;
+options_3.color_line = cb_yellow;
 options_3.alpha      = alpha;
 options_3.line_width = line_width;
 options_3.error      = error;
 options_3.x_axis     = td7_x_values;
 
-options_4.color_area = [0.4660 0.6740 0.1880];
-options_4.color_line = [0.4660 0.6740 0.1880];
+% options_4.color_area = [0.4660 0.6740 0.1880];
+% options_4.color_line = [0.4660 0.6740 0.1880];
+options_4.color_area = cb_green;
+options_4.color_line = cb_green;
 options_4.alpha      = alpha;
 options_4.line_width = line_width;
 options_4.error      = error;
 options_4.x_axis     = td7_x_values;
 
-options_5.color_area = [0.4940 0.1840 0.5560];
-options_5.color_line = [0.4940 0.1840 0.5560];
+% options_5.color_area = [0.4940 0.1840 0.5560];
+% options_5.color_line = [0.4940 0.1840 0.5560];
+options_5.color_area = cb_cyan;
+options_5.color_line = cb_cyan;
 options_5.alpha      = alpha;
 options_5.line_width = line_width;
 options_5.error      = error;
@@ -322,7 +419,7 @@ options_7.error      = error;
 options_7.x_axis     = td7_x_values;
 
 
-figure('Position',[0 0 1920 1440]);
+figure('Position',[0 0 fig_width fig_height]);
 hold on;
 % bar(bar_data)
 % set(gca,'xticklabel',{'10%','20%','50%','75%'});
@@ -349,10 +446,10 @@ e.CapSize = 40;
 
 %xlabel('Episodes in Demonstration Buffer')
 ylabel('Mean Reward and Variance','FontSize',16)
-ylim([0.4 0.7])
+ylim([0.4 0.65])
 
 % set(gca,'FontSize',18)
-set(gca,'FontSize',55)
+set(gca,'FontSize',55, 'YAxisLocation', 'right')
 hold off;
 
 
@@ -364,7 +461,7 @@ hold off;
 
 
 
-figure('Position',[0 0 1920 1440]);
+figure('Position',[0 0 fig_width fig_height]);
 hold on
 plot_areaerrorbar(five_demos_trans, options_2);
 plot_areaerrorbar(ten_demos_trans, options_3);
@@ -388,7 +485,7 @@ hold off
 
 %% Comparing influence of demonstration to exploration data ratio for learning
 
-clear all;
+%clear all;
 close all;
 
 td7_file_base = "door_mirror/gh360/osc_pose/online/";
@@ -448,36 +545,36 @@ alpha  = 0.3;
 line_width = 8;
 error = 'var';
 
-options_2.color_area = [0.8500 0.3250 0.0980];
-options_2.color_line = [0.8500 0.3250 0.0980];
+options_2.color_area = cb_red;
+options_2.color_line = cb_red;
 options_2.alpha      = alpha;
 options_2.line_width = line_width;
 options_2.error      = error;
 options_2.x_axis     = td7_x_values;
 
-options_3.color_area = [0.9290 0.6940 0.1250];
-options_3.color_line = [0.9290 0.6940 0.1250];
+options_3.color_area = cb_yellow;
+options_3.color_line = cb_yellow;
 options_3.alpha      = alpha;
 options_3.line_width = line_width;
 options_3.error      = error;
 options_3.x_axis     = td7_x_values;
 
-options_4.color_area = [0.4660 0.6740 0.1880];
-options_4.color_line = [0.4660 0.6740 0.1880];
+options_4.color_area = cb_green;
+options_4.color_line = cb_green;
 options_4.alpha      = alpha;
 options_4.line_width = line_width;
 options_4.error      = error;
 options_4.x_axis     = td7_x_values;
 
-options_5.color_area = [0.4940 0.1840 0.5560];
-options_5.color_line = [0.4940 0.1840 0.5560];
+options_5.color_area = cb_cyan;
+options_5.color_line = cb_cyan;
 options_5.alpha      = alpha;
 options_5.line_width = line_width;
 options_5.error      = error;
 options_5.x_axis     = td7_x_values;
 
 
-figure('Position',[0 0 1920 1440]);
+figure('Position',[0 0 fig_width fig_height]);
 hold on;
 % bar(bar_data)
 % set(gca,'xticklabel',{'10%','20%','50%','75%'});
@@ -500,13 +597,13 @@ e.LineStyle = 'none';
 e.LineWidth = line_width;
 e.CapSize = 40;
 
-title('Percentage of Demonstration Data in Learning Batch')
+%title('Percentage of Demonstration Data in Learning Batch')
 %xlabel('Demonstrations in Learning Batch')
 ylabel('Mean Reward and Variance','FontSize',16)
-ylim([0.5 0.7])
+ylim([0.4 0.65])
 
 % set(gca,'FontSize',18)
-set(gca,'FontSize',55)
+set(gca,'FontSize',55, 'YAxisLocation', 'right')
 hold off;
 
 
@@ -519,7 +616,7 @@ hold off;
 
 
 
-figure('Position',[0 0 1920 1440]);
+figure('Position',[0 0 fig_width fig_height]);
 hold on
 plot_areaerrorbar(ten_percenatage_trans, options_2);
 plot_areaerrorbar(twentyfive_percenatage_trans, options_3);
@@ -714,7 +811,7 @@ set(gca,'FontSize',18)
 hold off
 
 %% Comparing full length learning
-clear all;
+%clear all;
 close all;
 
 td7_file_base = "door_mirror/gh360/osc_pose/";
@@ -738,7 +835,7 @@ bar_category_label = '';
 data = draw_learning_analysis(file_paths, runs, episode_length, evaluation_frequency, episodes, mean_plot, bar_categories, bar_category_label);
 
 %% Comparing different learning methods
-clear all;
+%clear all;
 close all;
 
 td7_file_base = "door_mirror/gh360/osc_pose/";
@@ -762,7 +859,7 @@ data = draw_learning_analysis(file_paths, runs, episode_length, evaluation_frequ
 
 
 %% Comparing Demonstration to Exploration ratio in learning batch
-clear all;
+%clear all;
 close all;
 
 td7_file_base = "door_mirror/gh360/osc_pose/online/";
@@ -792,7 +889,14 @@ function option = getOption(iter, episode_length, evaluation_frequency, maximum_
     alpha  = 0.3;
     line_width = 8;
     error = 'std';
-    colors = {[0.8500 0.3250 0.0980]; [0.9290 0.6940 0.1250]; [0.4660 0.6740 0.1880]; [0.4940 0.1840 0.5560]; [21 5 120]./255; [0 255 255]./255};
+    cb_blue = [68 119 170]./255;
+    cb_cyan = [102 204 238]./255;
+    cb_green = [34 136 51]./255;
+    cb_yellow = [204 187 68]./255;
+    cb_red = [238 102 119]./255;
+    cb_purple = [170 51 119]./255;
+    cb_grey = [187 187 187]./255;
+    colors = {cb_red; cb_yellow; cb_green; cb_cyan; [21 5 120]./255; [0 255 255]./255};
 
     option.color_area = colors{iter};
     option.color_line = colors{iter};
@@ -824,7 +928,7 @@ function data_mean = draw_learning_analysis(file_paths, runs, episode_length, ev
 %     demo_trans = [transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo) transpose(demo)];
 
 
-    figure('Position',[0 0 1920 1440]);
+    figure('Position',[0 0 1800 1300]);
     hold on
     for i=1:size(file_paths)
         data_trans{i} = zeros(runs,evaluations);
@@ -856,7 +960,7 @@ function data_mean = draw_learning_analysis(file_paths, runs, episode_length, ev
         data_overall_mean = zeros(size(file_paths,1),1);
         data_overall_mean_var = zeros(size(file_paths,1),1);
 
-        figure('Position',[0 0 1920 1440]);
+        figure('Position',[0 0 1800 1300]);
         hold on; 
 
         for i=1:size(file_paths)
