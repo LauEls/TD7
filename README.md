@@ -25,7 +25,7 @@ Results were originally collected with:
 
 ## Ablation Study
 |                      Experiment Reference                      | Results |         |         |         |        Dataset        |
-|:--------------------------------------------------------------:|:-------:|:-------:|:-------:|:-------:|:---------------------:|
+|:---------------------------------------------------------------|:-------:|:-------:|:-------:|:-------:|:---------------------:|
 | Comparing number of demonstrations in the demonstration buffer |    [5](/runs/door_mirror/gh360/osc_pose/online/5_demos/)    |    [10](/runs/door_mirror/gh360/osc_pose/online/10_demos/)   |    [20](/runs/door_mirror/gh360/osc_pose/online/20_demos/)   |    [50](/runs/door_mirror/gh360/osc_pose/online/50_demos/)   | [demonstration_dataset](/demonstrations/gh360_sim_door_demonstration_with_variance_v1.npy) |
 | Percentage of Demonstration Data in Learning Batch             |   [10%](/runs/door_mirror/gh360/osc_pose/online/10_percent_demo_ratio/)   |   [25%](/runs/door_mirror/gh360/osc_pose/online/25_percent_demo_ratio/)   |   [50%](/runs/door_mirror/gh360/osc_pose/online/20_demos/)   |   [75%](/runs/door_mirror/gh360/osc_pose/online/75_percent_demo_ratio/)   | [demonstration_dataset](/demonstrations/gh360_sim_door_demonstration_with_variance_v1.npy) |
 
