@@ -1,7 +1,6 @@
 import json
 import gym
 import numpy as np
-# import gh360_gym
 import random
 import robosuite as suite
 from robosuite.utils.input_utils import *
@@ -9,11 +8,8 @@ from robosuite.wrappers import GymWrapper
 from util import NormalizedBoxEnv
 
 if __name__ == "__main__":
-    config_file = "/home/laurenz/phd_project/TD7/runs/door_mirror/gh360/osc_pose/online/v9_20_demos/variant.json"
-    demo_file_path = "/home/laurenz/phd_project/TD7/demonstrations/gh360_sim_door_demonstration_with_variance_v1.npy"
-
-    # config_file = "/home/laurenz/phd_project/TD7/runs/door_mirror/gh360/osc_pose/online/v5_rl_with_demo_no_variance/variant.json"
-    # demo_file_path = "/home/laurenz/phd_project/TD7/demonstrations/gh360_sim_door_demonstration_no_variance_v2.npy"
+    config_file = "runs/door_mirror/gh360/osc_pose/online/20_demos/variant.json"
+    demo_file_path = "demonstrations/gh360_sim_door_demonstration_with_variance_v1.npy"
 
     try:
         with open(config_file) as f:
@@ -23,15 +19,7 @@ if __name__ == "__main__":
             "Please check filepath and try again.".format(config_file))
         
     env_config = variant["environment_kwargs"]
-    # env_name = variant["environment_kwargs"].pop("env_name")
-    # env_name = variant["environment_kwargs"]["env_name"]
-    # variant["environment_kwargs"].pop("input_max")
-    # variant["environment_kwargs"].pop("input_min")
-    #variant["environment_kwargs"].pop("max_joint_pos")
-    #variant["environment_kwargs"].pop("min_joint_pos")
-    # variant["environment_kwargs"].pop("max_current")
 
-    # env = gym.make('gh360_gym/'+env_name, **env_config)
     controller = env_config.pop("controller")
     if controller in set(suite.ALL_CONTROLLERS):
         print("Controller: "+controller)
@@ -58,17 +46,8 @@ if __name__ == "__main__":
     env.reset()
     env.render()
 
-    # ep_length = variant["episode_length"]
-
     demos = np.load(demo_file_path, allow_pickle=True)
     demos = demos[0:20]
-
-    # for demo in demos:
-
-    #     for action in demo["actions"]:
-    #         env.step(action)
-
-    #     env.reset()
 
     
     obs = env.reset()
@@ -78,10 +57,7 @@ if __name__ == "__main__":
         obs = env.reset()
         demo = random.choice(demos)
 
-        # total_reward = 0
         for action in demo["actions"]:
-            
-            # obs, reward, done, _ = env.step(action)
             obs, reward, done, _ = env.step(action)
             total_reward[j] += reward
             env.render()
@@ -90,6 +66,5 @@ if __name__ == "__main__":
         if reward == 1:
             print(f"Episode {j} successful")
 
-        # print("Total Reward: ", total_reward)
     env.reset()
     env.render()

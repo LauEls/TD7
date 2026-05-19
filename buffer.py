@@ -111,7 +111,6 @@ class LAP(object):
 				path["next_observations"],
 				path["dones"]
 			)):
-				# print("terminal: ", terminal)
 				cntr_2 += 1
 				self.add(
 					state=obs,
@@ -120,15 +119,10 @@ class LAP(object):
 					next_state=next_obs,
 					done=terminal,
 				)
-			# self.avg_score = self.total_score/self.path_steps
 			reward_sum += self.total_score
-			# print('path ', self.paths, 'score ', self.total_score)
 
 		avg_reward = reward_sum/cntr 
-		# print("Epoch average reward: ",avg_reward)
 		print(self.not_done)
-		# print("cnt: ", cntr)
-		# print("cnt_2: ", cntr_2)
 		return avg_reward    
 	
 	def save_paths(self, filename):

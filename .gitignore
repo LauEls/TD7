@@ -165,6 +165,7 @@ demonstrations/*.npy
 !demonstrations/gh360_sim_door_demonstration_with_variance_v1.npy
 !demonstrations/gh360_sim_door_demonstration_with_variance_v1_random.npy
 !demonstrations/gh360_sim_door_demonstration_with_variance_v1_gradual_random.npy
+!demonstrations/gh360_door_demonstration_v8.npy
 *buffer_paths.npy
 
 
