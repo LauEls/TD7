@@ -47,9 +47,9 @@
 | Demonstrations | [demonstration_dataset](/demonstrations/gh360_sim_door_demonstration_with_variance_v1.npy) |
 
 ## Evaluation Experiments on Real GH360 Robot
-| Model and Results | Dataset | ROSBags |
-|:-----------------:|:-------:|:-------:|
-| [TD7 + Demo](/runs/door/real_gh360/eef_vel/online/td7_with_demos/) | [demonstration_dataset](/demonstrations/gh360_door_demonstration_v8.npy) | [recording]() |
-| [TD7](/runs/door/real_gh360/eef_vel/online/td7/) |  |  |
-| [BC](/runs/door/real_gh360/eef_vel/online/bc/) | [demonstration_dataset](/demonstrations/gh360_door_demonstration_v8.npy) | [recording]() |
-| Demonstrations | [demonstration_dataset](/demonstrations/gh360_door_demonstration_v8.npy) | [recording]() |
+| Model and Results | Dataset |
+|:-----------------:|:-------:|
+| [TD7 + Demo](/runs/door/real_gh360/eef_vel/online/td7_with_demos/) | [demonstration_dataset](/demonstrations/gh360_door_demonstration_v8.npy) |
+| [TD7](/runs/door/real_gh360/eef_vel/online/td7/) |  |
+| [BC](/runs/door/real_gh360/eef_vel/online/bc/) | [demonstration_dataset](/demonstrations/gh360_door_demonstration_v8.npy) |
+| Demonstrations | [demonstration_dataset](/demonstrations/gh360_door_demonstration_v8.npy) |
